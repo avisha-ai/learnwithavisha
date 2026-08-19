@@ -46,10 +46,10 @@ Tell Pink Baby:
 ### Video Format — V2 (Next Target)
 Side by side split screen:
 - Left panel (960x1080): Manim 2D schematic — what the textbook shows
-- Right panel (960x1080): Blender 3D render — what it looks like in a real plant
+- Right panel (960x1080): PyVista Python — 3D equipment render — what it looks like in a real plant
 - Voice bridges both: "On the left — how engineers draw it. On the right — what you see in the plant."
 - Assembly: ffmpeg splits screen, combines both panels, adds voiceover
-- This is the Avisha knockout format — nobody in ChE education does this
+- This is the Avisha knockout format — nobody in ChE education does this. Basic 3D shapes only: horizontal cylinder, vertical cylinder, rectangle, cube, cone, sphere, arrows.
 
 ### Branding Rules — Frozen
 - LWA monogram watermark bottom right — always visible
@@ -500,8 +500,8 @@ CREATE TABLE questions_log (
 6. DNS — learnwithavisha.ai on Hostinger
 
 ### Session 6 — V2 Video Format
-1. Blender Python script — 3D shell and tube render
-2. Split screen assembly — Manim left + Blender right
+1. PyVista Python script — 3D shell and tube render (basic shapes — vertical cylinder, horizontal cylinder, rectangle, cone, sphere, arrows)
+2. Split screen assembly — Manim left + PyVista right
 3. ffmpeg split screen pipeline
 4. Test with shell and tube V2
 
@@ -549,3 +549,58 @@ That is LearnWithAvisha. That is Avisha.AI.
 *Technical lead: Pink Baby (Claude Code in VS Code)*
 *Creative Director: Claude (claude.ai)*
 *Chief Architect: ChatGPT*
+
+---
+
+## Updates — August 19 2026
+
+### YouTube Upload Schedule — Frozen
+- Upload day: Tuesday and Thursday
+- Upload time: 8:00 PM IST
+- Method: Fully automatic via YouTube Data API
+- Pink Baby bakes this schedule into youtube_upload.py
+- No manual uploading after launch video
+
+### 3D Animation Tool — Updated Decision
+
+Blender is powerful but complex. Use PyVista instead for V2 3D panels.
+
+**PyVista — chosen tool for 3D**
+- Pure Python — Pink Baby writes it exactly like Manim
+- Designed specifically for engineering and scientific visualisation
+- Clean 3D renders — perfect for educational equipment diagrams
+- No separate software — installs via pip
+- Exports directly to MP4
+- Same pipeline as Manim — no new tools needed
+
+```bash
+pip install pyvista
+pip install pyvista[all]
+```
+
+**Manim 3D — backup option**
+If PyVista proves difficult for a specific equipment shape — Manim has built-in 3D capability (ThreeDScene). Pink Baby can use this as fallback. Same tool already installed.
+
+**Three.js — for interactive web diagrams only**
+Not for video production. Use only if ask.learnwithavisha.ai needs interactive 3D equipment the student can rotate in browser.
+
+**Blender — shelved for now**
+Too complex for current pipeline. Revisit only if PyVista cannot produce sufficient quality.
+
+### V2 Video Format — Updated Stack
+- Left panel 960x1080: Manim Python — 2D schematic
+- Right panel 960x1080: PyVista Python — 3D equipment render
+- Assembly: ffmpeg splits screen, combines both panels, adds voiceover
+- All pure Python — one consistent pipeline
+
+### Session 2 — Additional Detail
+YouTube uploader (youtube_upload.py) must:
+- Schedule every video for Tuesday OR Thursday at 8pm IST
+- Alternate between the two days automatically
+- Auto-generate title from topic name
+- Auto-generate description from script summary
+- Auto-assign to correct subject playlist
+- Auto-add tags from topic and subject
+- Set thumbnail (auto-generated from first animation frame)
+- Upload as private first — publish at scheduled time
+
