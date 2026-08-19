@@ -604,3 +604,77 @@ YouTube uploader (youtube_upload.py) must:
 - Set thumbnail (auto-generated from first animation frame)
 - Upload as private first — publish at scheduled time
 
+
+---
+
+## Critical Guardrails — Added August 19 2026
+
+These two guardrails must be implemented BEFORE Session 4 begins.
+Non-negotiable. Both are cheaper to fix now than after launch.
+
+---
+
+### Guardrail 1 — Copyright Protection
+
+**Problem:**
+The 8 textbooks originally listed (Coulson Richardson, McCabe Smith, Perry's etc) are owned by publishers. Using their content on a public website is copyright infringement. Publishers actively monitor and sue. Avisha's name on it makes it worse.
+
+**Fix — Replace all copyrighted textbooks with open licensed sources:**
+
+Use these instead — free, open licence, legally safe forever:
+
+- **LibreTexts Engineering** — libre.texts.org — free, openly licensed, peer reviewed
+- **NPTEL** — nptel.ac.in — IIT lecture notes and videos — completely free and open
+- **OpenStax** — openstax.org — peer reviewed, free, openly licensed
+- **MIT OpenCourseWare** — ocw.mit.edu — free lecture notes and problem sets
+
+**How the AI references them:**
+- Never reproduce their text verbatim in answers
+- Point to the source: "This is covered in NPTEL Chemical Engineering Module 3" or "See LibreTexts — Fluid Mechanics Chapter 4"
+- The RAG pipeline uses these open sources only — not copyrighted textbooks
+- If a student needs the exact text — direct them to the source
+
+**Result:** Same quality. Zero legal risk. Credible for Indian students — NPTEL is IIT content.
+
+---
+
+### Guardrail 2 — AI Confidence on Wrong Answers
+
+**Problem:**
+A first year student cannot tell when the AI is wrong. If it invents a pressure limit, a temperature value, or a safety parameter — the student trusts it. That is dangerous. Avisha's name is on every answer.
+
+**Fix — Add these hard rules to the system prompt:**
+
+```
+HARD RULES — never break these:
+
+1. If you are not certain — say so explicitly. Always.
+2. Never invent numbers — not pressures, temperatures, flow rates,
+   equipment sizes, safety limits, or any specific values.
+3. If the answer requires a specific value you cannot verify from
+   the provided source chunk — say exactly:
+   "I cannot confirm this value with certainty.
+    Please refer directly to [source] Chapter X."
+4. Never guess at safety-related information. Ever.
+5. Refuse to answer rather than invent. A refused answer is
+   safer than a confident wrong one.
+6. When uncertain about scope — give the principle only,
+   never the specific number.
+```
+
+**Result:** The AI teaches concepts safely. Students get referred to sources for specific values. No dangerous invented numbers ever reach a student.
+
+---
+
+### Session 4 Update — Implement Both Guardrails
+
+Before writing a single line of Session 4 code:
+
+1. Replace all textbook PDF references with LibreTexts, NPTEL, OpenStax, MIT OCW
+2. Update RAG pipeline to use open licensed sources only
+3. Update system prompt with the hard rules above
+4. Test: ask the AI a question requiring a specific value — it must refuse to invent
+5. Test: ask a safety related question — it must refer to source, never guess
+
+Both guardrails are non-negotiable. They protect students and protect Avisha.
+
