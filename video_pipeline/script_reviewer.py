@@ -155,15 +155,17 @@ def write_and_review(topic: Topic, rounds: int = 3) -> tuple[str, dict, dict]:
     Returns (script, draft, review).
     """
     feedback = None
+    previous = None
     for round_no in range(1, rounds + 1):
         log.info("Quality gate round %d/%d", round_no, rounds)
-        draft = script_writer.write(topic, feedback=feedback)
+        draft = script_writer.write(topic, feedback=feedback, previous=previous)
         result = review(topic, draft["script"], draft.get("sources_read"))
 
         if result["verdict"] == APPROVED:
             return draft["script"], draft, result
 
         feedback = feedback_text(result)
+        previous = draft["script"]
         log.warning("  rewrite requested:\n%s", feedback)
 
     raise RuntimeError(

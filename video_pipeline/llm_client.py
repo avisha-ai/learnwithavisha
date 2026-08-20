@@ -24,9 +24,9 @@ from __future__ import annotations
 import json
 import logging
 
-import openai
-
-from config import (CLAUDE_EFFORT, CLAUDE_MODEL, OPENROUTER_API_KEY_ENV,
+import claude_cli
+from config import (CLAUDE_EFFORT, CLAUDE_MODEL, LLM_PROVIDER,
+                    OPENROUTER_API_KEY_ENV,
                     OPENROUTER_BASE_URL, OPENROUTER_HEADERS,
                     OPENROUTER_SEARCH_ENGINE, OPENROUTER_SEARCH_MAX_RESULTS,
                     OPEN_SOURCE_DOMAINS, require_env)
@@ -36,7 +36,8 @@ log = logging.getLogger(__name__)
 REQUEST_TIMEOUT = 900.0     # Manim generation is a long single turn
 
 
-def client() -> openai.OpenAI:
+def client():
+    import openai          # lazy: OpenRouter path only
     return openai.OpenAI(
         base_url=OPENROUTER_BASE_URL,
         api_key=require_env(OPENROUTER_API_KEY_ENV),
@@ -83,6 +84,10 @@ def call(system: str,
     The second element is a compatibility shim: the Anthropic version returned
     content blocks and callers unpack a 2-tuple.
     """
+    if LLM_PROVIDER == "claude_cli":
+        return claude_cli.call(system, prompt, schema=schema, search=search,
+                               max_tokens=max_tokens, effort=effort)
+
     api = client()
 
     extra_body: dict = {"reasoning": {"effort": effort}}
@@ -140,6 +145,9 @@ def call(system: str,
 
 def call_json(system: str, prompt: str, schema: dict, **kwargs) -> dict:
     """Structured-output call — returns the parsed object."""
+    if LLM_PROVIDER == "claude_cli":
+        return claude_cli.call_json(system, prompt, schema, **kwargs)
+
     text, _ = call(system, prompt, schema=schema, **kwargs)
     try:
         return json.loads(text)

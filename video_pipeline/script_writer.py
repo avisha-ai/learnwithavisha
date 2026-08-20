@@ -153,7 +153,8 @@ def validate_sources(sources: list[str]) -> list[str]:
     return problems
 
 
-def _prompt(topic: Topic, feedback: str | None) -> str:
+def _prompt(topic: Topic, feedback: str | None,
+            previous: str | None = None) -> str:
     parts = [
         f"Write the voiceover script for this video.",
         "",
@@ -169,22 +170,46 @@ def _prompt(topic: Topic, feedback: str | None) -> str:
         "Search first. Read the actual pages. Then write.",
     ]
     if feedback:
-        parts += [
-            "",
-            "This is a REWRITE. The previous draft was rejected. Fix every point "
-            "below and change nothing else that was already correct:",
-            feedback,
-        ]
+        # The draft itself has to travel with the feedback. Without it the
+        # writer starts from a blank page every round, so it cannot "change
+        # nothing else" as instructed — it re-researches, rewrites, and trades
+        # the old defects for new ones instead of converging.
+        if previous:
+            parts += [
+                "",
+                "This is a REWRITE, not a new script.",
+                "",
+                "PREVIOUS DRAFT — edit this text directly:",
+                "-------------------",
+                previous,
+                "-------------------",
+                "",
+                "Apply ONLY the corrections listed below. Keep every other "
+                "sentence exactly as it already stands — same wording, same "
+                "order, same structure. Do not re-research settled material "
+                "and do not restyle anything that was not criticised. Verify "
+                "any NEW claim you add against the open licensed sources.",
+                feedback,
+            ]
+        else:
+            parts += [
+                "",
+                "This is a REWRITE. The previous draft was rejected. Fix every "
+                "point below and change nothing else that was already correct:",
+                feedback,
+            ]
     return "\n".join(parts)
 
 
-def write(topic: Topic, feedback: str | None = None, attempts: int = 3) -> dict:
+def write(topic: Topic, feedback: str | None = None, attempts: int = 3,
+          previous: str | None = None) -> dict:
     """
     Research and write the script. Retries in-process when a hard rule is
     broken, feeding the failure back to Claude rather than silently accepting.
     """
     problems: list[str] = []
     result: dict = {}
+    last_draft = previous          # carries across in-process retries too
 
     for attempt in range(1, attempts + 1):
         note = feedback
@@ -195,11 +220,12 @@ def write(topic: Topic, feedback: str | None = None, attempts: int = 3) -> dict:
 
         log.info("  Claude call 1 — writing script (attempt %d/%d)", attempt, attempts)
         result = llm_client.call_json(
-            SYSTEM, _prompt(topic, note), SCHEMA, search=True,
+            SYSTEM, _prompt(topic, note, last_draft), SCHEMA, search=True,
         )
 
         script = result["script"].strip()
         result["script"] = script
+        last_draft = script
         problems = validate(script) + validate_sources(result.get("sources_read", []))
         if not problems:
             log.info("  script ok — %d words, %d sources",

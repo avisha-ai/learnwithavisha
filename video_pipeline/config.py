@@ -45,6 +45,14 @@ CLOSING_LINE = ("This is LearnWithAvisha — chemical engineering fundamentals, 
 # Words that must never appear in a script or a description.
 BANNED_WORDS = ("free", "pricing", "subscription fee")
 
+# ── LLM transport ────────────────────────────────────────────────
+# "claude_cli" routes every model call through the local `claude` binary, which
+# bills the Max subscription. "openrouter" uses the metered API key below.
+# Override with LLM_PROVIDER in .env.
+LLM_PROVIDER = (os.environ.get("LLM_PROVIDER") or "claude_cli").strip()
+CLAUDE_CLI_BIN = (os.environ.get("CLAUDE_CLI_BIN") or "claude").strip()
+CLAUDE_CLI_MODEL = (os.environ.get("CLAUDE_CLI_MODEL") or "sonnet").strip()
+
 # ── LLM provider — OpenRouter ────────────────────────────────────
 # OpenRouter speaks the OpenAI chat-completions wire format, not Anthropic's
 # Messages API, so the pipeline talks to it through the openai SDK.
