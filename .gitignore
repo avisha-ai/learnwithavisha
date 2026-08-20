@@ -216,3 +216,15 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Local toolchain / render outputs (Pink Baby pilot)
+.micromamba/
+media/
+animation.mp4
+final_video*.mp4
+
+# LearnWithAvisha pipeline
+.credentials/
+output/
+media/
+.env
