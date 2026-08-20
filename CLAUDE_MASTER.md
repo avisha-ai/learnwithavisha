@@ -14,7 +14,7 @@ Automated faceless animated videos. One to two per week. Manim animations synced
 The organised curriculum home. Videos embedded by subject and topic. Students find the full learning path here. Clean. Simple. Avisha branded.
 
 **Part 3 — AI Assistant** (ask.learnwithavisha.ai)
-A dedicated chemical engineering AI professor. Available 24/7. Answers any ChE question — whether the video exists or not. Grounded in real textbooks. Simple language. Never generic. Never lazy.
+A dedicated chemical engineering AI professor. Available 24/7. Answers any ChE question — whether the video exists or not. Grounded in open licensed sources. Simple language. Never generic. Never lazy.
 
 ---
 
@@ -28,13 +28,7 @@ A dedicated chemical engineering AI professor. Available 24/7. Answers any ChE q
 
 ### Status
 Pilot video complete — Shell and Tube Heat Exchanger V1 ✅
-
-### Current Fixes Needed on Pilot
-Tell Pink Baby:
-1. Remove LearnWithAvisha header title from animation completely
-2. Add LWA monogram watermark — white italic serif Georgia font, thin circle border, bottom right corner, 85% opacity, visible throughout entire video
-3. Add 2.5 second pauses after each major element appears — shell, tubes, hot fluid, cold fluid, heat transfer arrow, key points summary
-4. Ensure total animation duration matches voiceover exactly — no blank screen while voice plays
+Session 1 fixes complete ✅
 
 ### Video Format — V1 (Current)
 - Tool: Manim Python
@@ -49,17 +43,101 @@ Side by side split screen:
 - Right panel (960x1080): PyVista Python — 3D equipment render — what it looks like in a real plant
 - Voice bridges both: "On the left — how engineers draw it. On the right — what you see in the plant."
 - Assembly: ffmpeg splits screen, combines both panels, adds voiceover
-- This is the Avisha knockout format — nobody in ChE education does this. Basic 3D shapes only: horizontal cylinder, vertical cylinder, rectangle, cube, cone, sphere, arrows.
+- This is the Avisha knockout format — nobody in ChE education does this
+- Basic 3D shapes only: horizontal cylinder, vertical cylinder, rectangle, cube, cone, sphere, arrows
 
 ### Branding Rules — Frozen
 - LWA monogram watermark bottom right — always visible
+- White italic serif Georgia font, thin circle border, 85% opacity
 - Never put LearnWithAvisha as a heading at the top
 - Never mention "free" anywhere in any video
 - Never repeat branding — watermark only, no end card duplication
 - Every video ends: "This is LearnWithAvisha — chemical engineering fundamentals, explained simply."
-- Reference at end: textbook name and chapter
 
-### Curriculum — Full Subject Order
+### References — Description Box Only
+References go in the YouTube description box — NEVER inside the video itself.
+
+Reasons:
+- References inside video interrupt learning flow
+- Description box is standard practice for all serious educational channels
+- Clean, professional, always accessible without cluttering the animation
+
+**Description template — Pink Baby auto-generates this for every video:**
+
+```
+Topic: [Topic Name]
+Subject: [Subject Name] — LearnWithAvisha Curriculum
+
+[2-3 sentence plain English summary of what the video covers]
+
+📚 References:
+• NPTEL — Chemical Engineering — [relevant module]
+  nptel.ac.in
+• LibreTexts Engineering — [relevant chapter]
+  eng.libretexts.org
+• MIT OpenCourseWare — Chemical Engineering
+  ocw.mit.edu
+
+🔗 Full curriculum: learnwithavisha.ai
+❓ Ask anything: ask.learnwithavisha.ai
+
+By Avisha.AI | Engineering Made Intelligent
+```
+
+Pink Baby generates this description automatically for every video
+and passes it to the YouTube Data API during upload.
+No manual description writing ever needed.
+
+### Upload Plan — Frozen
+
+**First 5-6 videos — manual upload by Mrinal**
+Automation takes over from Video 7 onwards.
+
+Reasons:
+- Gives Mrinal and Mayur full control over the launch
+- Allows quality check of each video before it goes public
+- Ensures the channel looks established from day one
+
+Manual upload checklist for each of the first videos:
+1. Watch the full video — approve it
+2. Go to YouTube Studio
+3. Upload the MP4
+4. Paste the auto-generated description from Pink Baby
+5. Add to correct subject playlist
+6. Set thumbnail — first frame of animation
+7. Schedule for Tuesday or Thursday 8pm IST
+8. Publish
+
+From Video 7 onwards — fully automatic.
+Pink Baby handles everything via YouTube Data API.
+Tuesday and Thursday. 8pm IST. No human involvement needed.
+
+### Launch Plan
+Do not launch with one video. Launch with 5-6 videos already uploaded.
+A channel with 5-6 videos from day one looks established.
+A channel with 1 video looks like an experiment.
+Build the library first. Then open the channel. Then share.
+
+### YouTube Upload Schedule — Frozen
+- Upload day: Tuesday and Thursday
+- Upload time: 8:00 PM IST
+- Method: Fully automatic via YouTube Data API
+- Pink Baby bakes this schedule into youtube_upload.py
+- No manual uploading after the first 5-6 launch videos
+
+### YouTube Uploader — youtube_upload.py must:
+- Schedule every video for Tuesday OR Thursday at 8pm IST
+- Alternate between the two days automatically
+- Auto-generate title from topic name
+- Auto-generate description from template above
+- Auto-assign to correct subject playlist
+- Auto-add tags from topic and subject
+- Set thumbnail — auto-generated from first animation frame
+- Upload as private first — publish at scheduled time
+
+---
+
+## Curriculum — Full Subject Order
 Videos produced strictly in this order. Never random. Never skip.
 
 **Subject 1 — Fluid Flow**
@@ -125,25 +203,30 @@ Videos produced strictly in this order. Never random. Never skip.
 03 Sedimentation
 04 Membrane separation
 
-### Script Quality Rules
-- Textbook faithful — every statement referenced to source
+---
+
+## Script Quality Rules
+- Textbook faithful — every statement referenced to open source
 - Generic — no opinions, no invented claims
 - Simple language — analogy first, concept second, equation last
 - Two Claude API review passes before human sees script
 - Mayur approves in 10 minutes before any video is produced
 - Never mention "free"
 
-### Video Production Pipeline — Automated Python on Railway
+---
+
+## Video Production Pipeline — Automated Python on Railway
+
 ```
 Scheduled Python script
         ↓
 Read next topic from Google Sheet queue
         ↓
-Fetch textbook chapter PDF from Google Drive
+Fetch open source reference from NPTEL/LibreTexts/MIT OCW
         ↓
-Claude API Call 1 — Write script from textbook chapter
+Claude API Call 1 — Write script from reference material
         ↓
-Claude API Call 2 — Review script against textbook
+Claude API Call 2 — Review script against reference
         ↓
 Save reviewed script to Google Drive
         ↓
@@ -159,12 +242,48 @@ ElevenLabs API — generate voiceover MP3 (Leandra, v3)
         ↓
 ffmpeg — combine animation + voiceover → final_video.mp4
         ↓
+Auto-generate description from template
+        ↓
 YouTube Data API — upload, set metadata, schedule publish
         ↓
 Google Sheet status updated to Published
         ↓
 Supabase — add topic to Q&A database as "video available"
 ```
+
+---
+
+## 3D Animation Tool — Frozen
+
+**PyVista — chosen tool for 3D**
+- Pure Python — Pink Baby writes it exactly like Manim
+- Designed specifically for engineering and scientific visualisation
+- Clean 3D renders — perfect for educational equipment diagrams
+- No separate software — installs via pip
+- Exports directly to MP4
+- Same pipeline as Manim — no new tools needed
+
+```bash
+pip install pyvista
+pip install pyvista[all]
+```
+
+**Basic shapes for ChE equipment:**
+- Horizontal cylinder — shell and tube heat exchanger, pipes
+- Vertical cylinder — distillation column, absorption column, reactor vessel
+- Rectangle/cube — tank, reactor body
+- Cone — vessel heads, nozzles
+- Sphere — storage vessels
+- Arrows — fluid flow direction, inlet/outlet streams
+
+**Manim 3D — backup option**
+If PyVista proves difficult for a specific shape — Manim has built-in 3D capability (ThreeDScene). Use as fallback only.
+
+**Blender — shelved**
+Too complex. Revisit only if PyVista cannot produce sufficient quality.
+
+**Three.js — web only**
+Use only if ask.learnwithavisha.ai needs interactive 3D the student can rotate in browser.
 
 ---
 
@@ -178,8 +297,8 @@ Organised curriculum home. Students find the full learning path here. Videos emb
 learnwithavisha.ai/
 ├── Home — what this is, who it's for
 ├── Curriculum — all 6 subjects listed
-│   ├── /fluid-flow — all fluid flow videos in order
-│   ├── /heat-transfer — all heat transfer videos
+│   ├── /fluid-flow
+│   ├── /heat-transfer
 │   ├── /mass-transfer
 │   ├── /reaction-engineering
 │   ├── /thermodynamics
@@ -210,14 +329,14 @@ learnwithavisha.ai/
 
 ### What This Is
 A dedicated chemical engineering AI professor. Not a generic chatbot. A specialist.
-
-Available 24 hours. 7 days. Never tired. Answers any ChE question — whether the video exists or not. Grounded in real textbooks. Simple language always.
+Available 24 hours. 7 days. Never tired. Answers any ChE question.
+Grounded in open licensed sources. Simple language always.
 
 **One sentence: A chemical engineering professor that lives inside ask.learnwithavisha.ai — available to every student in the world, for free, forever.**
 
 ### What It Does
 - Answers any chemical engineering question in simple language
-- References the actual textbook and chapter for every answer
+- References open licensed sources for every answer
 - Links to the relevant LearnWithAvisha video if it exists
 - If video does not exist — says "Video coming soon — subscribe to be notified"
 - Stays strictly within chemical engineering — does not answer unrelated questions
@@ -225,124 +344,85 @@ Available 24 hours. 7 days. Never tired. Answers any ChE question — whether th
 
 ### What It Does NOT Do
 - Does not give opinions
-- Does not invent answers
+- Does not invent answers or numbers
 - Does not answer outside ChE scope
 - Does not replace the videos — it complements them
 - Does not pretend to know what it does not know
 
-### Knowledge Base — The Textbooks
+### Knowledge Base — Open Licensed Sources Only
 
-The AI is grounded in these references via RAG (Retrieval Augmented Generation):
-
-**Core textbooks (PDF → chunked → stored in Supabase vector database):**
-- Coulson & Richardson — Chemical Engineering Vol 1, 2, 3
-- McCabe, Smith & Harriott — Unit Operations of Chemical Engineering
-- Perry's Chemical Engineers' Handbook
-- Geankoplis — Transport Processes and Unit Operations
-- Fogler — Elements of Chemical Reaction Engineering
-- Smith, Van Ness & Abbott — Introduction to Chemical Engineering Thermodynamics
-
-**Encyclopedias:**
-- Kirk-Othmer Encyclopedia of Chemical Technology
-- Ullmann's Encyclopedia of Industrial Chemistry
+**Sources used — all free, all open licensed, zero legal risk:**
+- NPTEL — nptel.ac.in — IIT lecture notes and videos
+- LibreTexts Engineering — eng.libretexts.org
+- OpenStax — openstax.org
+- MIT OpenCourseWare — ocw.mit.edu
 
 **How RAG works:**
-1. All textbooks are chunked into sections and stored in Supabase with pgvector embeddings
+1. Open source content chunked into sections stored in Supabase with pgvector
 2. Student asks a question
-3. System finds the most relevant textbook sections using vector similarity search
-4. Those sections are fed to Claude API along with the question
-5. Claude answers using the actual textbook text — not memory alone
-6. Answer includes the textbook name and chapter as reference
+3. System finds most relevant chunks via vector similarity search
+4. Chunks fed to Claude API along with the question
+5. Claude answers using the actual source text
+6. Answer includes source name and module as reference
 
-This means every answer is grounded in the actual books — not approximately correct — actually correct.
-
-### Answer Format — Every Response Follows This Structure
+### Answer Format — Every Response
 
 ```
 [Simple 2-3 sentence answer in plain English]
 
 [Explanation — analogy first, concept second, equation if needed]
 
-[Textbook reference — "According to Coulson & Richardson Vol 1, Chapter X..."]
+[Source reference — "According to NPTEL Chemical Engineering, Module X..."]
 
 [Related video — embedded or linked if available]
 
-[Related questions the student might also have — 3 suggestions]
-```
-
-### Tech Stack
-- Next.js 14 frontend — clean single page, one search box
-- Claude API — claude-sonnet-4-6 — the AI brain
-- Supabase — pgvector — textbook chunk storage and retrieval
-- Python — PDF chunking and embedding pipeline (run once, then automated)
-- Vercel hosting
-- Hostinger DNS — ask.learnwithavisha.ai
-
-### The RAG Pipeline — One Time Setup
-```
-Upload textbook PDFs to Google Drive
-        ↓
-Python script extracts text chapter by chapter
-        ↓
-Text chunked into 500-word sections with metadata
-(book name, chapter, topic tags)
-        ↓
-Each chunk embedded via Claude or OpenAI embeddings
-        ↓
-Embeddings stored in Supabase pgvector table
-        ↓
-Done — knowledge base is ready
-```
-
-### The Query Pipeline — Every Student Question
-```
-Student types question on ask.learnwithavisha.ai
-        ↓
-Question embedded into vector
-        ↓
-Supabase similarity search — find top 5 relevant textbook chunks
-        ↓
-Claude API called with:
-  - System prompt (ChE professor persona)
-  - Retrieved textbook chunks
-  - Student question
-        ↓
-Claude generates answer grounded in textbook text
-        ↓
-System checks Supabase for matching video
-        ↓
-Answer displayed with textbook reference + video if available
-        ↓
-Question and answer logged to Supabase for future improvement
+[Related questions — 3 suggestions]
 ```
 
 ### System Prompt — The AI Professor Persona
 
 ```
-You are a dedicated chemical engineering professor and teaching assistant 
-for LearnWithAvisha. You have deep expertise across all areas of chemical 
-engineering — fluid flow, heat transfer, mass transfer, reaction engineering, 
+You are a dedicated chemical engineering professor and teaching assistant
+for LearnWithAvisha. You have deep expertise across all areas of chemical
+engineering — fluid flow, heat transfer, mass transfer, reaction engineering,
 thermodynamics, and separation processes.
 
 Your rules:
 1. Answer ONLY chemical engineering questions. Politely decline anything else.
 2. Always use simple language. Explain to a first year student, not a PhD.
 3. Always use analogy first, concept second, equation last.
-4. Always reference the textbook source provided to you.
-5. Never invent an answer. If unsure, say so and point to the relevant chapter.
+4. Always reference the open source provided to you.
+5. Never invent an answer. If unsure, say so and point to the relevant source.
 6. If a question is too advanced, give the foundation first.
 7. Keep answers concise — 150 to 300 words maximum.
-8. End every answer with the textbook reference.
+8. End every answer with the source reference.
 9. Suggest 3 related questions the student might also want to know.
 10. If a LearnWithAvisha video covers this topic, mention it.
 
-You represent Avisha.AI — engineering made intelligent. 
+HARD RULES — never break these:
+1. If you are not certain — say so explicitly. Always.
+2. Never invent numbers — not pressures, temperatures, flow rates,
+   equipment sizes, safety limits, or any specific values.
+3. If the answer requires a specific value you cannot verify —
+   say: "I cannot confirm this value with certainty.
+   Please refer directly to [source]."
+4. Never guess at safety-related information. Ever.
+5. Refuse to answer rather than invent.
+   A refused answer is safer than a confident wrong one.
+
+You represent Avisha.AI — engineering made intelligent.
 Be precise. Be clear. Be helpful. Never be generic.
 ```
 
-### Website Design — ask.learnwithavisha.ai
+### Tech Stack
+- Next.js 14 frontend — clean single page, one search box
+- Claude API — claude-sonnet-4-6 — the AI brain
+- Supabase — pgvector — source chunk storage and retrieval
+- Python — content chunking and embedding pipeline
+- Vercel hosting
+- Hostinger DNS — ask.learnwithavisha.ai
 
-Single page. Extremely clean.
+### Website Design — ask.learnwithavisha.ai
 
 ```
 [LWA monogram — top left]
@@ -351,21 +431,19 @@ Single page. Extremely clean.
 "Ask anything about chemical engineering."
 
 [Subheading]
-"Grounded in Coulson Richardson, McCabe Smith, Perry's and more."
+"Grounded in NPTEL, LibreTexts, MIT OCW and more."
 
 [Search box — large, centred]
 "What would you like to know?"
 
-[Example questions below the box]
+[Example questions]
 • How does a distillation column work?
 • What is the difference between laminar and turbulent flow?
 • Why does fouling reduce heat exchanger performance?
 • What is NPSH and why does it matter for pumps?
 
 [Answer appears below — clean, readable, referenced]
-
 [Related video embedded if available]
-
 [Related questions — clickable]
 
 [Footer]
@@ -377,43 +455,37 @@ Single page. Extremely clean.
 ## File Structure — Full Ecosystem
 
 ```
-GitHub: avisha-ai/learnwithavisha (existing repo)
-├── CLAUDE.md                    ← master brief (this file)
+GitHub: avisha-ai/learnwithavisha
+├── CLAUDE.md                    ← pilot brief
+├── CLAUDE_MASTER.md             ← this file — master brief
 ├── SKILL.md                     ← video production bible
 ├── README.md
 ├── pilot/                       ← shell and tube pilot
 ├── curriculum/
-│   └── topic_queue.csv          ← full topic list with status
-├── video_pipeline/              ← automated video production
-│   ├── main.py                  ← scheduler and orchestrator
-│   ├── script_writer.py         ← Claude API script generation
-│   ├── script_reviewer.py       ← Claude API quality check
-│   ├── manim_generator.py       ← generates Manim code per topic
-│   ├── voiceover.py             ← ElevenLabs API
-│   ├── assembler.py             ← ffmpeg combination
-│   └── youtube_upload.py        ← YouTube Data API
-├── website/                     ← learnwithavisha.ai
+│   └── topic_queue.csv
+├── video_pipeline/
+│   ├── main.py
+│   ├── script_writer.py
+│   ├── script_reviewer.py
+│   ├── manim_generator.py
+│   ├── voiceover.py
+│   ├── assembler.py
+│   └── youtube_upload.py
+├── website/
 │   ├── pages/
 │   ├── components/
 │   └── styles/
-└── ask/                         ← ask.learnwithavisha.ai
+└── ask/
     ├── pages/
     ├── components/
     ├── api/
-    │   ├── ask.py               ← main query handler
-    │   └── search.py            ← Supabase vector search
+    │   ├── ask.py
+    │   └── search.py
     ├── scripts/
-    │   ├── chunk_textbooks.py   ← PDF → chunks pipeline
-    │   └── embed_chunks.py      ← embedding pipeline
+    │   ├── chunk_sources.py
+    │   └── embed_chunks.py
     └── prompts/
-        └── professor.txt        ← system prompt
-
-GitHub: avisha-ai/learnwithavisha-knowledge (new private repo)
-└── textbooks/                   ← PDF textbooks (private)
-    ├── coulson_richardson_v1.pdf
-    ├── mccabe_smith.pdf
-    ├── perrys_handbook.pdf
-    └── ...
+        └── professor.txt
 ```
 
 ---
@@ -421,7 +493,6 @@ GitHub: avisha-ai/learnwithavisha-knowledge (new private repo)
 ## Supabase Database Schema
 
 ```sql
--- Video tracking
 CREATE TABLE videos (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   subject TEXT NOT NULL,
@@ -433,23 +504,21 @@ CREATE TABLE videos (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Textbook knowledge base
 CREATE TABLE knowledge_chunks (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  book_name TEXT NOT NULL,
-  chapter TEXT NOT NULL,
+  source_name TEXT NOT NULL,
+  module TEXT NOT NULL,
   topic_tags TEXT[],
   content TEXT NOT NULL,
   embedding VECTOR(1536),
   created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Student questions log
 CREATE TABLE questions_log (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   question TEXT NOT NULL,
   answer TEXT NOT NULL,
-  textbook_reference TEXT,
+  source_reference TEXT,
   video_id UUID REFERENCES videos(id),
   asked_at TIMESTAMP DEFAULT NOW()
 );
@@ -457,32 +526,37 @@ CREATE TABLE questions_log (
 
 ---
 
-## Build Order — What Pink Baby Builds First
+## Build Order — Six Sessions
 
-### Session 1 — Pilot Video Fixes (immediate)
-1. Remove header title from shell tube animation
-2. Add LWA watermark bottom right
-3. Add 2.5 second pauses after each element
-4. Verify sync — animation matches voiceover exactly
-5. Render final_video_v2.mp4
+### Session 1 — Pilot Video Fixes ✅ COMPLETE
+1. Remove header title from shell tube animation ✅
+2. Add LWA watermark bottom right ✅
+3. Add 2.5 second pauses after each element ✅
+4. Verify sync — animation matches voiceover exactly ✅
+5. Render final_video_v2.mp4 ✅
 
 ### Session 2 — Video Pipeline Automation
 1. topic_queue.csv — full curriculum list
 2. script_writer.py — Claude API script generation
 3. script_reviewer.py — Claude API quality check
-4. voiceover.py — ElevenLabs API
+4. voiceover.py — ElevenLabs API (Leandra, v3)
 5. assembler.py — ffmpeg combination
-6. youtube_upload.py — YouTube Data API
+6. youtube_upload.py — YouTube Data API — Tuesday Thursday 8pm IST
 7. main.py — scheduler orchestrating all steps
 8. Test end to end with Subject 1 Topic 1
 
 ### Session 3 — Knowledge Base Setup
-1. chunk_textbooks.py — PDF text extraction and chunking
+1. chunk_sources.py — NPTEL/LibreTexts/MIT OCW content chunking
 2. embed_chunks.py — embedding pipeline to Supabase
 3. Supabase schema — knowledge_chunks table with pgvector
 4. Test retrieval — does a question return relevant chunks?
 
 ### Session 4 — ask.learnwithavisha.ai
+BEFORE writing any code — verify both guardrails are implemented:
+- Open sources only in RAG pipeline — no copyrighted textbooks
+- Hard rules in system prompt — no invented numbers, refuse when unsure
+
+Then build:
 1. Next.js frontend — single clean page
 2. Search box and answer display
 3. API route — question → vector search → Claude → answer
@@ -500,7 +574,7 @@ CREATE TABLE questions_log (
 6. DNS — learnwithavisha.ai on Hostinger
 
 ### Session 6 — V2 Video Format
-1. PyVista Python script — 3D shell and tube render (basic shapes — vertical cylinder, horizontal cylinder, rectangle, cone, sphere, arrows)
+1. PyVista Python script — 3D equipment render (basic shapes only)
 2. Split screen assembly — Manim left + PyVista right
 3. ffmpeg split screen pipeline
 4. Test with shell and tube V2
@@ -509,18 +583,21 @@ CREATE TABLE questions_log (
 
 ## Key Principles — Never Forget
 
-1. Textbook faithful — every answer and every video referenced to source
-2. Simple language always — first year student level
-3. Two AI quality checks before any human sees a script
-4. Mayur approves scripts — 10 minutes maximum
-5. LWA watermark only — never heading, never twice
-6. Never mention "free" in any video or answer
-7. Animation synced to voiceover — never out of sync
-8. Breathing pauses — 2.5 seconds after every major reveal
-9. The AI assistant answers ChE only — never wanders outside scope
-10. Quality over quantity — one accurate answer beats three vague ones
-11. Every answer ends with textbook reference
-12. Videos and Ask are connected — one ecosystem, not two separate things
+1. Open sources only — NPTEL, LibreTexts, OpenStax, MIT OCW
+2. Never reproduce source text verbatim — point to it instead
+3. Simple language always — first year student level
+4. Two AI quality checks before any human sees a script
+5. Mayur approves scripts — 10 minutes maximum
+6. LWA watermark only — never heading, never twice
+7. Never mention "free" in any video or answer
+8. Animation synced to voiceover — never out of sync
+9. Breathing pauses — 2.5 seconds after every major reveal
+10. AI assistant answers ChE only — never wanders outside scope
+11. AI never invents numbers — refuses rather than guesses
+12. References in description box only — never inside the video
+13. Launch with 5-6 videos — not one
+14. First 5-6 uploads manual — automation from Video 7 onwards
+15. Videos and Ask are connected — one ecosystem, not two
 
 ---
 
@@ -536,7 +613,7 @@ ask.learnwithavisha.ai  CNAME    cname.vercel-dns.com
 
 ## The Vision — Said Simply
 
-A student anywhere in the world — Mumbai, Lagos, Manila, São Paulo — opens their phone. Types a question about distillation. Gets a clear, simple, accurate answer in seconds. Referenced to Perry's Handbook. With a link to a beautifully animated video showing exactly how it works — in 2D and in 3D.
+A student anywhere in the world — Mumbai, Lagos, Manila, São Paulo — opens their phone. Types a question about distillation. Gets a clear, simple, accurate answer in seconds. Referenced to NPTEL or LibreTexts. With a link to a beautifully animated video showing exactly how it works — in 2D and in 3D.
 
 For free. Forever.
 
@@ -549,200 +626,3 @@ That is LearnWithAvisha. That is Avisha.AI.
 *Technical lead: Pink Baby (Claude Code in VS Code)*
 *Creative Director: Claude (claude.ai)*
 *Chief Architect: ChatGPT*
-
----
-
-## Updates — August 19 2026
-
-### YouTube Upload Schedule — Frozen
-- Upload day: Tuesday and Thursday
-- Upload time: 8:00 PM IST
-- Method: Fully automatic via YouTube Data API
-- Pink Baby bakes this schedule into youtube_upload.py
-- No manual uploading after launch video
-
-### 3D Animation Tool — Updated Decision
-
-Blender is powerful but complex. Use PyVista instead for V2 3D panels.
-
-**PyVista — chosen tool for 3D**
-- Pure Python — Pink Baby writes it exactly like Manim
-- Designed specifically for engineering and scientific visualisation
-- Clean 3D renders — perfect for educational equipment diagrams
-- No separate software — installs via pip
-- Exports directly to MP4
-- Same pipeline as Manim — no new tools needed
-
-```bash
-pip install pyvista
-pip install pyvista[all]
-```
-
-**Manim 3D — backup option**
-If PyVista proves difficult for a specific equipment shape — Manim has built-in 3D capability (ThreeDScene). Pink Baby can use this as fallback. Same tool already installed.
-
-**Three.js — for interactive web diagrams only**
-Not for video production. Use only if ask.learnwithavisha.ai needs interactive 3D equipment the student can rotate in browser.
-
-**Blender — shelved for now**
-Too complex for current pipeline. Revisit only if PyVista cannot produce sufficient quality.
-
-### V2 Video Format — Updated Stack
-- Left panel 960x1080: Manim Python — 2D schematic
-- Right panel 960x1080: PyVista Python — 3D equipment render
-- Assembly: ffmpeg splits screen, combines both panels, adds voiceover
-- All pure Python — one consistent pipeline
-
-### Session 2 — Additional Detail
-YouTube uploader (youtube_upload.py) must:
-- Schedule every video for Tuesday OR Thursday at 8pm IST
-- Alternate between the two days automatically
-- Auto-generate title from topic name
-- Auto-generate description from script summary
-- Auto-assign to correct subject playlist
-- Auto-add tags from topic and subject
-- Set thumbnail (auto-generated from first animation frame)
-- Upload as private first — publish at scheduled time
-
-
----
-
-## Critical Guardrails — Added August 19 2026
-
-These two guardrails must be implemented BEFORE Session 4 begins.
-Non-negotiable. Both are cheaper to fix now than after launch.
-
----
-
-### Guardrail 1 — Copyright Protection
-
-**Problem:**
-The 8 textbooks originally listed (Coulson Richardson, McCabe Smith, Perry's etc) are owned by publishers. Using their content on a public website is copyright infringement. Publishers actively monitor and sue. Avisha's name on it makes it worse.
-
-**Fix — Replace all copyrighted textbooks with open licensed sources:**
-
-Use these instead — free, open licence, legally safe forever:
-
-- **LibreTexts Engineering** — libre.texts.org — free, openly licensed, peer reviewed
-- **NPTEL** — nptel.ac.in — IIT lecture notes and videos — completely free and open
-- **OpenStax** — openstax.org — peer reviewed, free, openly licensed
-- **MIT OpenCourseWare** — ocw.mit.edu — free lecture notes and problem sets
-
-**How the AI references them:**
-- Never reproduce their text verbatim in answers
-- Point to the source: "This is covered in NPTEL Chemical Engineering Module 3" or "See LibreTexts — Fluid Mechanics Chapter 4"
-- The RAG pipeline uses these open sources only — not copyrighted textbooks
-- If a student needs the exact text — direct them to the source
-
-**Result:** Same quality. Zero legal risk. Credible for Indian students — NPTEL is IIT content.
-
----
-
-### Guardrail 2 — AI Confidence on Wrong Answers
-
-**Problem:**
-A first year student cannot tell when the AI is wrong. If it invents a pressure limit, a temperature value, or a safety parameter — the student trusts it. That is dangerous. Avisha's name is on every answer.
-
-**Fix — Add these hard rules to the system prompt:**
-
-```
-HARD RULES — never break these:
-
-1. If you are not certain — say so explicitly. Always.
-2. Never invent numbers — not pressures, temperatures, flow rates,
-   equipment sizes, safety limits, or any specific values.
-3. If the answer requires a specific value you cannot verify from
-   the provided source chunk — say exactly:
-   "I cannot confirm this value with certainty.
-    Please refer directly to [source] Chapter X."
-4. Never guess at safety-related information. Ever.
-5. Refuse to answer rather than invent. A refused answer is
-   safer than a confident wrong one.
-6. When uncertain about scope — give the principle only,
-   never the specific number.
-```
-
-**Result:** The AI teaches concepts safely. Students get referred to sources for specific values. No dangerous invented numbers ever reach a student.
-
----
-
-### Session 4 Update — Implement Both Guardrails
-
-Before writing a single line of Session 4 code:
-
-1. Replace all textbook PDF references with LibreTexts, NPTEL, OpenStax, MIT OCW
-2. Update RAG pipeline to use open licensed sources only
-3. ## References and Upload Plan — Added August 20 2026
-
-### References — Description Box Only
-
-References go in the YouTube description box — NEVER inside the video itself.
-
-Reasons:
-- References inside video interrupt learning flow
-- Description box is standard practice for all serious educational channels
-- Clean, professional, always accessible without cluttering the animation
-
-**Description template — Pink Baby auto-generates this for every video:**
-
-Topic: [Topic Name]
-Subject: [Subject Name] — LearnWithAvisha Curriculum
-
-[2-3 sentence plain English summary of what the video covers]
-
-📚 References:
-- NPTEL — Chemical Engineering — [relevant module]
-  nptel.ac.in
-- LibreTexts Engineering — [relevant chapter]
-  eng.libretexts.org
-- MIT OpenCourseWare — Chemical Engineering
-  ocw.mit.edu
-
-🔗 Full curriculum: learnwithavisha.ai
-❓ Ask anything: ask.learnwithavisha.ai
-
-By Avisha.AI | Engineering Made Intelligent
-
-Pink Baby generates this description automatically for every video
-and passes it to the YouTube Data API during upload.
-No manual description writing ever needed.
-
-### First Videos — Manual Upload
-
-The first 5-6 videos are uploaded manually by Mrinal.
-Automation takes over from Video 7 onwards.
-
-Reasons:
-- Gives Mrinal and Mayur full control over the launch
-- Allows quality check of each video before it goes public
-- Ensures the channel looks established from day one
-- No automation runs until the ecosystem is ready
-
-Manual upload checklist for each of the first videos:
-1. Watch the full video — approve it
-2. Go to YouTube Studio
-3. Upload the MP4
-4. Paste the auto-generated description from Pink Baby
-5. Add to correct subject playlist
-6. Set thumbnail — first frame of animation
-7. Schedule for Tuesday or Thursday 8pm IST
-8. Publish
-
-From Video 7 onwards — fully automatic.
-Pink Baby handles everything via YouTube Data API.
-Tuesday and Thursday. 8pm IST. No human involvement needed.
-
-### Launch Plan
-
-Do not launch with one video. Launch with 5-6 videos already uploaded.
-
-A channel with 5-6 videos from day one looks established.
-A channel with 1 video looks like an experiment.
-
-Build the library first. Then open the channel. Then share.
-4. Update system prompt with the hard rules above
-5. Test: ask the AI a question requiring a specific value — it must refuse to invent
-6. Test: ask a safety related question — it must refer to source, never guess
-
-Both guardrails are non-negotiable. They protect students and protect Avisha.
-
