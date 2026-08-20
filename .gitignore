@@ -228,3 +228,6 @@ final_video*.mp4
 output/
 media/
 .env
+
+# macOS
+.DS_Store
