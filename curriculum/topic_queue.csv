@@ -1,5 +1,5 @@
 subject_number,subject,subject_slug,topic_number,topic_name,slug,status,ref_nptel,ref_libretexts,ref_mit_ocw,youtube_id,scheduled_at_ist,updated_at,notes
-1,Fluid Flow,fluid-flow,1,What is a fluid — properties and behaviour,01_what_is_a_fluid_properties_and_behaviour,pending,Fluid Mechanics for Chemical Engineering,Fluid Mechanics,Chemical Engineering — Fluid Mechanics,,,2026-08-20T12:36:36+05:30,
+1,Fluid Flow,fluid-flow,1,What is a fluid — properties and behaviour,01_what_is_a_fluid_properties_and_behaviour,pending,Fluid Mechanics for Chemical Engineering,Fluid Mechanics,Chemical Engineering — Fluid Mechanics,,,2026-08-20T14:07:41+05:30,
 1,Fluid Flow,fluid-flow,2,Pressure in fluids — Pascal's law,02_pressure_in_fluids_pascals_law,pending,Fluid Mechanics for Chemical Engineering,Fluid Mechanics,Chemical Engineering — Fluid Mechanics,,,,
 1,Fluid Flow,fluid-flow,3,Bernoulli's equation — the energy balance,03_bernoullis_equation_the_energy_balance,pending,Fluid Mechanics for Chemical Engineering,Fluid Mechanics,Chemical Engineering — Fluid Mechanics,,,,
 1,Fluid Flow,fluid-flow,4,Reynolds number — laminar vs turbulent flow,04_reynolds_number_laminar_vs_turbulent_flow,pending,Fluid Mechanics for Chemical Engineering,Fluid Mechanics,Chemical Engineering — Fluid Mechanics,,,,

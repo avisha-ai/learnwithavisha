@@ -50,7 +50,7 @@ BANNED_WORDS = ("free", "pricing", "subscription fee")
 # Messages API, so the pipeline talks to it through the openai SDK.
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 OPENROUTER_API_KEY_ENV = "OPENROUTER_API_KEY"
-CLAUDE_MODEL = "anthropic/claude-sonnet-4-6"
+CLAUDE_MODEL = "anthropic/claude-sonnet-5"
 CLAUDE_EFFORT = "high"
 
 # Sent on every request so the traffic is attributable in the OpenRouter

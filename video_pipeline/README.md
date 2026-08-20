@@ -54,7 +54,7 @@ to, never reproduced.
 ## Provider
 
 Requests go to OpenRouter (`https://openrouter.ai/api/v1`) running
-`anthropic/claude-sonnet-4-6`. OpenRouter serves only an OpenAI-compatible
+`anthropic/claude-sonnet-5`. OpenRouter serves only an OpenAI-compatible
 `/chat/completions` endpoint, so the pipeline uses the `openai` SDK; the model
 underneath is still Claude. Provider settings live in `config.py`.
 
