@@ -23,7 +23,7 @@ import subprocess
 import textwrap
 from pathlib import Path
 
-import claude_client
+import llm_client
 from config import (BACKGROUND, BREATH_PAUSE, COLOURS, FPS, PILOT_ANIMATION,
                     RESOLUTION, WATERMARK_OPACITY)
 from queue_manager import Topic
@@ -173,7 +173,7 @@ def generate(topic: Topic, script: str, runtime: float,
     for attempt in range(1, attempts + 1):
         log.info("  Claude call 3 — generating Manim scene (attempt %d/%d)",
                  attempt, attempts)
-        code, _ = claude_client.call(
+        code, _ = llm_client.call(
             SYSTEM,
             _prompt(topic, script, runtime, beats, key_points, repair),
             max_tokens=64000,

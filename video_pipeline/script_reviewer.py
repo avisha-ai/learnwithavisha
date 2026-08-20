@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import logging
 
-import claude_client
+import llm_client
 import script_writer
 from config import (BANNED_WORDS, CLOSING_LINE, OPEN_SOURCE_DOMAINS,
                     SCRIPT_MAX_WORDS, SCRIPT_MIN_WORDS)
@@ -29,8 +29,8 @@ SYSTEM = f"""You are a chemical engineering expert reviewing a teaching script \
 before it is turned into a video watched by students.
 
 Your job is to find errors, not to praise. Assume the script is wrong until you
-have checked it. Use web_search and web_fetch to re-read the open licensed
-sources yourself: {", ".join(OPEN_SOURCE_DOMAINS)}.
+have checked it. Use web search to re-read the open licensed sources yourself.
+You may use ONLY these: {", ".join(OPEN_SOURCE_DOMAINS)}.
 
 Check every one of these and report each failure separately:
 1. Technical errors — anything factually wrong.
@@ -126,9 +126,7 @@ def review(topic: Topic, script: str, sources_read: list[str] | None = None) -> 
         f"(word count: {script_writer.word_count(script)})",
     ])
 
-    result = claude_client.call_json(
-        SYSTEM, prompt, SCHEMA, tools=claude_client.open_source_tools(),
-    )
+    result = llm_client.call_json(SYSTEM, prompt, SCHEMA, search=True)
 
     # Deterministic rules are checked in code as well — the reviewer is a model
     # and can miss a banned word. Code wins.

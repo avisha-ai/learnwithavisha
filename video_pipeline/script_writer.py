@@ -14,7 +14,7 @@ from __future__ import annotations
 import logging
 import re
 
-import claude_client
+import llm_client
 from config import (BANNED_WORDS, CHANNEL, CLOSING_LINE, OPEN_SOURCE_DOMAINS,
                     SCRIPT_MAX_WORDS, SCRIPT_MIN_WORDS)
 from queue_manager import Topic
@@ -28,8 +28,8 @@ You write the spoken voiceover script for a single animated teaching video.
 The script is read aloud by a narrator. It is never shown on screen.
 
 GROUNDING — non-negotiable:
-- Research the topic using ONLY the web_search and web_fetch tools. They are
-  restricted to open licensed sources: {", ".join(OPEN_SOURCE_DOMAINS)}.
+- Research the topic with web search. You may use ONLY these open licensed
+  sources: {", ".join(OPEN_SOURCE_DOMAINS)}. Any other source is rejected.
 - Every teaching statement must be supported by what you actually read there.
 - NEVER reproduce source text verbatim. Explain it in your own plain words.
 - NEVER invent a number. No pressure, temperature, flow rate, dimension,
@@ -131,6 +131,28 @@ def validate(script: str) -> list[str]:
     return problems
 
 
+def validate_sources(sources: list[str]) -> list[str]:
+    """
+    Every source the writer reports must sit on an open licensed domain.
+
+    OpenRouter's include_domains is applied by the search engine rather than by
+    the API, so a filter that silently degrades would let a copyrighted
+    textbook into a script with nothing failing. This is the backstop: the
+    allow-list is checked again here, in code, against what the model says it
+    actually read.
+    """
+    problems = []
+    if not sources:
+        return ["reports no sources — it must research before writing"]
+    for source in sources:
+        lowered = source.lower()
+        if not any(domain in lowered for domain in OPEN_SOURCE_DOMAINS):
+            problems.append(
+                f"cites '{source[:90]}', which is not an open licensed source"
+            )
+    return problems
+
+
 def _prompt(topic: Topic, feedback: str | None) -> str:
     parts = [
         f"Write the voiceover script for this video.",
@@ -172,14 +194,13 @@ def write(topic: Topic, feedback: str | None = None, attempts: int = 3) -> dict:
                    "\n".join(f"  - The script {p}." for p in problems)
 
         log.info("  Claude call 1 — writing script (attempt %d/%d)", attempt, attempts)
-        result = claude_client.call_json(
-            SYSTEM, _prompt(topic, note), SCHEMA,
-            tools=claude_client.open_source_tools(),
+        result = llm_client.call_json(
+            SYSTEM, _prompt(topic, note), SCHEMA, search=True,
         )
 
         script = result["script"].strip()
         result["script"] = script
-        problems = validate(script)
+        problems = validate(script) + validate_sources(result.get("sources_read", []))
         if not problems:
             log.info("  script ok — %d words, %d sources",
                      word_count(script), len(result.get("sources_read", [])))

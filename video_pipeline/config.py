@@ -45,10 +45,28 @@ CLOSING_LINE = ("This is LearnWithAvisha — chemical engineering fundamentals, 
 # Words that must never appear in a script or a description.
 BANNED_WORDS = ("free", "pricing", "subscription fee")
 
-# ── Claude — frozen ──────────────────────────────────────────────
-CLAUDE_MODEL = "claude-opus-5"
+# ── LLM provider — OpenRouter ────────────────────────────────────
+# OpenRouter speaks the OpenAI chat-completions wire format, not Anthropic's
+# Messages API, so the pipeline talks to it through the openai SDK.
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+OPENROUTER_API_KEY_ENV = "OPENROUTER_API_KEY"
+CLAUDE_MODEL = "anthropic/claude-sonnet-4-6"
 CLAUDE_EFFORT = "high"
-ANTHROPIC_API_KEY_ENV = "ANTHROPIC_API_KEY"
+
+# Sent on every request so the traffic is attributable in the OpenRouter
+# dashboard. Optional for the API, useful for cost tracking per project.
+OPENROUTER_HEADERS = {
+    "HTTP-Referer": "https://learnwithavisha.ai",
+    "X-Title": "LearnWithAvisha Video Pipeline",
+}
+
+# Web search plugin. Domain filtering is engine dependent, so the exa engine is
+# pinned — it honours include_domains. The allow-list is ALSO re-checked in
+# code after the model answers (script_writer.validate_sources), because a
+# search engine that quietly ignores the filter would otherwise let a
+# copyrighted textbook into a script without anything failing.
+OPENROUTER_SEARCH_ENGINE = "exa"
+OPENROUTER_SEARCH_MAX_RESULTS = 8
 
 # Open licensed sources ONLY. This tuple is the allow-list handed to the
 # web_search / web_fetch server tools, so the writer physically cannot ground

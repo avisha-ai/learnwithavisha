@@ -32,7 +32,7 @@ config.OUTPUT_DIR = SANDBOX / "output"
 config.CURRICULUM_CSV = SANDBOX / "topic_queue.csv"
 shutil.copy2(ROOT / "curriculum" / "topic_queue.csv", config.CURRICULUM_CSV)
 
-import claude_client                                       # noqa: E402
+import llm_client                                          # noqa: E402
 import main                                                # noqa: E402
 import queue_manager as q                                  # noqa: E402
 import voiceover as vo                                     # noqa: E402
@@ -106,7 +106,7 @@ class {scene}(Scene):
 
 
 # ── stubs ────────────────────────────────────────────────────────
-def stub_call(system, prompt, *, schema=None, tools=None, **kwargs):
+def stub_call(system, prompt, *, schema=None, search=False, **kwargs):
     """Stands in for every Claude call, chosen by what the prompt asks for."""
     if "Scene class name" in prompt:
         scene = next(line.split(": ", 1)[1].strip()
@@ -129,7 +129,7 @@ def stub_call_json(system, prompt, schema, **kwargs):
         "summary": "A plain English introduction to what makes something a fluid, "
                    "the properties that describe it, and how it behaves under force.",
         "sources_read": ["LibreTexts Engineering — Fluid Mechanics — "
-                         "https://eng.libretexts.org/"],
+                         "https://eng.libretexts.org/Bookshelves/"],
         "key_points": ["A fluid cannot resist shear",
                        "Density and viscosity describe it",
                        "Viscosity changes with temperature"],
@@ -156,11 +156,11 @@ def check(label, condition, detail=""):
 
 
 def run():
-    claude_client.call = stub_call
-    claude_client.call_json = stub_call_json
+    llm_client.call = stub_call
+    llm_client.call_json = stub_call_json
     vo.generate = stub_voiceover
 
-    # script_writer/reviewer/manim_generator imported claude_client as a module,
+    # script_writer/reviewer/manim_generator imported llm_client as a module,
     # so patching the module attributes above is enough.
     import manim_generator
     manim_generator.SYNC_TOLERANCE = 1.5     # low-quality render rounds to the frame
@@ -242,6 +242,25 @@ def run():
     results.append(check("title within YouTube's 100 chars",
                          len(body["snippet"]["title"]) <= 100,
                          body["snippet"]["title"]))
+
+    # 6 — open-source guardrails
+    print("\nguardrails: open sources only")
+    import script_writer
+    plugins = llm_client.open_source_plugins()
+    allowed = plugins[0]["include_domains"]
+    results.append(check("web search is domain-filtered", bool(allowed),
+                         f"{len(allowed)} patterns"))
+    results.append(check("filter covers all five open sources",
+                         all(any(d in a for a in allowed)
+                             for d in config.OPEN_SOURCE_DOMAINS)))
+    results.append(check("a copyrighted textbook citation is rejected",
+                         bool(script_writer.validate_sources(
+                             ["Coulson and Richardson Volume 1, Chapter 12"]))))
+    results.append(check("an open licensed citation is accepted",
+                         not script_writer.validate_sources(
+                             ["LibreTexts — https://eng.libretexts.org/x"])))
+    results.append(check("a draft citing no source at all is rejected",
+                         bool(script_writer.validate_sources([]))))
 
     print("\n--- generated description ---")
     print(desc)

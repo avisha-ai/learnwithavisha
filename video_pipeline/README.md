@@ -40,11 +40,23 @@ Manim generator. The approved pilot was built the same way
 
 ## Open sources only
 
-`script_writer.py` and `script_reviewer.py` research through the `web_search` /
-`web_fetch` server tools with `allowed_domains` pinned to `nptel.ac.in`,
-`eng.libretexts.org`, `chem.libretexts.org`, `openstax.org` and `ocw.mit.edu`.
-The restriction is enforced by the tool, not by the prompt, so a copyrighted
-textbook cannot reach a script. Sources are pointed to, never reproduced.
+`script_writer.py` and `script_reviewer.py` research through OpenRouter's web
+plugin with `include_domains` pinned to `nptel.ac.in`, `eng.libretexts.org`,
+`chem.libretexts.org`, `openstax.org` and `ocw.mit.edu`.
+
+That filter is applied by the search engine, not by the API, so it is backed up
+in code: `script_writer.validate_sources` re-checks every source the writer
+reports against the same allow-list and rejects the draft if anything else
+appears. A search filter that silently degraded would otherwise let a
+copyrighted textbook into a script with nothing failing. Sources are pointed
+to, never reproduced.
+
+## Provider
+
+Requests go to OpenRouter (`https://openrouter.ai/api/v1`) running
+`anthropic/claude-sonnet-4-6`. OpenRouter serves only an OpenAI-compatible
+`/chat/completions` endpoint, so the pipeline uses the `openai` SDK; the model
+underneath is still Claude. Provider settings live in `config.py`.
 
 ## Setup
 
@@ -54,7 +66,7 @@ cp .env.example .env          # then fill in the two keys
 
 | Credential | Used by | How to get it |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | script writer, reviewer, Manim generator | console.anthropic.com |
+| `OPENROUTER_API_KEY` | script writer, reviewer, Manim generator | openrouter.ai → Keys |
 | `ELEVENLABS_API_KEY` | voiceover | elevenlabs.io → profile → API key |
 | `.credentials/youtube_client_secrets.json` | uploader | Google Cloud console → enable YouTube Data API v3 → OAuth client ID → Desktop app |
 
@@ -130,7 +142,7 @@ stubbed.
 |---|---|
 | `config.py` | every frozen constant from SKILL.md and CLAUDE_MASTER.md |
 | `queue_manager.py` | `topic_queue.csv` state machine |
-| `claude_client.py` | Messages API wrapper — pause_turn loop, open-source allow-list |
+| `llm_client.py` | OpenRouter client — streaming, strict JSON schema, domain-filtered web search |
 | `script_writer.py` | Claude call 1 + the hard brand rules |
 | `script_reviewer.py` | Claude call 2 + the write/review/rewrite loop |
 | `manim_generator.py` | Claude call 3, compile check, test render, sync check |
