@@ -672,9 +672,77 @@ Before writing a single line of Session 4 code:
 
 1. Replace all textbook PDF references with LibreTexts, NPTEL, OpenStax, MIT OCW
 2. Update RAG pipeline to use open licensed sources only
-3. Update system prompt with the hard rules above
-4. Test: ask the AI a question requiring a specific value — it must refuse to invent
-5. Test: ask a safety related question — it must refer to source, never guess
+3. ## References and Upload Plan — Added August 20 2026
+
+### References — Description Box Only
+
+References go in the YouTube description box — NEVER inside the video itself.
+
+Reasons:
+- References inside video interrupt learning flow
+- Description box is standard practice for all serious educational channels
+- Clean, professional, always accessible without cluttering the animation
+
+**Description template — Pink Baby auto-generates this for every video:**
+
+Topic: [Topic Name]
+Subject: [Subject Name] — LearnWithAvisha Curriculum
+
+[2-3 sentence plain English summary of what the video covers]
+
+📚 References:
+- NPTEL — Chemical Engineering — [relevant module]
+  nptel.ac.in
+- LibreTexts Engineering — [relevant chapter]
+  eng.libretexts.org
+- MIT OpenCourseWare — Chemical Engineering
+  ocw.mit.edu
+
+🔗 Full curriculum: learnwithavisha.ai
+❓ Ask anything: ask.learnwithavisha.ai
+
+By Avisha.AI | Engineering Made Intelligent
+
+Pink Baby generates this description automatically for every video
+and passes it to the YouTube Data API during upload.
+No manual description writing ever needed.
+
+### First Videos — Manual Upload
+
+The first 5-6 videos are uploaded manually by Mrinal.
+Automation takes over from Video 7 onwards.
+
+Reasons:
+- Gives Mrinal and Mayur full control over the launch
+- Allows quality check of each video before it goes public
+- Ensures the channel looks established from day one
+- No automation runs until the ecosystem is ready
+
+Manual upload checklist for each of the first videos:
+1. Watch the full video — approve it
+2. Go to YouTube Studio
+3. Upload the MP4
+4. Paste the auto-generated description from Pink Baby
+5. Add to correct subject playlist
+6. Set thumbnail — first frame of animation
+7. Schedule for Tuesday or Thursday 8pm IST
+8. Publish
+
+From Video 7 onwards — fully automatic.
+Pink Baby handles everything via YouTube Data API.
+Tuesday and Thursday. 8pm IST. No human involvement needed.
+
+### Launch Plan
+
+Do not launch with one video. Launch with 5-6 videos already uploaded.
+
+A channel with 5-6 videos from day one looks established.
+A channel with 1 video looks like an experiment.
+
+Build the library first. Then open the channel. Then share.
+4. Update system prompt with the hard rules above
+5. Test: ask the AI a question requiring a specific value — it must refuse to invent
+6. Test: ask a safety related question — it must refer to source, never guess
 
 Both guardrails are non-negotiable. They protect students and protect Avisha.
 
