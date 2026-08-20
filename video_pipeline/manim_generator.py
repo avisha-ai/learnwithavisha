@@ -155,12 +155,30 @@ def _render(path: Path, scene: str, quality: str, destination: Path | None = Non
     if result.returncode != 0:
         return False, (result.stderr or result.stdout)[-6000:]
 
-    produced = sorted(media.rglob(f"{scene}.mp4"))
+    # The low quality dry run from generate() leaves its own MP4 in this same
+    # media tree, so the directory holds both renders. Sorting by path and
+    # taking the last one silently picks 480p15 over 1080p60 — "1080p60" sorts
+    # BEFORE "480p15" as a string, because '1' < '4'. Select the quality that
+    # was actually asked for instead of trusting sort order.
+    produced = [q for q in media.rglob(f"{scene}.mp4")
+                if "partial_movie_files" not in q.parts]
     if not produced:
         return False, "manim reported success but produced no MP4."
+
+    if quality == "h":
+        wanted = f"{RESOLUTION[1]}p{FPS}"
+        exact = [q for q in produced if q.parent.name == wanted]
+        if not exact:
+            found = ", ".join(sorted(q.parent.name for q in produced)) or "none"
+            return False, (f"manim produced no {wanted} render "
+                           f"(found: {found}).")
+        chosen = exact[0]
+    else:
+        chosen = max(produced, key=lambda q: q.stat().st_mtime)
+
     if destination:
-        shutil.copy2(produced[-1], destination)
-    return True, str(produced[-1])
+        shutil.copy2(chosen, destination)
+    return True, str(chosen)
 
 
 def generate(topic: Topic, script: str, runtime: float,
