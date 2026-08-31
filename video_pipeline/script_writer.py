@@ -16,7 +16,8 @@ import re
 
 import llm_client
 from config import (BANNED_WORDS, CHANNEL, CLOSING_LINE, OPEN_SOURCE_DOMAINS,
-                    SCRIPT_MAX_WORDS, SCRIPT_MIN_WORDS)
+                    SCRIPT_MAX_WORDS, SCRIPT_MIN_WORDS,
+                    STAGE_DIRECTION_PATTERNS)
 from queue_manager import Topic
 
 log = logging.getLogger(__name__)
@@ -127,6 +128,15 @@ def validate(script: str) -> list[str]:
     for marker in ("#", "*", "- ", "•", "```", "Narrator:", "VOICEOVER:"):
         if marker in script:
             problems.append(f"contains the formatting marker '{marker.strip()}'")
+
+    for pattern in STAGE_DIRECTION_PATTERNS:
+        found = re.search(pattern, lowered)
+        if found:
+            problems.append(
+                f"contains a stage direction — '{found.group(0)}'. The script "
+                "is spoken aloud and must never refer to the animation or "
+                "instruct it."
+            )
 
     return problems
 

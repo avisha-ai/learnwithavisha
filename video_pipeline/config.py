@@ -45,6 +45,21 @@ CLOSING_LINE = ("This is LearnWithAvisha — chemical engineering fundamentals, 
 # Words that must never appear in a script or a description.
 BANNED_WORDS = ("free", "pricing", "subscription fee")
 
+# Stage directions written as ordinary prose — the marker check below only
+# catches literal labels like "Narrator:", so a sentence like "Picture how the
+# animation builds this up. First, draw the shell." passes straight through and
+# the voice reads it aloud. These patterns name the medium itself, or open a
+# sentence with a production imperative, which spoken narration never does.
+# Kept deliberately narrow: "video" is allowed so a script can point a viewer
+# at upcoming videos.
+STAGE_DIRECTION_PATTERNS = (
+    r"\b(?:the|this) animation\b",
+    r"\bon(?: the)? screen\b",
+    r"\b(?:the|this) slide\b",
+    r"(?:\A|(?<=[.!?])\s+)(?:draw|show|display|animate|render|fade|zoom|"
+    r"cut to|highlight)\b",
+)
+
 # ── LLM transport ────────────────────────────────────────────────
 # "claude_cli" routes every model call through the local `claude` binary, which
 # bills the Max subscription. "openrouter" uses the metered API key below.
