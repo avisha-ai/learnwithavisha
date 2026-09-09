@@ -1,0 +1,76 @@
+{
+  "id": "ep001_the_drift",
+  "title": "The Drift",
+  "runtime": 27.0,
+
+  "location": "exchanger_bay",
+  "characters": ["operator_01"],
+  "equipment": ["E-101"],
+
+  "readings": {
+    "TI-1014": {
+      "now": 87,
+      "history": [["07 SEP", "83"], ["08 SEP", "85"], ["09 SEP", "87"]]
+    }
+  },
+
+  "blocking": {
+    "operator_01": { "stands_at": "at_TI-1014" }
+  },
+
+  "shots": [
+    {
+      "name": "the_plant_is_normal",
+      "camera": "wide_establishing",
+      "target": "exchanger_bay",
+      "start": 0.0, "end": 10.5,
+      "transition": "cut",
+      "intent": "This place is real and has been running all night. Nothing is wrong yet, so nothing may foreshadow."
+    },
+    {
+      "name": "something_earns_his_attention",
+      "camera": "slow_push_in",
+      "target": "operator_01",
+      "start": 10.5, "end": 19.0,
+      "transition": "continuous",
+      "end_width": 9.05,
+      "settle": 0.59,
+      "intent": "I am not sure why he stopped. But he stopped."
+    },
+    {
+      "name": "the_number",
+      "camera": "instrument_closeup",
+      "target": "TI-1014",
+      "start": 19.0, "end": 27.0,
+      "transition": "cut",
+      "intent": "Something is wrong. I do not know what. I want to know."
+    }
+  ],
+
+  "timeline": [
+    { "t": 0.0,  "who": "operator_01", "action": "walk_to",
+      "mark": "at_TI-1014", "from_x": -6.39, "arrive": 15.4 },
+    { "t": 12.5, "who": "operator_01", "action": "look_at",
+      "target": "TI-1014", "rise": 0.70, "hold": 0.50,
+      "note": "out of habit, without breaking stride" },
+    { "t": 15.4, "who": "operator_01", "action": "stop" },
+    { "t": 17.0, "who": "operator_01", "action": "second_glance",
+      "target": "TI-1014", "turn": 0.45 },
+    { "t": 20.3, "who": "operator_01", "action": "check_log",
+      "target": "TI-1014", "until": 25.4 }
+  ],
+
+  "sound": {
+    "stems": ["plant_ambience", "steam"],
+    "footsteps": "footsteps_grating",
+    "narrow": { "from": 22.4, "to": 24.4, "air": 0.50, "width": 0.56 },
+    "rule": "The machine bed never changes level. Only the air and the stereo width close."
+  },
+
+  "fade": { "in": [0.0, 1.6], "out": [26.0, 27.0] },
+
+  "not_in_this_episode": [
+    "fouling", "cutaway", "heat transfer theory", "narration",
+    "alarms", "red", "music"
+  ]
+}

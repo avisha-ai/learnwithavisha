@@ -1,0 +1,50 @@
+{
+  "_comment": "E-101 knows what it is. An episode says 'use E-101' and inherits this geometry, these nozzles and these instruments.",
+  "tag": "E-101",
+  "type": "shell_and_tube_exchanger",
+  "passes": {
+    "shell": 1,
+    "tube": 2
+  },
+  "location": "exchanger_bay",
+  "hot_side": "process",
+  "cold_side": "cooling_water",
+  "service": "process cooler",
+  "engineering": [
+    "Both tube nozzles land on the channel head, which is what makes this a two-tube-pass machine.",
+    "Shell inlet at the far end and outlet at the near end, so the shell stream runs counter-current to the first tube pass.",
+    "Shell inlet bottom and outlet top, so the shell runs liquid-full.",
+    "The process is on the TUBE side because the process is the fouling stream here, and the tubes are the side you can rod out. That is also why the drift shows up on TI-1014."
+  ],
+  "geometry": {
+    "ycl": 1.45,
+    "od": 0.95,
+    "shell_x0": 2.0,
+    "shell_x1": 6.2,
+    "head_x0": 1.3,
+    "bonnet_x1": 6.86,
+    "plinth_x0": 2.55,
+    "plinth_x1": 5.95,
+    "plinth_h": 0.35,
+    "saddle_a": 3.05,
+    "saddle_b": 5.35,
+    "saddle_w": 0.52,
+    "n_tube_in": 1.9,
+    "n_tube_out": 1.62,
+    "n_shell_in": 5.55,
+    "n_shell_out": 2.55,
+    "noz_od": 0.2
+  },
+  "instruments": {
+    "process_outlet": "TI-1014",
+    "process_inlet": "TI-1013",
+    "cooling_water_inlet": "PI-1012"
+  },
+  "assets": {
+    "exterior": "exterior.py",
+    "cutaway": null
+  },
+  "not_built_yet": [
+    "cutaway - Pilot 001 never goes inside the exchanger"
+  ]
+}

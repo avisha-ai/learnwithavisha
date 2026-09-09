@@ -231,3 +231,6 @@ media/
 
 # macOS
 .DS_Store
+
+# engine render outputs — the world and the recipes are tracked, frames are not
+learnwithavisha_engine/_render/

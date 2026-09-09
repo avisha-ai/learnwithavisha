@@ -1,0 +1,17 @@
+{
+  "_comment": "Instrument style is frozen here so every gauge in every episode reads as the same manufacturer.",
+  "digital": {
+    "display": "lcd_lit on lcd_back",
+    "decimals": 0,
+    "units": "degC",
+    "tag_plate": true,
+    "subtitle": true,
+    "mount": "thermowell on line, rotated to face the walkway"
+  },
+  "dial": {
+    "sweep_deg": 270,
+    "major_ticks": 9,
+    "needle": "tapered, dark, stable",
+    "face": "gauge_face"
+  }
+}
