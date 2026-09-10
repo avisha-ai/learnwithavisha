@@ -35,7 +35,9 @@ learnwithavisha_engine/
 │   │       ├── poses.json     named poses; the rig invents nothing
 │   │       ├── rig.py         what this person wears over the shared solver
 │   │       └── neutral/walking/inspecting.svg
-│   ├── instruments/temperature_gauge.py/.json/.svg
+│   ├── instruments/
+│   │   ├── temperature_gauge.py/.json/.svg
+│   │   └── indicator_light.py/.json   running lamps and beacons
 │   └── sound/                 plant_ambience · steam · footsteps_grating
 ├── engine/
 │   ├── draw.py       drawing kit; every asset shades from lighting.json
@@ -177,6 +179,20 @@ Generating them is manual for now. The ElevenLabs account is free tier, and
 the API refuses library voices with `paid_plan_required`, which includes
 Daniel. So the line comes off elevenlabs.io by hand and gets saved beside
 `episode.json` under the filename the recipe names.
+
+### Indicator lights
+
+Running lamps and beacons, placed by the location in `indicators_placed`.
+They matter more than their size suggests. A still plant is a drawing; a
+plant with a few lamps breathing at different rates is a place that has been
+running all night. Every lamp carries its own period and phase, because
+lights that blink together read as decoration and lights that do not read as
+independent machines.
+
+They are also doing story work. Red is reserved, so these are green and
+amber, and every one of them in Episode 1 says RUNNING NORMALLY — including
+the lamp bolted to the exchanger that is quietly fouling shut. The plant is
+not lying. Nobody has asked it the right question yet.
 
 ### Sound
 

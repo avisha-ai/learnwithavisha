@@ -109,6 +109,8 @@ class World:
             a = i["asset"]
             if a not in self.instruments:
                 self.instruments[a] = Instrument(a)
+        if self.location.data.get("indicators_placed"):
+            self.instruments["indicator_light"] = Instrument("indicator_light")
 
     def resolve(self, name):
         """A target name -> (x, y, extent). Cameras aim with this."""

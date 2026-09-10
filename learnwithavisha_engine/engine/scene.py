@@ -66,6 +66,30 @@ class Stage:
                                     spread=s["spread"], seed=s["seed"]))
         return g
 
+    def _indicators(self, layer, t):
+        """Running lamps and beacons. Kept out of the static near layer so
+        the expensive geometry stays static and only five small lights get
+        rebuilt per frame."""
+        g = VGroup()
+        spec = self.world.location.data.get("indicators_placed", [])
+        if not spec:
+            return g
+        mod = self.world.instruments.get("indicator_light")
+        if mod is None:
+            return g
+        mod = mod.module
+        for i in spec:
+            if i.get("layer", "near") != layer:
+                continue
+            kw = {k: v for k, v in i.items()
+                  if k not in ("kind", "layer", "x", "y", "lamps",
+                               "_comment")}
+            if i["kind"] == "panel":
+                g.add(mod.panel(i["x"], i["y"], i["lamps"], t=t))
+            else:
+                g.add(mod.build(i["x"], i["y"], t=t, **kw))
+        return g
+
     def _shafts(self):
         g = VGroup()
         for s in self.world.location.data["light_shafts"]:
@@ -100,6 +124,10 @@ class Stage:
         scene.add(self._shafts())
         scene.add(loc.background.build_far())
         if animated:
+            live(scene, lambda: self._indicators("far", scene.T.get_value()))
+        else:
+            scene.add(self._indicators("far", t))
+        if animated:
             live(scene, lambda: self._steam("far", scene.T.get_value()))
         else:
             scene.add(self._steam("far", t))
@@ -111,6 +139,10 @@ class Stage:
             scene.add(self._steam("mid", t))
         scene.add(draw.haze_sheet(loc.data["haze"]["haze_mid"]))
         scene.add(self._near())
+        if animated:
+            live(scene, lambda: self._indicators("near", scene.T.get_value()))
+        else:
+            scene.add(self._indicators("near", t))
         if animated:
             live(scene, lambda: self._steam("drift", scene.T.get_value()))
         else:
