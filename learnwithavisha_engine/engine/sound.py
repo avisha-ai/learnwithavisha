@@ -209,9 +209,23 @@ def mix_episode(stage, out_path, episode_dir=None):
     side = (mix[:, 0] - mix[:, 1]) * 0.5 * width_env
     L, R = mid + side, mid - side
 
+    # The PICTURE fades to black, but the plant does not stop running just
+    # because the camera stopped looking. Sound dips under the end card and
+    # is cut at the end, which is what "hold two seconds, cut" means. Fading
+    # audio to digital silence under the card makes the file feel finished
+    # a beat before the question has landed.
     f = ep["fade"]
-    master = np.interp(t, [0, f["in"][0], f["in"][1], f["out"][0], f["out"][1]],
-                       [0.0, 0.0, 1.0, 1.0, 0.0])
+    af = spec.get("under_end_card", 0.42)
+    card = ep.get("end_card")
+    if card:
+        master = np.interp(
+            t, [0, f["in"][0], f["in"][1], f["out"][0], f["out"][1] + 0.2,
+                ep["runtime"] - 0.12, ep["runtime"]],
+            [0.0, 0.0, 1.0, 1.0, af, af, 0.0])
+    else:
+        master = np.interp(
+            t, [0, f["in"][0], f["in"][1], f["out"][0], f["out"][1]],
+            [0.0, 0.0, 1.0, 1.0, 0.0])
     L, R = L * master, R * master
     peak = max(np.max(np.abs(L)), np.max(np.abs(R))) + 1e-12
     out = np.stack([L, R], axis=1) / peak * 0.70
