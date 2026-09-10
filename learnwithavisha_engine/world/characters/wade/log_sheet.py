@@ -11,8 +11,8 @@ numbers. Three handwritten readings, and the reader does the arithmetic.
 from engine.draw import *
 
 
-def build(x, y, scale=1.0, rows=(("09 SEP", "87"), ("08 SEP", "85"),
-                                          ("07 SEP", "83"))):
+def build(x, y, scale=1.0, rows=(("29 AUG", "83"), ("04 SEP", "85"),
+                                 ("09 SEP", "87")), rows_visible=None):
     """His log sheet, held up beside the instrument.
 
     Deliberately not an infographic: no highlight, no arrow, no colour on the
@@ -40,15 +40,21 @@ def build(x, y, scale=1.0, rows=(("09 SEP", "87"), ("08 SEP", "85"),
     g.add(hd)
     g.add(band_rect(x - pw * 0.40, x + pw * 0.40, y + ph / 2 - 0.28 * s_,
                     y + ph / 2 - 0.272 * s_, "#6b7382"))
+    # rows_visible lets the readings arrive one at a time, oldest first,
+    # so the viewer does the arithmetic in the same order he did.
     for i2, (day, val) in enumerate(rows):
+        vis = 1.0 if rows_visible is None else \
+            max(0.0, min(1.0, rows_visible - i2))
         ry = y + ph / 2 - 0.42 * s_ - i2 * 0.245 * s_
         d_ = label(day, (0, 0), size=18, colour="#3a414c")
         d_.set_width(pw * 0.34)
         d_.move_to(np.array([x - pw * 0.21, ry, 0]))
+        d_.set_opacity(vis)
         g.add(d_)
         v_ = label(val, (0, 0), size=22, colour="#22272f")
         v_.set_width(pw * 0.155)
         v_.move_to(np.array([x + pw * 0.26, ry, 0]))
+        v_.set_opacity(vis)
         g.add(v_)
     # his thumb on the board
     th = Ellipse(width=0.20 * s_, height=0.34 * s_)

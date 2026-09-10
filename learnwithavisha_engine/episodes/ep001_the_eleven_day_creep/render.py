@@ -1,5 +1,5 @@
 """
-ep001_the_drift — the film.
+ep001_the_eleven_day_creep — the film.
 
 Nothing here describes the story. episode.json does that. This file exists
 only to point Manim at it.

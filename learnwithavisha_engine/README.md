@@ -46,8 +46,9 @@ learnwithavisha_engine/
 │   ├── sound.py      stem synthesis + episode mix
 │   ├── scene.py      recipe → frames
 │   └── export_svg.py builders → canonical SVG
-└── episodes/ep001_the_drift/
-    ├── episode.json  the recipe. This is the only file the story lives in.
+└── episodes/ep001_the_eleven_day_creep/
+    ├── brief.md      the story, as written by the Creative Director
+    ├── episode.json  the recipe derived from it — shots, blocking, sound
     ├── style_frame.py
     ├── render.py
     └── finish.sh
@@ -57,7 +58,7 @@ learnwithavisha_engine/
 
 ```
 BIN=../.micromamba/root/envs/manim/bin
-cd episodes/ep001_the_drift
+cd episodes/ep001_the_eleven_day_creep
 $BIN/python -m manim -s -qh style_frame.py StyleFrameA   # style frame
 $BIN/python -m manim -qh    render.py Ep001              # film, ~1620 frames
 ./finish.sh                                              # grade, pad, mix
@@ -164,6 +165,18 @@ if plant PPE should override the character design.
 `TI-1014` process outlet, digital · `TI-1013` process inlet, dial ·
 `PI-1012` cooling water inlet, dial.
 `6"-P-10103` · `6"-P-10104` · `8"-CWS-10121` · `8"-CWR-10122`
+
+### Voiceover
+
+An episode may carry spoken lines in `episode.json` under `voiceover`. Each
+names the character, the line, the second it lands on, and the mp3 to use.
+The mix drops it in if the file is there and says so plainly if it is not —
+the beat then plays as a held silence rather than failing the render.
+
+Generating them is manual for now. The ElevenLabs account is free tier, and
+the API refuses library voices with `paid_plan_required`, which includes
+Daniel. So the line comes off elevenlabs.io by hand and gets saved beside
+`episode.json` under the filename the recipe names.
 
 ### Sound
 

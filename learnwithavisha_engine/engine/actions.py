@@ -107,9 +107,18 @@ def check_log(state, ev, t, world):
     y = (ramp(t, up0, up1, ev.get("low_y", 1.24), ev.get("high_y", 2.00))
          - ramp(t, dn0, ev["until"], 0.0,
                 ev.get("high_y", 2.00) - ev.get("low_y", 1.24)))
+    # the readings arrive one at a time, oldest first
+    step = ev.get("row_every", 1.00)
+    first = ev.get("rows_from", up1 + 0.40)
+    n = ev.get("rows", 3)
+    rows_visible = 0.0
+    for k in range(n):
+        rows_visible += ramp(t, first + k * step, first + k * step + 0.45,
+                             0.0, 1.0)
     state["log_sheet"] = {
         "visible": (ev["t"] - 0.20) <= t <= (ev["until"] + 0.20),
-        "x": ev.get("x", 1.63), "y": y, "scale": ev.get("scale", 0.40)}
+        "x": ev.get("x", 1.63), "y": y, "scale": ev.get("scale", 0.40),
+        "rows_visible": rows_visible}
     if ev["t"] <= t <= ev["until"]:
         state["head_pitch"] = state["poses"]["checking_log"]["head_pitch"]
 
@@ -127,7 +136,7 @@ class ActionTrack:
                  "facing": 1, "walking": True, "head_pitch": 0.0,
                  "clipboard": 0.0, "squash": 1.0,
                  "log_sheet": {"visible": False, "x": 0.0, "y": 0.0,
-                               "scale": 0.40}}
+                               "scale": 0.40, "rows_visible": 3.0}}
         for ev in self.events:
             ACTIONS[ev["action"]](state, ev, t, self.world)
         return state

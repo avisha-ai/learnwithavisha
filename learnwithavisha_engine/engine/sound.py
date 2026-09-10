@@ -29,6 +29,8 @@ SR = 48000
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                      ".."))
 SOUND = os.path.join(ROOT, "world", "sound")
+_FFMPEG = ("/Users/mrinalgala/Documents/Avisha/learnwithavisha/"
+           ".micromamba/root/envs/manim/bin/ffmpeg")
 STEM_SECONDS = 30.0
 N_FOOTSTEPS = 8
 FOOTSTEP_SLOT = 1.0
@@ -137,7 +139,7 @@ def _fit(stem, n):
     return np.tile(stem, (reps, 1))[:n]
 
 
-def mix_episode(stage, out_path):
+def mix_episode(stage, out_path, episode_dir=None):
     """Place the world's stems against this episode's clock."""
     ep = stage.episode
     spec = ep["sound"]
@@ -177,6 +179,31 @@ def mix_episode(stage, out_path):
             continue
         mix[i0:i1, 0] += seg[:i1 - i0, 0] * gain * (0.75 - pan * 0.5)
         mix[i0:i1, 1] += seg[:i1 - i0, 1] * gain * (0.75 + pan * 0.5)
+
+    # Wade's line. It is the only voice in the episode, so it sits dry and
+    # slightly forward — no reverb, no ducking. He is talking to himself.
+    for vo in ep.get("voiceover", []):
+        path = None if episode_dir is None else \
+            os.path.join(episode_dir, vo.get("file", ""))
+        if not path or not os.path.exists(path):
+            print("  voiceover MISSING: %r at %.1fs — the beat plays as a "
+                  "held silence until %s is dropped in"
+                  % (vo["line"], vo["at"], vo.get("file")))
+            continue
+        wav = os.path.join(os.path.dirname(out_path), "_vo_tmp.wav")
+        os.system('%s -v error -y -i "%s" -ac 1 -ar %d "%s"'
+                  % (_FFMPEG, path, SR, wav))
+        _sr, v = wavfile.read(wav)
+        v = v.astype(np.float64) / 32768.0
+        if v.ndim > 1:
+            v = v.mean(axis=1)
+        v = v / (np.max(np.abs(v)) + 1e-12) * vo.get("gain", 0.85)
+        i0 = int(vo["at"] * SR)
+        i1 = min(n, i0 + len(v))
+        mix[i0:i1, 0] += v[:i1 - i0] * 0.92
+        mix[i0:i1, 1] += v[:i1 - i0] * 0.92
+        print("  voiceover placed: %r at %.1fs (%.2f s)"
+              % (vo["line"], vo["at"], len(v) / SR))
 
     mid = (mix[:, 0] + mix[:, 1]) * 0.5
     side = (mix[:, 0] - mix[:, 1]) * 0.5 * width_env

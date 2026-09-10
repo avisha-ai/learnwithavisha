@@ -133,7 +133,8 @@ class Stage:
         if ch.log_sheet is None:
             return VGroup()
         g = ch.log_sheet.build(st["log_sheet"]["x"], st["log_sheet"]["y"],
-                               scale=st["log_sheet"]["scale"])
+                               scale=st["log_sheet"]["scale"],
+                               rows_visible=st["log_sheet"]["rows_visible"])
         if not st["log_sheet"]["visible"]:
             g.set_opacity(0.0)
         return g
@@ -215,16 +216,12 @@ class Film(MovingCameraScene):
 
             ch = stage.world.characters[name]
             if ch.log_sheet is not None:
-                sheet = ch.log_sheet.build(1.63, 2.00, scale=0.40)
-                home = sheet.get_center()
-
-                def move_sheet(m, n=name):
+                def draw_sheet(n=name):
                     st = stage.tracks[n].at(self.T.get_value())
-                    ls = st["log_sheet"]
-                    m.move_to(home + np.array([0.0, ls["y"] - 2.00, 0.0]))
-                    m.set_opacity(1.0 if ls["visible"] else 0.0)
-                sheet.add_updater(move_sheet)
-                self.add(sheet)
+                    if not st["log_sheet"]["visible"]:
+                        return VGroup()
+                    return stage.log_sheet_at(n, st)
+                live(self, draw_sheet)
 
         loc = stage.world.location
         self.add(loc.foreground.build_foreground())
@@ -254,6 +251,29 @@ class Film(MovingCameraScene):
             m.move_to(f.get_center())
         black.add_updater(do_fade)
         self.add(black)
+
+        card_cfg = ep.get("end_card")
+        if card_cfg:
+            # White on black, after the picture has gone. Two lines, because
+            # one long line reads as a caption and this is the question the
+            # whole episode was built to leave behind.
+            head, tail = card_cfg["text"].split("—", 1)
+            card = VGroup(
+                Text(head.strip() + " —", font_size=30, color="#e9edf2"),
+                Text(tail.strip(), font_size=30, color="#e9edf2"),
+            ).arrange(DOWN, buff=0.34)
+            card.set_z_index(210)
+
+            def do_card(m):
+                t = self.T.get_value()
+                m.set(width=f.width * 0.62)
+                m.move_to(f.get_center())
+                a = card_cfg["at"]
+                o = 0.0 if t < a else min(
+                    1.0, (t - a) / max(card_cfg.get("fade_in", 0.7), 1e-6))
+                m.set_opacity(float(o))
+            card.add_updater(do_card)
+            self.add(card)
 
         self.play(self.T.animate.set_value(runtime), run_time=runtime,
                   rate_func=linear)
