@@ -1,4 +1,3 @@
-
 ---
 
 ## Episode Brief Format — Frozen September 2026
@@ -113,3 +112,40 @@ Engineering truth: Fouling reduces U silently. Pressure drop stays flat. Tempera
 Unresolved question: Why did the pressure drop stay perfectly flat?
 Status: Scene recipe complete. Assets in progress.
 
+
+---
+
+## Character Voices — Frozen September 2026
+
+All voices generated via ElevenLabs API. Eleven v3 model. Stability 75%.
+
+**Wade** — ElevenLabs voice: Daniel
+Deep. Warm. Unhurried. Gravelly.
+Speaks like someone who has seen everything and is never surprised.
+
+**Lyra** — ElevenLabs voice: Leandra
+Clear. Professional. Forward moving.
+Already thinking about the next thing while saying this thing.
+
+**Ellis** — ElevenLabs voice: Adam
+Calm. Measured. Quiet.
+Each word chosen carefully.
+
+Rule: Never swap voices between characters. Ever.
+The voice IS the character.
+
+
+---
+
+## ElevenLabs Voice IDs — Frozen September 2026
+
+Use these exact IDs in the ElevenLabs API calls. Never look up by name — always use ID.
+
+WADE_VOICE_ID = "9fHP3GqJWwJmIbYQwQ1V"    # Daniel — deep, warm, gravelly
+LYRA_VOICE_ID = "9CeirP4ivY4Fg4JmYNWz"    # Leandra — clear, professional
+ELLIS_VOICE_ID = "HdI8DDQNjJGf1UOh1gG0"   # Adam — calm, measured
+
+Model: eleven_v3
+Stability: 75%
+Style Exaggeration: None
+Speed: 1.00
