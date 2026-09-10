@@ -1,0 +1,68 @@
+{
+  "_comment": "Named poses for Ellis. He barely swings and he does not lean in \u2014 he looks through things rather than at them.",
+  "neutral": {
+    "walking": false,
+    "head_pitch": 0.0,
+    "clipboard": 0.0,
+    "stance": {
+      "thigh_a": -3.0,
+      "thigh_b": 5.0,
+      "knee_a": 4.0,
+      "knee_b": 8.0,
+      "arm_a": 5.0,
+      "arm_b": -4.0,
+      "lean": 0.5
+    }
+  },
+  "walking": {
+    "walking": true,
+    "head_pitch": 0.0,
+    "clipboard": 0.0,
+    "speed_mps": 0.62,
+    "stride_m": 1.5,
+    "stance": {
+      "swing": 19.0,
+      "arm_swing": 13.0,
+      "lean": 1.5
+    }
+  },
+  "glancing": {
+    "walking": true,
+    "head_pitch": 11.0,
+    "clipboard": 0.0,
+    "stance": {
+      "swing": 19.0,
+      "arm_swing": 13.0,
+      "lean": 1.5
+    }
+  },
+  "inspecting": {
+    "walking": false,
+    "head_pitch": 18.0,
+    "clipboard": 0.0,
+    "stance": {
+      "thigh_a": -3.0,
+      "thigh_b": 5.0,
+      "knee_a": 4.0,
+      "knee_b": 8.0,
+      "arm_a": 6.0,
+      "arm_b": -4.0,
+      "lean": 0.0
+    },
+    "_note": "he does not lean in. That is the whole character."
+  },
+  "checking_log": {
+    "walking": false,
+    "head_pitch": 16.0,
+    "clipboard": 1.0,
+    "stance": {
+      "thigh_a": -3.0,
+      "thigh_b": 5.0,
+      "knee_a": 4.0,
+      "knee_b": 8.0,
+      "arm_a": 5.0,
+      "arm_b": -4.0,
+      "lean": 0.5
+    }
+  }
+}

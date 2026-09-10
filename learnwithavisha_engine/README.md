@@ -27,16 +27,19 @@ learnwithavisha_engine/
 │   ├── equipment/E-101/
 │   │   ├── metadata.json      what the machine IS
 │   │   └── exterior.py/.svg
-│   ├── characters/operator_01/
-│   │   ├── character.json     proportions, wardrobe, direction
-│   │   ├── poses.json         named poses; the rig invents nothing
-│   │   ├── rig.py             the solver
-│   │   ├── log_sheet.py       his prop, because check_log() is his action
-│   │   └── neutral/walking/inspecting.svg
+│   ├── characters/
+│   │   ├── wade_reference.png · lyra_reference.png · ellis_reference.png
+│   │   ├── character_sheet.py all three, all poses, one morning
+│   │   └── wade/ lyra/ ellis/
+│   │       ├── character.json proportions, wardrobe, direction
+│   │       ├── poses.json     named poses; the rig invents nothing
+│   │       ├── rig.py         what this person wears over the shared solver
+│   │       └── neutral/walking/inspecting.svg
 │   ├── instruments/temperature_gauge.py/.json/.svg
 │   └── sound/                 plant_ambience · steam · footsteps_grating
 ├── engine/
 │   ├── draw.py       drawing kit; every asset shades from lighting.json
+│   ├── figure.py     the shared human solver — gait, lean, head, rim
 │   ├── loader.py     the world registry
 │   ├── camera.py     wide_establishing · slow_push_in · instrument_closeup
 │   ├── actions.py    walk_to · stop · look_at · second_glance · check_log
@@ -68,11 +71,11 @@ $BIN/python -m manim -qh    render.py Ep001              # film, ~1620 frames
 ```json
 {
   "location": "exchanger_bay",
-  "characters": ["operator_01"],
+  "characters": ["wade"],
   "equipment": ["E-101"],
   "shots": [
     {"camera": "wide_establishing",  "target": "exchanger_bay"},
-    {"camera": "slow_push_in",       "target": "operator_01"},
+    {"camera": "slow_push_in",       "target": "wade"},
     {"camera": "instrument_closeup", "target": "TI-1014"}
   ],
   "timeline": [
@@ -102,9 +105,9 @@ light itself from somewhere else.
 direction. Haze sheets are tinted to the sky at each height — haze a warm
 dawn with a cool grey and every silhouette turns blue and jumps forward.
 
-**Colour.** Red is reserved for real alarms. Nothing here is red. The hi-vis
-ochre on the operator is the only saturated colour in frame, which is why the
-eye finds him.
+**Colour.** Red is reserved for real alarms. Nothing here is red. Hi-vis
+ochre is the only saturated colour the world allows, which is why Lyra is the
+one the eye goes to when she is in frame.
 
 **Perspective.** The floor carries the depth and the equipment stays in
 near-elevation. That keeps E-101 canonical and readable at any scale while
@@ -121,6 +124,40 @@ it runs liquid-full.
 The process is on the **tube** side because the process is the fouling stream
 here, and the tubes are the side you can rod out. That is also why the drift
 shows up on TI-1014, which reads the process outlet on his walking route.
+
+### The three canonical characters
+
+Designed from the reference images in `world/characters/`, translated into
+this world rather than copied from them. The references are rendered
+three-dimensional characters; this world is flat, banded and backlit, so what
+carries across is identity, not surface.
+
+Each one has to be recognisable at forty pixels tall, so each was given a
+silhouette job that no other character does:
+
+| | identity at distance | build | direction |
+|---|---|---|---|
+| **Wade** | bulk, bib straps, silver beard, brass gauge on the chest | widest and shortest | moves deliberately, never rushes |
+| **Lyra** | the bun above the skull line, brightest garment, tablet glow | slimmest, leans forward | quick and precise |
+| **Ellis** | upright stillness, dark knit stripe down an open olive jacket, gloved hands | tallest, straightest | still; his pause is an event |
+
+Three poses each — `neutral`, `walking`, `inspecting` — named in each
+character's `poses.json` and exported to SVG beside their `rig.py`.
+
+`engine/figure.py` holds the shared solver: gait, lean, head pitch, the turn,
+and the single rim pass. Characters differ in what they wear and how they
+carry themselves, not in how a leg works. Head parts are sized in multiples
+of head radius, never in body scale — tuned against body scale they come out
+several times too large, which is the difference between a face and a
+snowman.
+
+**Lyra's tablet is the world's one sanctioned second light source.** It is a
+device she actually carries, so it may cast a small local glow on her forearm
+and under her jaw. Nothing else in this world lights from anywhere but the
+morning sun.
+
+**None of the three wears a hard hat**, which matches the references. Flag it
+if plant PPE should override the character design.
 
 ### Instruments and lines
 
@@ -165,3 +202,7 @@ stories nobody has written:
 world has been ported into `world/` here. Keeping both means two copies of
 E-101, which is exactly what this architecture exists to prevent — delete it
 once you are happy with what the engine renders.
+
+`world/characters/operator_01/` was the placeholder for the character Wade
+now plays. SKILL.md names Wade for Episode 1, so `episode.json` casts Wade
+and operator_01 is no longer referenced by anything. It can go too.

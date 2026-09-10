@@ -1,0 +1,35 @@
+{
+  "_comment": "ELLIS \u2014 The One Who Knows the Pattern. Canonical.",
+  "id": "ellis",
+  "name": "Ellis",
+  "role": "The One Who Knows the Pattern",
+  "age": "early 40s",
+  "reference": "world/characters/ellis_reference.png",
+  "height_m": 1.8,
+  "build": {
+    "torso": 1.0,
+    "limb": 0.96,
+    "_note": "tallest and most upright; the stillest silhouette"
+  },
+  "wardrobe": {
+    "jacket": "olive",
+    "jacket_shadow": "olive_dark",
+    "jacket_light": "olive_light",
+    "knit": "knit_charcoal",
+    "gloves": "glove_dark",
+    "hair": "hair_brown"
+  },
+  "carries": [
+    {
+      "item": "utility gloves",
+      "detail": "chalk mark on the right knuckle",
+      "note": "he has not noticed it"
+    }
+  ],
+  "direction": "Still. Upright. Looks through things rather than at them. His pause is an event.",
+  "identity_at_distance": [
+    "upright stillness",
+    "dark knit stripe down an open olive jacket",
+    "gloved hands"
+  ]
+}

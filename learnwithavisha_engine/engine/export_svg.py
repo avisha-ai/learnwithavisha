@@ -126,15 +126,19 @@ def main():
                  os.path.join(W, "instruments", "temperature_gauge.svg"),
                  "temperature gauge, digital head and local dial"))
 
-    ch = Character("operator_01")
-    for pose, kw in (("neutral", dict(walking=False)),
-                     ("walking", dict(walking=True, phase=0.9)),
-                     ("inspecting", dict(walking=False, facing=-1,
-                                         head_pitch=27.0))):
-        jobs.append((ch.rig.build(0.0, **kw),
-                     os.path.join(W, "characters", "operator_01",
-                                  pose + ".svg"),
-                     "OPERATOR_01 — %s" % pose))
+    for name in ("wade", "lyra", "ellis", "operator_01"):
+        ch = Character(name)
+        for pose in ("neutral", "walking", "inspecting"):
+            p_ = ch.poses[pose]
+            kw = dict(walking=p_["walking"], head_pitch=p_["head_pitch"])
+            if pose == "walking":
+                kw["phase"] = 0.95
+            if pose == "inspecting":
+                kw["facing"] = -1
+            jobs.append((ch.rig.build(0.0, **kw),
+                         os.path.join(W, "characters", name, pose + ".svg"),
+                         "%s — %s" % (ch.data.get("name", name).upper(),
+                                      pose)))
 
     for mob, path, title in jobs:
         p, n = to_svg(mob, path, title=title)
