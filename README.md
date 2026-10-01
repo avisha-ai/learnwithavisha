@@ -50,20 +50,15 @@ Videos follow standard ChE university syllabus in order:
 
 ## Pilot — How to Run
 
-```bash
 # Install Manim
 pip install manim
 
-# Render animation (low quality preview)
-manim -pql shell_tube_animation.py ShellTubeScene
+# Render animation preview
+manim -pql examples/shell_tube_animation.py ShellTubeScene
 
-# Render animation (high quality final)
-manim -pqh shell_tube_animation.py ShellTubeScene
+# Combine animation with voiceover
+ffmpeg -i examples/shell_tube_animation.mp4 -i examples/voiceover.mp3 -c:v copy -c:a aac -shortest final_video.mp4
 
-# Combine with voiceover (after generating MP3 from ElevenLabs)
-ffmpeg -i animation.mp4 -i voiceover.mp3 \
-  -c:v copy -c:a aac -shortest final_video.mp4
-```
 
 ---
 
