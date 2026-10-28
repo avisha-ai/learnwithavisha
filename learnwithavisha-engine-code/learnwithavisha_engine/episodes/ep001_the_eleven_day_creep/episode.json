@@ -1,0 +1,99 @@
+{
+  "id": "ep001_the_eleven_day_creep",
+  "title": "The Eleven Day Creep",
+  "brief": "brief.md",
+  "runtime": 31.0,
+  "_runtime_note": "Story runs 0.0 to 28.0, inside the brief's 20-30 s. The fade and the unresolved question run past it as an epilogue.",
+
+  "location": "exchanger_bay",
+  "characters": ["wade"],
+  "equipment": ["E-101"],
+
+  "readings": {
+    "TI-1014": {
+      "now": 87,
+      "history": [["29 AUG", "83"], ["04 SEP", "85"], ["09 SEP", "87"]],
+      "_note": "29 AUG to 09 SEP is eleven days. That is the line he says."
+    }
+  },
+
+  "blocking": {
+    "wade": { "stands_at": "at_TI-1014" }
+  },
+
+  "shots": [
+    {
+      "name": "the_plant_is_normal",
+      "camera": "wide_establishing",
+      "target": "exchanger_bay",
+      "start": 0.0, "end": 9.0,
+      "transition": "cut",
+      "intent": "This place exists and has been running all night. Nothing is about to happen. Yet."
+    },
+    {
+      "name": "something_earns_his_attention",
+      "camera": "slow_push_in",
+      "target": "wade",
+      "start": 9.0, "end": 17.5,
+      "transition": "continuous",
+      "end_width": 9.05,
+      "settle": 0.55,
+      "intent": "I don't know why he stopped. But he stopped."
+    },
+    {
+      "name": "the_number",
+      "camera": "instrument_closeup",
+      "target": "TI-1014",
+      "start": 17.5, "end": 28.0,
+      "transition": "cut",
+      "intent": "Something is wrong. Nothing looks wrong. I want to know why."
+    }
+  ],
+
+  "timeline": [
+    { "t": 0.0,  "who": "wade", "action": "walk_to",
+      "mark": "at_TI-1014", "from_x": -5.65, "arrive": 14.2 },
+    { "t": 10.9, "who": "wade", "action": "look_at",
+      "target": "TI-1014", "rise": 0.70, "hold": 0.50,
+      "note": "out of habit, not concern. He does not break stride." },
+    { "t": 14.2, "who": "wade", "action": "stop",
+      "note": "the whole shot is one man ending his stride" },
+    { "t": 15.6, "who": "wade", "action": "second_glance",
+      "target": "TI-1014", "turn": 0.45,
+      "note": "that second look is everything" },
+    { "t": 18.7, "who": "wade", "action": "check_log",
+      "target": "TI-1014", "until": 26.1,
+      "rows_from": 20.3, "row_every": 1.00, "rows": 3,
+      "note": "83 then 85 then 87, oldest first, one at a time" }
+  ],
+
+  "voiceover": [
+    {
+      "who": "wade", "line": "Eleven days.", "at": 23.5, "gain": 0.85,
+      "voice": { "name": "Daniel", "id": "9fHP3GqJWwJmIbYQwQ1V",
+                 "provider": "elevenlabs", "model": "eleven_v3",
+                 "direction": "quiet, to himself, slow and unhurried" },
+      "file": "vo_eleven_days.mp3",
+      "_status": "NOT GENERATED. The account is free tier and the API refuses library voices, so this line has to come off elevenlabs.io by hand. Drop the mp3 in beside episode.json and the mix picks it up. Without it the beat plays as a held silence."
+    }
+  ],
+
+  "sound": {
+    "stems": ["plant_ambience", "steam"],
+    "footsteps": "footsteps_grating",
+    "narrow": { "from": 14.6, "to": 16.4, "air": 0.55, "width": 0.60 },
+    "rule": "The ambience never stops and the machine bed never changes level. It narrows when he stops, and stays narrow."
+  },
+
+  "fade": { "in": [0.0, 1.6], "out": [28.0, 29.0] },
+
+  "end_card": {
+    "text": "If the flow is normal — why is the temperature still climbing?",
+    "at": 29.0, "fade_in": 0.70, "until": 31.0
+  },
+
+  "not_in_this_episode": [
+    "fouling animation", "cutaway", "Lyra", "Ellis",
+    "engineering explanation", "theory", "alarms", "red", "music"
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "_comment": "WADE \u2014 The One Who Knows the Plant by Feel. Canonical.",
+  "id": "wade",
+  "name": "Wade",
+  "role": "The One Who Knows the Plant by Feel",
+  "age": "late 50s",
+  "reference": "world/characters/wade_reference.png",
+  "height_m": 1.74,
+  "build": {
+    "torso": 1.34,
+    "limb": 1.3,
+    "_note": "the widest silhouette in the world. Shorter and heavier than the others, not taller."
+  },
+  "wardrobe": {
+    "coveralls": "coverall_navy",
+    "bib": "coverall_navy",
+    "rolled_sleeve": "sleeve_blue",
+    "undershirt": "henley_dark",
+    "beard": "beard_silver",
+    "hair": "hair_grey",
+    "buckles": "brass"
+  },
+  "carries": [
+    {
+      "item": "pocket pressure gauge",
+      "material": "brass",
+      "on": "leather lanyard",
+      "position": "centre chest"
+    }
+  ],
+  "direction": "Moves deliberately. Never rushes. The plant knows him.",
+  "identity_at_distance": [
+    "bulk",
+    "bib straps",
+    "silver beard",
+    "brass gauge on the chest"
+  ],
+  "no_hard_hat": "Matches the reference. Flag if plant PPE should override."
+}

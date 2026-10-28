@@ -1,0 +1,26 @@
+{
+  "_comment": "Proportions and wardrobe for OPERATOR_01. Name not frozen.",
+  "id": "operator_01",
+  "height_m": 1.78,
+  "proportions": {
+    "hip_y": 0.94,
+    "knee_len": 0.47,
+    "shin_len": 0.47,
+    "shoulder_y": 1.42,
+    "upper_arm": 0.31,
+    "forearm": 0.29,
+    "head_y": 1.615,
+    "head_r": 0.105
+  },
+  "wardrobe": {
+    "vest": "vest",
+    "vest_bands": "band",
+    "hard_hat": "hat",
+    "body": "fig_dark",
+    "near_limb": "fig_mid"
+  },
+  "direction": "He does not walk around amazed by machinery. This is his workplace. Small movements only.",
+  "carries": [
+    "log_sheet"
+  ]
+}

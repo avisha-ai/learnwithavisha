@@ -1,0 +1,92 @@
+{
+  "_comment": "The world's one light. Every asset shades from this and nothing may light from anywhere else.",
+  "units": {
+    "world_unit_metres": 1.0,
+    "deck_y": 0.0,
+    "horizon_y": 0.62
+  },
+  "sun": {
+    "position": [
+      -2.6,
+      1.17
+    ],
+    "role": "contre-jour, low morning, behind and left of the bay",
+    "core": "#e0a06a",
+    "rim": "#e0a978"
+  },
+  "shading": {
+    "horizontal_cylinder": {
+      "peak_v": 0.72,
+      "spread": 0.27,
+      "bounce_v": 0.05,
+      "bounce": 0.18,
+      "floor": 0.09,
+      "gain": 0.8
+    },
+    "vertical_cylinder": {
+      "peak_u": 0.29,
+      "spread": 0.29,
+      "floor": 0.11,
+      "gain": 0.78
+    }
+  },
+  "palette": {
+    "brand_deep": "#0d0d1a",
+    "sky_top": "#0e1424",
+    "sky_upper": "#161d2f",
+    "sky_band": "#28293c",
+    "sky_horizon": "#7a5747",
+    "sun_core": "#e0a06a",
+    "far_dark": "#1e2637",
+    "far_light": "#333e54",
+    "mid_dark": "#151a24",
+    "mid_light": "#28313f",
+    "steel_dark": "#11161e",
+    "steel_mid": "#28313c",
+    "steel_light": "#454f5c",
+    "steel_rim": "#e0a978",
+    "concrete_dark": "#171920",
+    "concrete_light": "#3a3d45",
+    "grate_dark": "#141922",
+    "grate_light": "#3b4655",
+    "gauge_face": "#b6bfcb",
+    "gauge_case": "#171b22",
+    "lcd_back": "#0e2a19",
+    "lcd_lit": "#6fd490",
+    "vest": "#c8823c",
+    "vest_dark": "#7d4e21",
+    "band": "#d5dce4",
+    "fig_dark": "#10141b",
+    "fig_mid": "#1f2530",
+    "skin": "#7a5947",
+    "hat": "#c3c9d2",
+    "haze": "#4a5064",
+    "tag_text": "#7d8b9d",
+    "fore_black": "#070910",
+    "coverall_navy": "#232c42",
+    "coverall_navy_dark": "#161d2e",
+    "sleeve_blue": "#4d5f7a",
+    "henley_dark": "#1a1f28",
+    "beard_silver": "#b9bfc8",
+    "hair_grey": "#9aa2ad",
+    "brass": "#b08a4e",
+    "leather": "#4a3728",
+    "olive": "#43492f",
+    "olive_dark": "#2a2e1e",
+    "olive_light": "#5c6342",
+    "knit_charcoal": "#23262c",
+    "glove_dark": "#1b1e24",
+    "chalk": "#e6e8ea",
+    "hair_dark": "#241c1e",
+    "hair_brown": "#3b2a20",
+    "lens_dark": "#12161c",
+    "tablet_glow": "#4fd4c4",
+    "tablet_body": "#1d2229"
+  },
+  "rules": [
+    "Red is reserved for real alarms. Nothing in this world is red unless it is one.",
+    "Distance is loss of contrast, never a change in light direction.",
+    "The sky is the brightest value in frame. The plant silhouettes on it.",
+    "One light, with one sanctioned exception: a device a character actually carries may cast a small local glow. Lyra's tablet is the only one."
+  ]
+}

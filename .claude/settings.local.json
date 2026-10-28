@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git clone *)",
+      "Bash(git -C learnwithavisha log --oneline -5)",
+      "Bash(mv learnwithavisha/.git learnwithavisha/.gitignore learnwithavisha/CLAUDE.md learnwithavisha/README.md learnwithavisha/script.txt learnwithavisha/shell_tube_animation.py .)",
+      "Bash(python3 -c \"import manim; print\\(manim.__version__\\)\")",
+      "Bash(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 /Users/mrinalgala/Documents/Avisha/learnwithavisha/voiceover.mp3)",
+      "Read(//opt/homebrew/bin/**)",
+      "Bash(python3 -m venv --help)",
+      "Bash(xcode-select -p)",
+      "Bash(python3 -m venv .venv)",
+      "Bash(.venv/bin/pip install *)",
+      "Bash(.venv/bin/pip index *)",
+      "Bash(.venv/bin/pip download *)",
+      "Bash(curl -Ls https://micro.mamba.pm/api/micromamba/osx-arm64/latest)",
+      "Bash(tar -xj -C .micromamba --strip-components=1 bin/micromamba)",
+      "Bash(.micromamba/micromamba --version)",
+      "Bash(export MAMBA_ROOT_PREFIX=/Users/mrinalgala/Documents/Avisha/learnwithavisha/.micromamba/root)",
+      "Bash(.micromamba/micromamba create *)",
+      "Bash(.micromamba/micromamba run *)",
+      "Bash(python3 -V)",
+      "Bash(.micromamba/root/envs/manim/bin/python -)",
+      "Read(//private/tmp/**)",
+      "Bash(echo \"exit: $?\")",
+      "Read(//Users/mrinalgala/Desktop/**)"
+    ]
+  }
+}

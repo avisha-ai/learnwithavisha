@@ -234,3 +234,14 @@ media/
 
 # engine render outputs — the world and the recipes are tracked, frames are not
 learnwithavisha_engine/_render/
+
+# PM01 and later episodes — renders and finals live in Drive, not git
+pm01_the_flip/_render/
+finals/*.mp4
+archive/
+
+# EP01 v2 pipeline render outputs
+out/
+*.mp4
+*TEMP_MPY_wvf_snd*
+hx_ep01_v2_master*

@@ -20,7 +20,7 @@ topic_queue.csv
   voiceover.py      ElevenLabs — Leandra, Eleven v3 → voiceover.mp3
       │             its exact duration is the animation's TOTAL_RUNTIME
       ▼
-  manim_generator.py  Claude call 3 → animation.py → 1080p60 animation.mp4
+  gemini_generator.py Scene prompts → Veo clips → 1080p60 animation.mp4
       │
       ▼
   assembler.py      ffmpeg mux + thumbnail → final_video.mp4
@@ -145,7 +145,7 @@ stubbed.
 | `llm_client.py` | OpenRouter client — streaming, strict JSON schema, domain-filtered web search |
 | `script_writer.py` | Claude call 1 + the hard brand rules |
 | `script_reviewer.py` | Claude call 2 + the write/review/rewrite loop |
-| `manim_generator.py` | Claude call 3, compile check, test render, sync check |
+| `gemini_generator.py` | Scene prompts, Veo clip generation, conform to the narration |
 | `voiceover.py` | ElevenLabs, voice lookup by name, duration measurement |
 | `assembler.py` | ffmpeg mux, sync verification, thumbnail |
 | `youtube_upload.py` | metadata, schedule, OAuth, resumable upload, playlists |

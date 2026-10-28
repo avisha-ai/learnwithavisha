@@ -1,0 +1,32 @@
+{
+  "_comment": "Named parameter sets for rig.build(). engine/actions.py interpolates between these and never invents new numbers.",
+  "neutral": {
+    "walking": false,
+    "head_pitch": 0.0,
+    "clipboard": 0.0
+  },
+  "walking": {
+    "walking": true,
+    "head_pitch": 0.0,
+    "clipboard": 0.0,
+    "speed_mps": 0.6,
+    "stride_m": 1.44
+  },
+  "glancing": {
+    "walking": true,
+    "head_pitch": 14.0,
+    "clipboard": 0.0,
+    "_note": "the habitual look, taken without breaking stride"
+  },
+  "inspecting": {
+    "walking": false,
+    "head_pitch": 27.0,
+    "clipboard": 0.0,
+    "_note": "stopped, turned back, reading the instrument"
+  },
+  "checking_log": {
+    "walking": false,
+    "head_pitch": 20.0,
+    "clipboard": 1.0
+  }
+}

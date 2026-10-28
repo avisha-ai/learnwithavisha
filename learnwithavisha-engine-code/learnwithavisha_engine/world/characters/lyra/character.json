@@ -1,0 +1,36 @@
+{
+  "_comment": "LYRA \u2014 The One Who Knows the Theory. Canonical.",
+  "id": "lyra",
+  "name": "Lyra",
+  "role": "The One Who Knows the Theory",
+  "age": "late 20s",
+  "reference": "world/characters/lyra_reference.png",
+  "height_m": 1.68,
+  "build": {
+    "torso": 0.9,
+    "limb": 0.88,
+    "_note": "slimmest silhouette; the bun adds height above the skull"
+  },
+  "wardrobe": {
+    "jacket": "vest",
+    "reflective_bands": "band",
+    "knit": "knit_charcoal",
+    "hair": "hair_dark",
+    "glasses": "lens_dark",
+    "trousers": "#2b303a"
+  },
+  "carries": [
+    {
+      "item": "ruggedized tablet",
+      "on": "left forearm strap",
+      "emits": "tablet_glow",
+      "note": "the world's one sanctioned second light source"
+    }
+  ],
+  "direction": "Forward leaning. Quick and precise. Always two steps ahead of everyone except the plant.",
+  "identity_at_distance": [
+    "the bun above the skull line",
+    "brightest garment in the world",
+    "cool tablet glow on forearm and jaw"
+  ]
+}

@@ -37,7 +37,7 @@ import traceback
 from pathlib import Path
 
 import assembler
-import manim_generator
+import gemini_generator
 import queue_manager as q
 import script_reviewer
 import voiceover as vo
@@ -112,28 +112,30 @@ def stage_voiceover(topic: q.Topic, force: bool = False, **_) -> q.Topic:
 
 
 def stage_animate(topic: q.Topic, force: bool = False, **_) -> q.Topic:
-    """Claude call 3 writes the Manim scene, then it renders at 1080p60."""
+    """Veo generates one clip per scene prompt, then they are cut to the voice."""
     state = load_state(topic)
     runtime = state.get("runtime_seconds")
     if not runtime:
         raise RuntimeError(f"{topic.key}: run the voiceover stage first — the "
                            f"animation is timed to the narration.")
 
-    if not topic.animation_path.exists() or force:
-        manim_generator.generate(
+    # Unlike the Manim path, generation here is billed per clip and resumable.
+    # gemini_generator skips any clip already on disk, so this is safe to rerun
+    # after a failure without paying twice for the clips that worked.
+    if force or not gemini_generator.prompts_path(topic).exists() \
+            or not topic.rendered_path.exists():
+        gemini_generator.generate(
             topic,
             topic.script_path.read_text(encoding="utf-8").strip(),
             runtime,
             state.get("visual_beats", []),
             state.get("key_points", []),
         )
-    else:
-        log.info("animation.py already exists — skipping generation")
 
     if not topic.rendered_path.exists() or force:
-        manim_generator.render(topic)
+        gemini_generator.render(topic)
     else:
-        log.info("animation.mp4 already exists — skipping render")
+        log.info("animation.mp4 already exists — skipping conform")
     return topic
 
 

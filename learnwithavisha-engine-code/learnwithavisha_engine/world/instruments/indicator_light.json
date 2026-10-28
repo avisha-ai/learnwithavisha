@@ -1,0 +1,13 @@
+{
+  "_comment": "Lamp style is frozen here so every running light in every location reads as the same fitting.",
+  "lens_diameter_m": 0.09,
+  "colours": {
+    "running": "#4f9d6b",
+    "standby": "#c08a3e",
+    "pilot": "#cfd8e2"
+  },
+  "rule": "Red is reserved for real alarms. An indicator light in this world is never red.",
+  "steady": { "base": 0.72, "breath_period_s": 7.3, "breath_amp": 0.05 },
+  "beacon": { "typical_period_s": [3.5, 5.0], "base": 0.28, "amp": 0.60 },
+  "phasing": "Every lamp carries its own phase. Lamps that blink together read as decoration; lamps that do not read as independent machines."
+}

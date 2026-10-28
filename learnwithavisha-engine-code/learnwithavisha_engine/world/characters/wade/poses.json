@@ -1,0 +1,67 @@
+{
+  "_comment": "Named poses for Wade. He swings less than anyone else and plants his stance wide, because he never hurries.",
+  "neutral": {
+    "walking": false,
+    "head_pitch": 0.0,
+    "clipboard": 0.0,
+    "stance": {
+      "thigh_a": -7.0,
+      "thigh_b": 10.0,
+      "knee_a": 5.0,
+      "knee_b": 11.0,
+      "arm_a": 9.0,
+      "arm_b": -8.0,
+      "lean": 2.0
+    }
+  },
+  "walking": {
+    "walking": true,
+    "head_pitch": 0.0,
+    "clipboard": 0.0,
+    "speed_mps": 0.6,
+    "stride_m": 1.44,
+    "stance": {
+      "swing": 21.0,
+      "arm_swing": 16.0,
+      "lean": 3.5
+    }
+  },
+  "glancing": {
+    "walking": true,
+    "head_pitch": 14.0,
+    "clipboard": 0.0,
+    "stance": {
+      "swing": 21.0,
+      "arm_swing": 16.0,
+      "lean": 3.5
+    }
+  },
+  "inspecting": {
+    "walking": false,
+    "head_pitch": 26.0,
+    "clipboard": 0.0,
+    "stance": {
+      "thigh_a": -9.0,
+      "thigh_b": 12.0,
+      "knee_a": 5.0,
+      "knee_b": 13.0,
+      "arm_a": 12.0,
+      "arm_b": -9.0,
+      "lean": 1.0
+    }
+  },
+  "checking_log": {
+    "walking": false,
+    "head_pitch": 20.0,
+    "clipboard": 1.0,
+    "stance": {
+      "thigh_a": -7.0,
+      "thigh_b": 10.0,
+      "knee_a": 5.0,
+      "knee_b": 11.0,
+      "arm_a": 9.0,
+      "arm_b": -8.0,
+      "lean": 2.0
+    }
+  }
+}

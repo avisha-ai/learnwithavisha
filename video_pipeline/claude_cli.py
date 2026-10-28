@@ -4,7 +4,7 @@ Claude CLI transport — the same three pipeline calls, routed through the local
 API key.
 
 Signature-compatible with llm_client.call / llm_client.call_json, so callers
-(script_writer, script_reviewer, manim_generator) need no changes.
+(script_writer, script_reviewer, gemini_generator) need no changes.
 
 Three things do NOT map cleanly from the OpenRouter path, and all of them
 matter:

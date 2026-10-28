@@ -467,7 +467,7 @@ GitHub: avisha-ai/learnwithavisha
 │   ├── main.py
 │   ├── script_writer.py
 │   ├── script_reviewer.py
-│   ├── manim_generator.py
+│   ├── gemini_generator.py
 │   ├── voiceover.py
 │   ├── assembler.py
 │   └── youtube_upload.py

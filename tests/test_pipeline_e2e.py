@@ -60,66 +60,22 @@ _BODY = (
 STUB_SCRIPT = ((_BODY * 6).strip() + " This is LearnWithAvisha — chemical "
                "engineering fundamentals, explained simply.")
 
-STUB_SCENE = '''"""Stub scene — stands in for the Claude-generated animation."""
-from manim import *
-
-TOTAL_RUNTIME = {runtime}
-
-
-class {scene}(Scene):
-    def hold_until(self, t):
-        dt = t - self.clock
-        if dt > 1e-3:
-            self.wait(dt)
-            self.clock = t
-
-    def at(self, t, *anims, run_time=1.0):
-        self.hold_until(t)
-        self.play(*anims, run_time=run_time)
-        self.clock += run_time
-
-    def construct(self):
-        self.clock = 0.0
-        self.camera.background_color = "{bg}"
-
-        ring = Circle(radius=0.42, fill_opacity=0)
-        ring.set_stroke(WHITE, width=1.2, opacity=0.85)
-        mono = Text("LWA", font="Georgia", slant=ITALIC, font_size=17, color=WHITE)
-        mono.move_to(ring.get_center()).set_opacity(0.85)
-        self.add(VGroup(ring, mono).to_corner(DR, buff=0.35))
-
-        title = Text("{title}", font_size=30, color=WHITE).to_edge(UP, buff=0.6)
-        self.at(0.5, FadeIn(title))
-
-        vessel = Rectangle(width=6.0, height=2.4, color="{equip}").shift(DOWN * 0.2)
-        self.at(4.0, Create(vessel))
-
-        arrow = Arrow(LEFT * 3.4, RIGHT * 3.4, color="{cold}").shift(DOWN * 0.2)
-        self.at(10.0, GrowArrow(arrow))
-
-        label = Text("A fluid deforms continuously under shear",
-                     font_size=22, color=WHITE).move_to(DOWN * 2.7)
-        self.at(15.0, FadeIn(label))
-
-        self.hold_until(TOTAL_RUNTIME)
-'''
-
 
 # ── stubs ────────────────────────────────────────────────────────
 def stub_call(system, prompt, *, schema=None, search=False, **kwargs):
-    """Stands in for every Claude call, chosen by what the prompt asks for."""
-    if "Scene class name" in prompt:
-        scene = next(line.split(": ", 1)[1].strip()
-                     for line in prompt.splitlines() if line.startswith("Scene class name"))
-        return STUB_SCENE.format(runtime=RUNTIME, scene=scene,
-                                 title="What is a Fluid",
-                                 bg=config.BACKGROUND,
-                                 equip=config.COLOURS["equipment"],
-                                 cold=config.COLOURS["cold_in"]), []
+    """Stands in for every Claude call. Nothing in the pipeline needs one now
+    that scenes are prompts rather than generated Python."""
     raise AssertionError("unexpected plain Claude call")
 
 
 def stub_call_json(system, prompt, schema, **kwargs):
+    if "Produce EXACTLY" in prompt:                     # veo scene prompts
+        count = int(next(line for line in prompt.splitlines()
+                         if "Produce EXACTLY" in line).split()[2])
+        return {"shots": [
+            {"index": i, "covers": f"sentence {i}",
+             "prompt": f"Pixar style 3D animation, test shot {i}, no text."}
+            for i in range(count)]}
     if "SCRIPT UNDER REVIEW" in prompt:                 # reviewer
         return {"verdict": "APPROVED", "discrepancies": [],
                 "sources_checked": ["LibreTexts Engineering — Fluid Mechanics"],
@@ -149,6 +105,18 @@ def stub_voiceover(script, destination, voice_id=None):
     return vo.duration_seconds(destination)
 
 
+def stub_veo_clip(client, prompt, destination):
+    """Stands in for one Veo generation: a solid clip of the right length."""
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    subprocess.run(
+        ["ffmpeg", "-y", "-f", "lavfi",
+         "-i", f"color=c=0x1b3a5c:s=1280x720:d={config.VEO_CLIP_SECONDS}",
+         "-r", "24", "-pix_fmt", "yuv420p", str(destination)],
+        capture_output=True, check=True,
+    )
+    return destination
+
+
 # ── harness ──────────────────────────────────────────────────────
 def check(label, condition, detail=""):
     print(f"  {'PASS' if condition else 'FAIL'}  {label}{'  — ' + detail if detail else ''}")
@@ -160,10 +128,10 @@ def run():
     llm_client.call_json = stub_call_json
     vo.generate = stub_voiceover
 
-    # script_writer/reviewer/manim_generator imported llm_client as a module,
+    # script_writer/reviewer/gemini_generator imported llm_client as a module,
     # so patching the module attributes above is enough.
-    import manim_generator
-    manim_generator.SYNC_TOLERANCE = 1.5     # low-quality render rounds to the frame
+    import gemini_generator
+    gemini_generator.generate_clip = stub_veo_clip
 
     results = []
     print(f"\nsandbox: {SANDBOX}\n")
@@ -200,7 +168,8 @@ def run():
     rc = main.main(["--topic", "S1T1", "--stages", "voiceover,animate,assemble"])
     topic = q.find("S1T1", config.CURRICULUM_CSV)
     results.append(check("production stages exit 0", rc == 0))
-    results.append(check("animation.py generated", topic.animation_path.exists()))
+    results.append(check("scene_prompts.json generated",
+                         (topic.dir / config.SCENE_PROMPTS_FILE).exists()))
     results.append(check("animation.mp4 rendered", topic.rendered_path.exists()))
     results.append(check("final_video.mp4 assembled", topic.video_path.exists()))
     results.append(check("thumbnail.jpg extracted", topic.thumbnail_path.exists()))

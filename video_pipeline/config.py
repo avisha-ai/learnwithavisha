@@ -22,7 +22,7 @@ except ImportError:                     # pragma: no cover
 ROOT = Path(__file__).resolve().parent.parent
 CURRICULUM_CSV = ROOT / "curriculum" / "topic_queue.csv"
 OUTPUT_DIR = ROOT / "output"
-PILOT_ANIMATION = ROOT / "shell_tube_animation.py"   # reference example for Manim generation
+PILOT_ANIMATION = ROOT / "shell_tube_animation.py"   # retired Manim pilot, kept for reference only
 SKILL_MD = ROOT / "SKILL.md"
 CREDENTIALS_DIR = ROOT / ".credentials"
 YOUTUBE_CLIENT_SECRETS = CREDENTIALS_DIR / "youtube_client_secrets.json"
@@ -122,6 +122,34 @@ COLOURS = {
     "accent": "#FFD700",
 }
 WATERMARK_OPACITY = 0.85    # as rendered in the approved pilot
+
+# ── animation — Veo generation (replaces Manim) ──────────────────
+# Scenes are no longer authored as Manim code. Each scene prompt is sent to
+# Veo, which returns a short clip, and the clips are conformed and joined.
+#
+# Consequences of that swap, all of them load-bearing:
+#   * Veo clips are 4, 6 or 8 seconds and 1080p REQUIRES 8. A 4 minute
+#     narration is therefore ~30 separate billed generations.
+#   * Veo returns native audio on every clip. It is stripped at conform time
+#     because the ElevenLabs narration is the only audio this channel ships.
+#   * Nothing about the generated pixels is deterministic, so the watermark
+#     is composited afterwards with ffmpeg rather than drawn into the scene.
+GEMINI_API_KEY_ENV = "GEMINI_API_KEY"
+VEO_MODEL = (os.environ.get("VEO_MODEL") or "veo-3.1-generate-preview").strip()
+VEO_ASPECT_RATIO = "16:9"
+VEO_RESOLUTION = "1080p"
+VEO_CLIP_SECONDS = 8            # 1080p is only offered at 8 s
+VEO_POLL_SECONDS = 10
+VEO_POLL_TIMEOUT = 1800         # a single clip can sit in the queue for minutes
+VEO_MAX_CLIPS = 40              # cost guard — raise deliberately, not by accident
+VEO_RETENTION_HOURS = 48        # Google deletes generated videos after 2 days
+
+SCENE_PROMPTS_FILE = "scene_prompts.json"
+CLIPS_DIRNAME = "clips"
+
+# Georgia italic, to match the monogram burned into the approved pilot.
+WATERMARK_FONT = Path("/System/Library/Fonts/Supplemental/Georgia Italic.ttf")
+WATERMARK_TEXT = "LWA"
 
 # ── voiceover — frozen (SKILL.md) ────────────────────────────────
 ELEVENLABS_API_KEY_ENV = "ELEVENLABS_API_KEY"
