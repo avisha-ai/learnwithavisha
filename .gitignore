@@ -245,3 +245,6 @@ out/
 *.mp4
 *TEMP_MPY_wvf_snd*
 hx_ep01_v2_master*
+
+# Audio render artefacts (trial runs, not for tracking)
+*.mp3
