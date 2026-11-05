@@ -1,0 +1,760 @@
+<title>Learn with Avisha</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@400;500&display=swap">
+
+<style>
+/* ── tokens: Ivory & Oxblood ── */
+:root{
+  --bg:#F7F2EA;
+  --paper:#EFE9DF;
+  --main:#582C3B;
+  --accent:#B89A68;
+  --accent-dark:#7A5A3A;
+  --fg:#1E0F14;
+  --fg2:#4A2530;
+  --fg3:#8A6670;
+  --rule:#D4C4C0;
+  --red:#8B2020;
+  --border:#C8B0AC;
+  --card:#FAF6F0;
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+}
+
+/* color switcher overrides */
+body.mist{
+  --bg:#EDF2F1;--paper:#E6EDEB;--main:#174B50;--accent:#B98C64;
+  --fg:#1A2422;--fg2:#354B48;--fg3:#6B8480;--rule:#C2D0CE;--red:#9B3A3A;--border:#B4C5C2;--card:#F3F7F6;
+}
+body.champagne{
+  --bg:#F3EBDD;--paper:#EBE0CF;--main:#202C42;--accent:#A58B60;
+  --fg:#10151F;--fg2:#2C3A52;--fg3:#7080A0;--rule:#C8C0B0;--red:#8B3030;--border:#B8B0A0;--card:#F8F4EC;
+}
+body.pearl{
+  --bg:#F4F0F5;--paper:#EDE8EE;--main:#49334F;--accent:#AA8FAD;
+  --fg:#180F1C;--fg2:#3C2840;--fg3:#826888;--rule:#CBBECE;--red:#803040;--border:#C0AECC;--card:#F9F6FA;
+}
+body.sand{
+  --bg:#F2EDE2;--paper:#EAE3D5;--main:#4B563B;--accent:#B17D52;
+  --fg:#161A10;--fg2:#323D26;--fg3:#6A7858;--rule:#C5C0A8;--red:#8B3520;--border:#B4B098;--card:#F7F3EA;
+}
+body.graphite{
+  --bg:#202326;--paper:#262A2D;--main:#EAE5DD;--accent:#CE956F;
+  --fg:#F0EDE8;--fg2:#C0B8AC;--fg3:#80787C;--rule:#383D40;--red:#CE6060;--border:#404850;--card:#2A2E32;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+
+body{
+  background:var(--bg);color:var(--fg);
+  font-family:'Inter',sans-serif;
+  overflow-x:hidden;
+  min-height:100vh;
+}
+
+/* paper grain overlay */
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:var(--grain);
+  opacity:.5;
+}
+
+/* ruled lines */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(var(--rule) 1px,transparent 1px);
+  background-size:100% 28px;
+  opacity:.22;
+}
+
+/* theme picker — internal only, not shown on public page */
+.theme-wrap{display:none}
+
+/* ── margin layout ── */
+.page{
+  position:relative;z-index:1;
+  padding-left:max(80px,env(safe-area-inset-left,0px));
+  padding-right:max(24px,env(safe-area-inset-right,0px));
+  padding-bottom:48px;
+}
+/* red left margin */
+.page::before{
+  content:'';position:fixed;
+  left:max(64px,env(safe-area-inset-left,0px));
+  top:0;bottom:0;width:1px;
+  background:var(--red);opacity:.3;pointer-events:none;z-index:2;
+}
+@media(max-width:600px){
+  .page{padding-left:max(52px,env(safe-area-inset-left,0px))}
+  .page::before{left:max(40px,env(safe-area-inset-left,0px))}
+}
+
+/* ── nav ── */
+nav{
+  position:sticky;top:0;z-index:50;
+  padding:0 max(24px,env(safe-area-inset-right,0px)) 0 0;
+  height:48px;display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--rule);
+  background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(10px);
+}
+.nav-logo{
+  font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.18em;
+  color:var(--fg);text-decoration:none;
+}
+.nav-logo em{color:var(--main);font-style:normal}
+.nav-fig{
+  font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.14em;
+  color:var(--fg3);
+}
+
+/* ── hero ── */
+.hero{
+  padding:52px 0 44px;
+  border-bottom:1px solid var(--rule);
+}
+.hero-fig{
+  font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.2em;
+  color:var(--fg2);margin-bottom:18px;
+  display:flex;align-items:center;gap:10px;
+}
+.hero-fig::before{content:'§ 1';margin-right:4px;color:var(--accent)}
+
+.hero h1{
+  font-family:'DM Serif Display',serif;
+  font-size:clamp(1.9rem,5vw,3.2rem);
+  line-height:1.08;color:var(--fg);
+  margin-bottom:6px;text-wrap:balance;
+  letter-spacing:-.015em;
+}
+.hero h1 em{font-style:italic;color:var(--main)}
+
+/* handwritten annotation */
+.annotation{
+  font-family:'DM Mono',monospace;font-size:.62rem;
+  color:var(--accent);margin-bottom:16px;
+  display:flex;align-items:center;gap:6px;
+  opacity:.85;
+}
+.annotation::before{content:'↳'}
+
+.hero-body{
+  font-family:'Lora',serif;font-size:.95rem;color:var(--fg2);
+  line-height:1.85;max-width:480px;margin-bottom:28px;
+}
+
+.hero-actions{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:36px}
+.btn-main{
+  font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.08em;
+  background:var(--main);color:var(--bg);
+  padding:10px 22px;border:none;cursor:pointer;
+  border-radius:100px;
+  transition:opacity .15s;
+}
+.btn-main:hover{opacity:.85}
+.btn-link{
+  font-family:'DM Mono',monospace;font-size:.64rem;letter-spacing:.08em;
+  color:var(--main);background:none;border:none;cursor:pointer;
+  text-decoration:underline;
+}
+
+/* spec row */
+.spec-row{
+  display:flex;gap:0;border-top:1px solid var(--rule);
+  padding-top:16px;
+}
+.spec-item{
+  padding-right:24px;margin-right:24px;
+  border-right:1px solid var(--rule);
+}
+.spec-item:last-child{border-right:none}
+.sv{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--fg);display:block;font-weight:500}
+.sl{font-family:'DM Mono',monospace;font-size:.54rem;letter-spacing:.1em;color:var(--fg3);display:block}
+
+/* ── FEATURED MYSTERY ── */
+.featured{
+  padding:40px 0 36px;
+  border-bottom:1px solid var(--rule);
+}
+.feat-fig{
+  font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.2em;
+  color:var(--fg2);margin-bottom:20px;
+}
+.feat-fig::before{content:'§ 2 · ';color:var(--accent)}
+
+.feat-inner{
+  display:grid;grid-template-columns:1fr 200px;gap:32px;align-items:start;
+}
+@media(max-width:600px){
+  .feat-inner{grid-template-columns:1fr;gap:20px}
+  .feat-sketch{order:-1}
+}
+
+.feat-ep{
+  font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.16em;
+  color:var(--accent);margin-bottom:10px;
+  display:flex;align-items:center;gap:8px;
+}
+.live-dot{
+  width:5px;height:5px;border-radius:50%;background:var(--accent);
+  animation:pulse 2s infinite;flex-shrink:0;
+}
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(185,140,100,.5)}
+  70%{box-shadow:0 0 0 8px rgba(185,140,100,0)}
+  100%{box-shadow:0 0 0 0 rgba(185,140,100,0)}
+}
+
+.feat-q{
+  font-family:'DM Serif Display',serif;font-style:italic;
+  font-size:clamp(1.1rem,3vw,1.5rem);color:var(--fg);
+  line-height:1.35;margin-bottom:12px;text-wrap:balance;
+}
+.feat-sub{
+  font-family:'Lora',serif;font-size:.82rem;color:var(--fg2);
+  line-height:1.75;max-width:400px;margin-bottom:20px;
+}
+.feat-watch{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.1em;
+  color:var(--main);border:1px solid var(--main);
+  padding:9px 18px;cursor:pointer;background:none;
+  border-radius:100px;
+  transition:background .15s,color .15s;
+}
+.feat-watch:hover{background:var(--main);color:var(--bg)}
+
+/* equipment sketch */
+.feat-sketch{
+  background:var(--card);
+  border:1px solid var(--rule);
+  padding:16px;
+  position:relative;
+}
+.feat-sketch svg{width:100%;height:auto;display:block}
+.sketch-cap{
+  font-family:'DM Mono',monospace;font-size:.54rem;letter-spacing:.1em;
+  color:var(--fg3);text-align:center;margin-top:10px;
+}
+
+/* margin note */
+.margin-note{
+  position:absolute;left:-72px;top:0;
+  font-family:'DM Mono',monospace;font-size:.52rem;
+  color:var(--accent);opacity:.7;
+  width:60px;text-align:right;line-height:1.5;
+  transform:rotate(-1deg);
+}
+@media(max-width:700px){.margin-note{display:none}}
+
+/* ── TOPICS ── */
+.topics-section{
+  padding:36px 0 0;
+}
+.topics-fig{
+  font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.2em;
+  color:var(--fg2);margin-bottom:16px;padding-bottom:12px;
+  border-bottom:1px solid var(--rule);
+}
+.topics-fig::before{content:'§ 3 · ';color:var(--accent)}
+
+/* coming-soon compact list */
+.cs-list{display:flex;flex-direction:column}
+.cs-row{
+  display:flex;align-items:baseline;gap:12px;
+  padding:13px 0;border-bottom:1px solid var(--rule);
+  position:relative;
+}
+.cs-num{
+  font-family:'DM Mono',monospace;font-size:.58rem;
+  color:var(--rule);flex-shrink:0;width:24px;
+}
+.cs-name{
+  font-family:'Lora',serif;font-size:.88rem;font-weight:600;color:var(--fg2);
+  flex:1;
+}
+.cs-label{
+  font-family:'DM Mono',monospace;font-size:.54rem;letter-spacing:.1em;
+  color:var(--fg3);flex-shrink:0;
+}
+.cs-teaser{
+  font-family:'Lora',serif;font-style:italic;font-size:.76rem;
+  color:var(--fg3);flex:2;
+}
+
+/* ── TUTOR ── */
+.tutor-section{
+  margin-top:0;
+  border-top:2px solid var(--rule);
+  padding:36px 0 0;
+  position:relative;
+}
+.tutor-fig{
+  font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.2em;
+  color:var(--fg2);margin-bottom:20px;
+}
+.tutor-fig::before{content:'§ 4 · ';color:var(--accent)}
+
+.tutor-inner{
+  background:var(--card);
+  border:1px solid var(--rule);
+  padding:24px;
+}
+
+.tutor-head{
+  display:flex;align-items:center;gap:12px;
+  padding-bottom:16px;border-bottom:1px solid var(--rule);
+  margin-bottom:18px;
+}
+.orb-wrap{position:relative;flex-shrink:0}
+.orb{
+  width:32px;height:32px;border-radius:50%;
+  background:conic-gradient(from 0deg,var(--main),color-mix(in srgb,var(--main) 60%,var(--accent)),var(--main));
+  animation:spin 10s linear infinite;
+  display:flex;align-items:center;justify-content:center;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.orb::after{
+  content:'';width:20px;height:20px;border-radius:50%;
+  background:var(--card);
+}
+.orb-ring{
+  position:absolute;inset:-4px;border-radius:50%;
+  border:1px solid var(--main);opacity:.18;
+  animation:orb-pulse 2.5s ease-in-out infinite;
+}
+@keyframes orb-pulse{0%,100%{transform:scale(1);opacity:.18}50%{transform:scale(1.2);opacity:.06}}
+.tutor-id{flex:1}
+.tutor-id strong{
+  font-family:'DM Mono',monospace;font-size:.75rem;font-weight:500;
+  color:var(--fg);display:block;
+}
+.tutor-id span{font-size:.68rem;color:var(--fg3)}
+.tutor-badge{
+  font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.14em;
+  color:var(--accent);border:1px solid var(--accent);padding:3px 8px;opacity:.75;
+}
+
+/* starter questions as "entries" */
+.starter-label{
+  font-family:'DM Mono',monospace;font-size:.56rem;letter-spacing:.16em;
+  color:var(--fg3);margin-bottom:10px;
+}
+.starter-q{
+  font-family:'Lora',serif;font-style:italic;font-size:.82rem;
+  color:var(--main);cursor:pointer;
+  padding:7px 0;border-bottom:1px solid var(--rule);
+  display:flex;align-items:baseline;gap:8px;
+  transition:color .15s;
+}
+.starter-q:hover{color:var(--accent)}
+.starter-q::before{
+  content:'Q.';font-family:'DM Mono',monospace;font-style:normal;
+  font-size:.56rem;color:var(--accent);flex-shrink:0;letter-spacing:.06em;
+}
+
+.chat-log{
+  margin-top:20px;
+  display:flex;flex-direction:column;gap:16px;
+  max-height:300px;overflow-y:auto;
+}
+.chat-q{
+  font-family:'Lora',serif;font-style:italic;font-size:.82rem;
+  color:var(--fg2);padding-left:14px;border-left:2px solid var(--rule);
+  line-height:1.65;
+}
+.chat-a{
+  font-size:.82rem;color:var(--fg);line-height:1.85;
+  padding:14px;border-left:2px solid var(--main);
+  background:color-mix(in srgb,var(--main) 6%,var(--card));
+}
+.chat-a strong{color:var(--main)}
+.chat-a .fig-ref{
+  display:block;margin-top:8px;
+  font-family:'DM Mono',monospace;font-size:.58rem;
+  color:var(--accent);letter-spacing:.08em;
+}
+.chat-thinking{
+  font-family:'DM Mono',monospace;font-size:.68rem;color:var(--fg3);
+  display:flex;align-items:center;gap:6px;padding:8px 0;
+}
+.dots span{animation:d 1.2s infinite}
+.dots span:nth-child(2){animation-delay:.2s}
+.dots span:nth-child(3){animation-delay:.4s}
+@keyframes d{0%,80%,100%{opacity:.2}40%{opacity:1}}
+
+.chat-input-row{
+  display:flex;border:1px solid var(--rule);
+  background:var(--bg);margin-top:16px;
+  transition:border-color .2s;
+}
+.chat-input-row:focus-within{border-color:var(--main)}
+.chat-input-row input{
+  flex:1;background:transparent;border:none;outline:none;
+  font-family:'Lora',serif;font-style:italic;font-size:.85rem;
+  color:var(--fg);padding:12px 14px;
+}
+.chat-input-row input::placeholder{color:var(--fg3)}
+.chat-send{
+  background:var(--main);border:none;
+  font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.08em;
+  color:var(--bg);padding:0 16px;cursor:pointer;flex-shrink:0;
+  border-radius:0 6px 6px 0;
+}
+.chat-send:hover{opacity:.85}
+.chat-send:disabled{background:var(--fg3);cursor:default}
+.chat-note{
+  font-family:'DM Mono',monospace;font-size:.54rem;letter-spacing:.1em;
+  color:var(--fg3);margin-top:8px;
+}
+
+/* ── footer ── */
+.lab-footer{
+  padding:20px 0 8px;
+  border-top:1px solid var(--rule);
+  display:flex;align-items:center;justify-content:space-between;
+  position:relative;z-index:1;
+}
+.lab-footer span{
+  font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.14em;color:var(--fg3);
+}
+.lab-footer em{color:var(--main);font-style:normal}
+
+/* modal */
+.modal-overlay{
+  display:none;position:fixed;inset:0;z-index:300;
+  background:rgba(0,0,0,.5);backdrop-filter:blur(4px);
+  align-items:center;justify-content:center;
+}
+.modal-overlay.open{display:flex}
+.modal-box{
+  background:var(--bg);border:1px solid var(--rule);
+  width:min(380px,94vw);
+}
+.modal-hd{
+  padding:12px 16px;border-bottom:1px solid var(--rule);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.modal-hd-t{font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.12em;color:var(--fg)}
+.modal-close{background:none;border:none;cursor:pointer;font-family:'DM Mono',monospace;font-size:.7rem;color:var(--fg3);padding:2px 8px}
+.modal-vid{aspect-ratio:9/16;background:#050A09;overflow:hidden}
+.modal-vid iframe{width:100%;height:100%;border:none}
+.vid-ph{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.play-ring{width:50px;height:50px;border-radius:50%;border:1.5px solid var(--accent);display:flex;align-items:center;justify-content:center}
+.play-ring::after{content:'▶';color:var(--accent);font-size:.85rem;margin-left:3px}
+.vid-ph span{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.12em;color:var(--fg3)}
+.modal-meta{padding:14px 16px;border-top:1px solid var(--rule)}
+.modal-ep{font-family:'DM Mono',monospace;font-size:.56rem;letter-spacing:.12em;color:var(--accent);margin-bottom:4px}
+.modal-name{font-family:'Lora',serif;font-size:.9rem;font-weight:600;color:var(--fg)}
+.modal-hook{font-family:'Lora',serif;font-style:italic;font-size:.75rem;color:var(--fg2);margin-top:4px;line-height:1.6}
+
+@media(max-width:480px){
+  .hero{padding:36px 0 28px}
+  .spec-row{flex-direction:column;gap:10px}
+  .spec-item{border-right:none;padding-right:0;margin-right:0;padding-bottom:8px;border-bottom:1px solid var(--rule)}
+  .cs-teaser{display:none}
+  .tutor-inner{padding:16px}
+}
+</style>
+
+<!-- PAGE -->
+<div class="page">
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="nav-logo">LEARN WITH <em>AVISHA</em></a>
+    <div class="theme-wrap">
+      <button class="theme-toggle" id="themeToggle" onclick="toggleDrawer()" aria-label="Change theme">
+        <span class="theme-dot" id="themeDot"></span>
+        THEME
+      </button>
+      <div class="theme-drawer" id="themeDrawer">
+        <div class="td-label">COLOUR PALETTE</div>
+        <div class="td-opt" data-theme="" onclick="setTheme('','Ivory & Oxblood',this)">
+          <span class="td-swatch" style="background:#F7F2EA;border-color:#C8B0AC"></span>
+          IVORY &amp; OXBLOOD
+          <span class="td-check">✓</span>
+        </div>
+        <div class="td-opt" data-theme="mist" onclick="setTheme('mist','Mist & Petrol',this)">
+          <span class="td-swatch" style="background:#EDF2F1;border-color:#B4C5C2"></span>
+          MIST &amp; PETROL
+          <span class="td-check">✓</span>
+        </div>
+        <div class="td-opt" data-theme="champagne" onclick="setTheme('champagne','Champagne & Ink',this)">
+          <span class="td-swatch" style="background:#F3EBDD;border-color:#B8B0A0"></span>
+          CHAMPAGNE &amp; INK
+          <span class="td-check">✓</span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-fig">PLANT MYSTERIES SERIES · CHEMICAL ENGINEERING EXPLAINERS</div>
+    <h1>One process mystery.<br><em>One honest explanation.</em></h1>
+    <div class="annotation">Short animated explainers — built for engineers who want to understand why.</div>
+    <p class="hero-body">Real equipment. Real phenomena. Explained clearly — so the next time you see a heat exchanger or a control loop, you actually know what's happening inside.</p>
+    <div class="hero-actions">
+      <button class="btn-main" onclick="document.getElementById('topics').scrollIntoView({behavior:'smooth'})">Browse episodes →</button>
+      <button class="btn-link" onclick="document.getElementById('tutor').scrollIntoView({behavior:'smooth'})">Ask Avisha ↓</button>
+    </div>
+    <div class="spec-row">
+      <div class="spec-item"><span class="sv">60–90s</span><span class="sl">per episode</span></div>
+      <div class="spec-item"><span class="sv">Free</span><span class="sl">always</span></div>
+      <div class="spec-item"><span class="sv">8 topics</span><span class="sl">coming</span></div>
+    </div>
+  </div>
+
+  <!-- FEATURED MYSTERY -->
+  <div class="featured">
+    <div class="feat-fig">FEATURED MYSTERY · EPISODE 01</div>
+    <div class="feat-inner" style="position:relative">
+      <div class="margin-note">EP 01<br>Heat<br>Transfer</div>
+      <div>
+        <div class="feat-ep">
+          <span class="live-dot"></span>
+          EPISODE 01 · HEAT TRANSFER · AVAILABLE NOW
+        </div>
+        <div class="feat-q">"Same exchanger. Same fluids.<br>Flip the flow — why does heat transfer jump?"</div>
+        <p class="feat-sub">A shell-and-tube heat exchanger runs two ways. Parallel flow. Countercurrent flow. The geometry is identical. So why is countercurrent almost always better — and by how much?</p>
+        <button class="feat-watch" onclick="openModal()">
+          <span>▶</span> Watch Episode 01
+        </button>
+      </div>
+      <div class="feat-sketch">
+        <!-- Equipment sketch: shell and tube exchanger -->
+        <svg viewBox="0 0 180 140" stroke="var(--fg2)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <!-- shell -->
+          <rect x="10" y="40" width="160" height="60" rx="2" stroke-width="1.2"/>
+          <!-- left head -->
+          <path d="M10 40 Q2 70 10 100" stroke-width="1.2"/>
+          <!-- right head -->
+          <path d="M170 40 Q178 70 170 100" stroke-width="1.2"/>
+          <!-- tubes (3 passes) -->
+          <line x1="10" y1="56" x2="170" y2="56" stroke-width=".7" stroke-dasharray="3 2" opacity=".5"/>
+          <line x1="10" y1="70" x2="170" y2="70" stroke-width=".7" stroke-dasharray="3 2" opacity=".5"/>
+          <line x1="10" y1="84" x2="170" y2="84" stroke-width=".7" stroke-dasharray="3 2" opacity=".5"/>
+          <!-- tube side inlet/outlet -->
+          <line x1="10" y1="63" x2="0" y2="63" stroke-width="1"/>
+          <line x1="170" y1="63" x2="180" y2="63" stroke-width="1"/>
+          <text x="0" y="59" font-size="6" fill="var(--main)" font-family="monospace">T₁</text>
+          <text x="168" y="59" font-size="6" fill="var(--accent)" font-family="monospace">T₂</text>
+          <!-- shell side nozzles -->
+          <line x1="50" y1="40" x2="50" y2="30" stroke-width="1"/>
+          <line x1="130" y1="100" x2="130" y2="110" stroke-width="1"/>
+          <text x="38" y="28" font-size="6" fill="var(--accent)" font-family="monospace">hot in</text>
+          <text x="112" y="122" font-size="6" fill="var(--main)" font-family="monospace">hot out</text>
+          <!-- countercurrent arrow -->
+          <path d="M30 75 L60 75" stroke-width=".8" marker-end="url(#arr)" opacity=".6"/>
+          <path d="M150 65 L120 65" stroke-width=".8" marker-end="url(#arr2)" opacity=".6"/>
+          <defs>
+            <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="var(--main)"/>
+            </marker>
+            <marker id="arr2" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="var(--accent)"/>
+            </marker>
+          </defs>
+          <!-- baffle plates (simplified) -->
+          <line x1="60" y1="40" x2="60" y2="78" stroke-width=".6" opacity=".4"/>
+          <line x1="90" y1="62" x2="90" y2="100" stroke-width=".6" opacity=".4"/>
+          <line x1="120" y1="40" x2="120" y2="78" stroke-width=".6" opacity=".4"/>
+        </svg>
+        <div class="sketch-cap">FIG. 1 — SHELL & TUBE EXCHANGER · COUNTERCURRENT FLOW</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOPICS -->
+  <div class="topics-section" id="topics">
+    <div class="topics-fig">EPISODE INDEX · 8 TOPICS PLANNED</div>
+    <div class="cs-list">
+      <!-- EP 01 already featured, list remaining 7 -->
+      <div class="cs-row">
+        <span class="cs-num">02</span>
+        <span class="cs-name">Fluid Flow</span>
+        <span class="cs-teaser">Why does doubling pipe diameter cut pressure drop by up to 32× in turbulent flow?</span>
+        <span class="cs-label">COMING SOON</span>
+      </div>
+      <div class="cs-row">
+        <span class="cs-num">03</span>
+        <span class="cs-name">Mass Transfer</span>
+        <span class="cs-teaser">What actually happens on a distillation tray?</span>
+        <span class="cs-label">COMING SOON</span>
+      </div>
+      <div class="cs-row">
+        <span class="cs-num">04</span>
+        <span class="cs-name">Reaction Engineering</span>
+        <span class="cs-teaser">Why does residence time change everything in a CSTR?</span>
+        <span class="cs-label">COMING SOON</span>
+      </div>
+      <div class="cs-row">
+        <span class="cs-num">05</span>
+        <span class="cs-name">Thermodynamics</span>
+        <span class="cs-teaser">What is a dew-point curve and why does it matter?</span>
+        <span class="cs-label">COMING SOON</span>
+      </div>
+      <div class="cs-row">
+        <span class="cs-num">06</span>
+        <span class="cs-name">Separations</span>
+        <span class="cs-teaser">How does a cyclone separate without any moving parts?</span>
+        <span class="cs-label">COMING SOON</span>
+      </div>
+      <div class="cs-row">
+        <span class="cs-num">07</span>
+        <span class="cs-name">Process Safety</span>
+        <span class="cs-teaser">When does a relief valve open — and what happens next?</span>
+        <span class="cs-label">COMING SOON</span>
+      </div>
+      <div class="cs-row">
+        <span class="cs-num">08</span>
+        <span class="cs-name">Instrumentation & Control</span>
+        <span class="cs-teaser">Why does integral action eliminate steady-state error?</span>
+        <span class="cs-label">COMING SOON</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TUTOR -->
+  <div class="tutor-section" id="tutor">
+    <div class="tutor-fig">COMMON QUESTIONS · ANSWERED</div>
+    <div class="margin-note" style="top:0">ChemE<br>Q&amp;A</div>
+
+    <div class="tutor-inner">
+      <div class="tutor-head">
+        <div class="orb-wrap">
+          <div class="orb"></div>
+          <div class="orb-ring"></div>
+        </div>
+        <div class="tutor-id">
+          <strong>Avisha</strong>
+          <span>Process engineering · curated answers</span>
+        </div>
+        <span class="tutor-badge">EP 01</span>
+      </div>
+
+      <!-- starter questions -->
+      <div class="starter-label">CLICK A QUESTION TO READ THE ANSWER</div>
+      <div id="starters">
+        <div class="starter-q" onclick="askStarter(this)">Why does countercurrent flow transfer more heat than parallel flow?</div>
+        <div class="starter-q" onclick="askStarter(this)">What is LMTD and how do I use it?</div>
+        <div class="starter-q" onclick="askStarter(this)">How does a PID controller respond to a disturbance?</div>
+        <div class="starter-q" onclick="askStarter(this)">Why does a pump cavitate at high suction lift?</div>
+      </div>
+
+      <!-- answer log -->
+      <div class="chat-log" id="chatLog" style="display:none"></div>
+
+      <div class="chat-note" style="margin-top:16px">More questions answered with each new episode · Full AI tutor coming soon</div>
+    </div>
+  </div>
+
+  <!-- FOLLOW SECTION -->
+  <div style="border-top:1px solid var(--rule);padding:32px 0 8px;margin-top:16px">
+    <div style="font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.18em;color:var(--fg3);margin-bottom:16px">FOLLOW ALONG</div>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+      <a href="https://instagram.com/learnwithavisha" target="_blank" style="display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border:1px solid var(--border);border-radius:100px;font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.1em;color:var(--fg2);text-decoration:none;transition:border-color .15s,color .15s" onmouseover="this.style.borderColor='var(--main)';this.style.color='var(--main)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--fg2)'">▶ INSTAGRAM</a>
+      <a href="https://youtube.com/@learnwithavisha" target="_blank" style="display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border:1px solid var(--border);border-radius:100px;font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.1em;color:var(--fg2);text-decoration:none;transition:border-color .15s,color .15s" onmouseover="this.style.borderColor='var(--main)';this.style.color='var(--main)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--fg2)'">▶ YOUTUBE</a>
+      <span style="font-family:'Lora',serif;font-style:italic;font-size:.75rem;color:var(--fg3);padding-left:4px">New episode every week.</span>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="lab-footer">
+    <span>LEARN WITH <em>AVISHA</em> · © 2026</span>
+    <a href="https://avisha.ai" target="_blank" style="color:var(--fg3);text-decoration:none;font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.12em;">BY AVISHA.AI ↗</a>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <span class="modal-hd-t">EP 01 · HEAT TRANSFER</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-vid">
+      <div class="vid-ph">
+        <div class="play-ring"></div>
+        <span>COMING TO YOUTUBE &amp; INSTAGRAM</span>
+      </div>
+    </div>
+    <div class="modal-meta">
+      <div class="modal-ep">EPISODE 01 · PLANT MYSTERIES</div>
+      <div class="modal-name">Heat Transfer — The Countercurrent Flip</div>
+      <div class="modal-hook">Same exchanger. Same fluids. Flip the flow direction. Why does everything change?</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// theme locked to Ivory & Oxblood for public page
+document.body.className = '';
+
+// ── modal ──
+function openModal(){ document.getElementById('modal').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(){ document.getElementById('modal').classList.remove('open'); document.body.style.overflow=''; }
+
+// ── tutor ──
+let qCount = 0;
+const MAX_Q = 5;
+const log = document.getElementById('chatLog');
+const input = document.getElementById('chatInput');
+const btn = document.getElementById('sendBtn');
+
+const ANSWERS = {
+  counter: 'Because the <strong>temperature driving force (ΔT) remains high along the entire exchanger length.</strong> In parallel flow, both streams move in the same direction — hot fluid cools while cold fluid warms, so their temperatures converge near the exit and ΔT collapses. Countercurrent keeps the hot inlet opposite the cold outlet, maintaining a useful gradient at every cross-section. The result: the same duty with significantly less heat transfer area. That is why nearly every industrial shell-and-tube runs countercurrent.<span class="fig-ref">→ See Fig. 1 above · EP 01</span>',
+  lmtd: '<strong>LMTD — Log Mean Temperature Difference</strong> — is the correct average ΔT to use in Q = U·A·LMTD. You need it because ΔT changes continuously along the exchanger. A simple arithmetic average overstates performance. LMTD = (ΔT₁ − ΔT₂) / ln(ΔT₁/ΔT₂), where ΔT₁ and ΔT₂ are the temperature differences at each end. For anything other than pure counterflow, apply a geometry correction factor F.',
+  pid: 'A PID controller outputs a correction signal equal to <strong>P·e + I·∫e dt + D·de/dt</strong>, where e is the error — setpoint minus measurement. Proportional action (P) responds immediately but leaves a residual offset at steady state. Integral action (I) eliminates that offset by accumulating error over time, though it can cause overshoot. Derivative action (D) anticipates rate of change, damping the response before overshoot occurs. Most plant loops run as PI; derivative is added selectively where sensor noise is manageable.',
+  cavitation: 'Cavitation occurs when <strong>local pressure at the pump suction falls below the fluid\'s vapour pressure</strong>. Liquid flashes to vapour, forming bubbles that collapse violently as pressure recovers inside the impeller. High suction lift increases the static head the pump must overcome to draw fluid — lowering suction pressure further. The fix: reduce friction losses in the suction line, lower pump elevation relative to the liquid source, raise the liquid level, or reduce fluid temperature to lower vapour pressure.',
+  default: 'Good question. The short answer usually comes down to the smallest driving force in the system — whether that\'s a temperature difference, a concentration gradient, or a pressure drop. If you can tell me more about the specific equipment or operating context, I can be more precise.'
+};
+
+function pick(q){
+  const l = q.toLowerCase();
+  if(l.includes('counter') || l.includes('parallel')) return ANSWERS.counter;
+  if(l.includes('lmtd') || l.includes('log mean')) return ANSWERS.lmtd;
+  if(l.includes('pid') || l.includes('controller') || l.includes('disturbance')) return ANSWERS.pid;
+  if(l.includes('cavit') || l.includes('suction')) return ANSWERS.cavitation;
+  return ANSWERS.default;
+}
+
+function showLog(){
+  log.style.display = 'flex';
+  document.getElementById('starters').style.display = 'none';
+}
+
+function addExchange(q, a){
+  const qEl = document.createElement('div'); qEl.className = 'chat-q'; qEl.textContent = q;
+  const thinking = document.createElement('div'); thinking.className = 'chat-thinking';
+  thinking.innerHTML = 'Working through it <span class="dots"><span>·</span><span>·</span><span>·</span></span>';
+  log.appendChild(qEl); log.appendChild(thinking);
+  log.scrollTop = log.scrollHeight;
+  setTimeout(()=>{
+    thinking.remove();
+    const aEl = document.createElement('div'); aEl.className = 'chat-a'; aEl.innerHTML = a;
+    log.appendChild(aEl);
+    log.scrollTop = log.scrollHeight;
+    btn.disabled = false;
+    input.focus();
+  }, 900 + Math.random()*600);
+}
+
+function sendQ(){
+  const q = input.value.trim(); if(!q) return;
+  if(qCount >= MAX_Q){ return; }
+  input.value = ''; btn.disabled = true; qCount++;
+  showLog();
+  addExchange(q, pick(q));
+}
+
+function askStarter(el){
+  const q = el.textContent;
+  if(qCount >= MAX_Q) return;
+  qCount++; btn.disabled = true;
+  showLog();
+  addExchange(q, pick(q));
+}
+</script>

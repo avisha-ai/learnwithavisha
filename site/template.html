@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Learn with Avisha — Plant Mysteries</title>
+<meta name="description" content="{{DESCRIPTION}}">
+<link rel="canonical" href="{{SITE_URL}}">
+<link rel="icon" href="data:,">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Learn with Avisha">
+<meta property="og:title" content="Learn with Avisha — Plant Mysteries">
+<meta property="og:description" content="{{DESCRIPTION}}">
+<meta property="og:image" content="{{SITE_URL}}og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="{{SITE_URL}}">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@400;500&display=swap">
+<style>
+{{BASE_CSS}}
+/* ── additions (2026-11-05) ── */
+h2.feat-fig,h2.topics-fig,h2.tutor-fig{font-weight:400}
+h3.feat-q{font-weight:400}
+.feat-soon{
+  font-family:'Lora',serif;font-style:italic;font-size:.88rem;color:var(--fg2);
+  line-height:1.7;border-left:2px solid var(--accent);padding-left:12px;
+}
+.feat-soon a{color:var(--main)}
+.feat-video video{display:block;width:100%;max-width:320px;aspect-ratio:9/16;background:#050A09;border:1px solid var(--rule)}
+.cs-watch{
+  font-family:'DM Mono',monospace;font-size:.54rem;letter-spacing:.1em;
+  color:var(--main);flex-shrink:0;text-decoration:none;border-bottom:1px solid currentColor;
+}
+.cs-watch:hover,.cs-watch:focus-visible{color:var(--accent)}
+.cs-row.done .cs-num{color:var(--accent)}
+
+/* Q&A accordion */
+.qa-label{
+  font-family:'DM Mono',monospace;font-size:.56rem;letter-spacing:.16em;
+  color:var(--fg3);margin-bottom:10px;
+}
+.qa-item h3{margin:0;font-weight:400}
+.qa-q{
+  width:100%;text-align:left;background:none;border:none;cursor:pointer;
+  font-family:'Lora',serif;font-style:italic;font-size:.82rem;color:var(--main);
+  padding:9px 0;border-bottom:1px solid var(--rule);
+  display:flex;align-items:baseline;gap:8px;transition:color .15s;
+}
+.qa-q:hover{color:var(--accent)}
+.qa-q:focus-visible{outline:2px solid var(--main);outline-offset:2px}
+.qa-q::before{
+  content:'Q.';font-family:'DM Mono',monospace;font-style:normal;
+  font-size:.56rem;color:var(--accent);flex-shrink:0;letter-spacing:.06em;
+}
+.qa-q .qa-sign{margin-left:auto;font-family:'DM Mono',monospace;font-style:normal;font-size:.7rem;color:var(--fg3);padding-left:12px}
+.qa-q[aria-expanded="true"] .qa-sign::before{content:'−'}
+.qa-q[aria-expanded="false"] .qa-sign::before{content:'+'}
+.qa-a{
+  font-size:.82rem;color:var(--fg);line-height:1.85;
+  padding:14px;margin:10px 0 6px;border-left:2px solid var(--main);
+  background:color-mix(in srgb,var(--main) 6%,var(--card));
+}
+.qa-a strong{color:var(--main)}
+.qa-a .fig-ref{display:block;margin-top:8px;font-family:'DM Mono',monospace;font-size:.58rem;color:var(--accent);letter-spacing:.08em}
+.qa-a[hidden]{display:none}
+
+/* follow */
+.follow{border-top:1px solid var(--rule);padding:32px 0 8px;margin-top:16px}
+.follow-h{font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.18em;color:var(--fg3);margin-bottom:16px}
+.follow-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pill{
+  display:inline-flex;align-items:center;gap:7px;padding:9px 16px;
+  border:1px solid var(--border);border-radius:100px;
+  font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.1em;
+  color:var(--fg2);text-decoration:none;transition:border-color .15s,color .15s;
+}
+.pill:hover,.pill:focus-visible{border-color:var(--main);color:var(--main)}
+.follow-sub{font-family:'Lora',serif;font-style:italic;font-size:.75rem;color:var(--fg3);padding-left:4px}
+.lab-footer a{color:var(--fg3);text-decoration:none;font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.12em}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="nav-logo">LEARN WITH <em>AVISHA</em></a>
+  </nav>
+
+  <main>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-fig">PLANT MYSTERIES SERIES · CHEMICAL ENGINEERING EXPLAINERS</div>
+    <h1>One process mystery.<br><em>One honest explanation.</em></h1>
+    <div class="annotation">Short animated explainers — built for engineers who want to understand why.</div>
+    <p class="hero-body">Real equipment. Real phenomena. Explained clearly — so the next time you see a heat exchanger or a control loop, you actually know what's happening inside.</p>
+    <div class="hero-actions">
+      <a class="btn-main" href="#topics" style="text-decoration:none">Browse episodes →</a>
+      <a class="btn-link" href="#tutor">Ask Avisha ↓</a>
+    </div>
+    <div class="spec-row">
+      <div class="spec-item"><span class="sv">60–90s</span><span class="sl">per episode</span></div>
+      <div class="spec-item"><span class="sv">Free</span><span class="sl">always</span></div>
+      <div class="spec-item"><span class="sv">{{TOPIC_COUNT}} topics</span><span class="sl">coming</span></div>
+    </div>
+  </section>
+
+  <!-- FEATURED (rolling hero: always the latest episode — generated from episodes.json) -->
+  <section class="featured" aria-labelledby="featured-h">
+{{FEATURED}}
+  </section>
+
+  <!-- EPISODE INDEX (generated from episodes.json) -->
+  <section class="topics-section" id="topics" aria-labelledby="topics-h">
+    <h2 class="topics-fig" id="topics-h">EPISODE INDEX · {{TOPIC_COUNT}} TOPICS PLANNED</h2>
+    <div class="cs-list">
+{{INDEX}}
+    </div>
+  </section>
+
+  <!-- Q&A -->
+  <section class="tutor-section" id="tutor" aria-labelledby="tutor-h">
+    <h2 class="tutor-fig" id="tutor-h">COMMON QUESTIONS · ANSWERED</h2>
+    <div class="margin-note" style="top:0" aria-hidden="true">ChemE<br>Q&amp;A</div>
+
+    <div class="tutor-inner">
+      <div class="tutor-head">
+        <div class="orb-wrap" aria-hidden="true">
+          <div class="orb"></div>
+          <div class="orb-ring"></div>
+        </div>
+        <div class="tutor-id">
+          <strong>Avisha</strong>
+          <span>Process engineering · curated answers</span>
+        </div>
+        <span class="tutor-badge">EP 01</span>
+      </div>
+
+      <p class="qa-label">TAP A QUESTION TO READ THE ANSWER</p>
+
+      <div class="qa-item">
+        <h3><button class="qa-q" type="button" aria-expanded="true" aria-controls="qa-1" id="qa-1-q">Why does countercurrent flow transfer more heat than parallel flow?<span class="qa-sign" aria-hidden="true"></span></button></h3>
+        <div class="qa-a" id="qa-1" role="region" aria-labelledby="qa-1-q">Because the <strong>temperature driving force (ΔT) remains high along the entire exchanger length.</strong> In parallel flow, both streams move in the same direction — hot fluid cools while cold fluid warms, so their temperatures converge near the exit and ΔT collapses. Countercurrent keeps the hot inlet opposite the cold outlet, maintaining a useful gradient at every cross-section. The result: the same duty with significantly less heat transfer area. That is why nearly every industrial shell-and-tube runs countercurrent.<span class="fig-ref">→ See Fig. 1 above · EP 01</span></div>
+      </div>
+      <div class="qa-item">
+        <h3><button class="qa-q" type="button" aria-expanded="true" aria-controls="qa-2" id="qa-2-q">What is LMTD and how do I use it?<span class="qa-sign" aria-hidden="true"></span></button></h3>
+        <div class="qa-a" id="qa-2" role="region" aria-labelledby="qa-2-q"><strong>LMTD — Log Mean Temperature Difference</strong> — is the correct average ΔT to use in Q = U·A·LMTD. You need it because ΔT changes continuously along the exchanger. A simple arithmetic average overstates performance. LMTD = (ΔT₁ − ΔT₂) / ln(ΔT₁/ΔT₂), where ΔT₁ and ΔT₂ are the temperature differences at each end. For anything other than pure counterflow, apply a geometry correction factor F.</div>
+      </div>
+      <div class="qa-item">
+        <h3><button class="qa-q" type="button" aria-expanded="true" aria-controls="qa-3" id="qa-3-q">How does a PID controller respond to a disturbance?<span class="qa-sign" aria-hidden="true"></span></button></h3>
+        <div class="qa-a" id="qa-3" role="region" aria-labelledby="qa-3-q">A PID controller outputs a correction signal equal to <strong>P·e + I·∫e dt + D·de/dt</strong>, where e is the error — setpoint minus measurement. Proportional action (P) responds immediately but leaves a residual offset at steady state. Integral action (I) eliminates that offset by accumulating error over time, though it can cause overshoot. Derivative action (D) anticipates rate of change, damping the response before overshoot occurs. Most plant loops run as PI; derivative is added selectively where sensor noise is manageable.</div>
+      </div>
+      <div class="qa-item">
+        <h3><button class="qa-q" type="button" aria-expanded="true" aria-controls="qa-4" id="qa-4-q">Why does a pump cavitate at high suction lift?<span class="qa-sign" aria-hidden="true"></span></button></h3>
+        <div class="qa-a" id="qa-4" role="region" aria-labelledby="qa-4-q">Cavitation occurs when <strong>local pressure at the pump suction falls below the fluid's vapour pressure</strong>. Liquid flashes to vapour, forming bubbles that collapse violently as pressure recovers inside the impeller. High suction lift increases the static head the pump must overcome to draw fluid — lowering suction pressure further. The fix: reduce friction losses in the suction line, lower pump elevation relative to the liquid source, raise the liquid level, or reduce fluid temperature to lower vapour pressure.</div>
+      </div>
+
+      <div class="chat-note" style="margin-top:16px">More questions answered with each new episode · Full AI tutor coming soon</div>
+    </div>
+  </section>
+
+  <!-- FOLLOW -->
+  <section class="follow" aria-labelledby="follow-h">
+    <h2 class="follow-h" id="follow-h" style="font-weight:400">FOLLOW ALONG</h2>
+    <div class="follow-row">
+      <a class="pill" href="{{LINKEDIN}}" target="_blank" rel="noopener">LINKEDIN ↗</a>
+      <span class="follow-sub">New episodes announced on LinkedIn.</span>
+    </div>
+  </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="lab-footer">
+    <span>LEARN WITH <em>AVISHA</em> · © 2026</span>
+    <a href="https://avisha.ai" target="_blank" rel="noopener">BY AVISHA.AI ↗</a>
+  </footer>
+</div>
+
+<script>
+// Q&A accordion. Without JavaScript every answer stays visible; with it, answers start collapsed.
+document.querySelectorAll('.qa-q').forEach(function (btn) {
+  var panel = document.getElementById(btn.getAttribute('aria-controls'));
+  btn.setAttribute('aria-expanded', 'false');
+  panel.hidden = true;
+  btn.addEventListener('click', function () {
+    var open = btn.getAttribute('aria-expanded') === 'true';
+    btn.setAttribute('aria-expanded', String(!open));
+    panel.hidden = open;
+  });
+});
+</script>
+</body>
+</html>

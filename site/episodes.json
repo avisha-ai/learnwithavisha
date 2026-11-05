@@ -1,0 +1,38 @@
+{
+  "_how_to_use": [
+    "The featured hero (section 2) always shows the most recent episode whose status is 'released' or 'dropping_soon'.",
+    "Every other 'released' episode appears in the episode index (section 3) with a WATCH link.",
+    "status: 'released' (needs video.mp4) | 'dropping_soon' | 'coming_soon'.",
+    "video.mp4 / video.poster are paths inside site/public/ (e.g. 'media/lwa_s1e01_the_flip.mp4').",
+    "After editing, run:  python3 site/build.py   then commit and deploy."
+  ],
+  "linkedin": "https://www.linkedin.com/in/mrinalgala",
+  "episodes": [
+    {
+      "num": "01",
+      "subject": "Heat Transfer",
+      "name": "Heat Transfer — The Flip",
+      "status": "dropping_soon",
+      "question": "“Same exchanger. Same fluids.<br>Flip the flow — why does heat transfer jump?”",
+      "teaser": "Same exchanger. Flip one stream. Why does heat transfer jump?",
+      "summary": "A shell-and-tube heat exchanger runs two ways. Parallel flow. Countercurrent flow. The geometry is identical. So why is countercurrent almost always better — and by how much?",
+      "figure": "fig_ep01.svg",
+      "figure_caption": "FIG. 1 — SHELL & TUBE EXCHANGER · COUNTERCURRENT FLOW",
+      "video": null
+    },
+    {"num": "02", "subject": "Fluid Flow", "name": "Fluid Flow", "status": "coming_soon",
+     "teaser": "Why does doubling pipe diameter cut pressure drop by up to 32× in turbulent flow?"},
+    {"num": "03", "subject": "Mass Transfer", "name": "Mass Transfer", "status": "coming_soon",
+     "teaser": "What actually happens on a distillation tray?"},
+    {"num": "04", "subject": "Reaction Engineering", "name": "Reaction Engineering", "status": "coming_soon",
+     "teaser": "Why does residence time change everything in a CSTR?"},
+    {"num": "05", "subject": "Thermodynamics", "name": "Thermodynamics", "status": "coming_soon",
+     "teaser": "What is a dew-point curve and why does it matter?"},
+    {"num": "06", "subject": "Separations", "name": "Separations", "status": "coming_soon",
+     "teaser": "How does a cyclone separate without any moving parts?"},
+    {"num": "07", "subject": "Process Safety", "name": "Process Safety", "status": "coming_soon",
+     "teaser": "When does a relief valve open — and what happens next?"},
+    {"num": "08", "subject": "Instrumentation & Control", "name": "Instrumentation & Control", "status": "coming_soon",
+     "teaser": "Why does integral action eliminate steady-state error?"}
+  ]
+}

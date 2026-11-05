@@ -1,0 +1,37 @@
+<svg viewBox="0 0 180 140" stroke="var(--fg2)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <!-- shell -->
+  <rect x="10" y="40" width="160" height="60" rx="2" stroke-width="1.2"/>
+  <!-- left head -->
+  <path d="M10 40 Q2 70 10 100" stroke-width="1.2"/>
+  <!-- right head -->
+  <path d="M170 40 Q178 70 170 100" stroke-width="1.2"/>
+  <!-- tubes (3 passes) -->
+  <line x1="10" y1="56" x2="170" y2="56" stroke-width=".7" stroke-dasharray="3 2" opacity=".5"/>
+  <line x1="10" y1="70" x2="170" y2="70" stroke-width=".7" stroke-dasharray="3 2" opacity=".5"/>
+  <line x1="10" y1="84" x2="170" y2="84" stroke-width=".7" stroke-dasharray="3 2" opacity=".5"/>
+  <!-- tube side inlet/outlet -->
+  <line x1="10" y1="63" x2="0" y2="63" stroke-width="1"/>
+  <line x1="170" y1="63" x2="180" y2="63" stroke-width="1"/>
+  <text x="0" y="59" font-size="6" fill="var(--main)" font-family="monospace">T₁</text>
+  <text x="168" y="59" font-size="6" fill="var(--accent)" font-family="monospace">T₂</text>
+  <!-- shell side nozzles -->
+  <line x1="50" y1="40" x2="50" y2="30" stroke-width="1"/>
+  <line x1="130" y1="100" x2="130" y2="110" stroke-width="1"/>
+  <text x="38" y="28" font-size="6" fill="var(--accent)" font-family="monospace">hot in</text>
+  <text x="112" y="122" font-size="6" fill="var(--main)" font-family="monospace">hot out</text>
+  <!-- countercurrent arrow -->
+  <path d="M30 75 L60 75" stroke-width=".8" marker-end="url(#arr)" opacity=".6"/>
+  <path d="M150 65 L120 65" stroke-width=".8" marker-end="url(#arr2)" opacity=".6"/>
+  <defs>
+    <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="var(--main)"/>
+    </marker>
+    <marker id="arr2" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="var(--accent)"/>
+    </marker>
+  </defs>
+  <!-- baffle plates (simplified) -->
+  <line x1="60" y1="40" x2="60" y2="78" stroke-width=".6" opacity=".4"/>
+  <line x1="90" y1="62" x2="90" y2="100" stroke-width=".6" opacity=".4"/>
+  <line x1="120" y1="40" x2="120" y2="78" stroke-width=".6" opacity=".4"/>
+</svg>
