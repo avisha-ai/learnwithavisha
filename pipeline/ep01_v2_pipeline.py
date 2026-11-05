@@ -449,7 +449,7 @@ def cf_hot(x):   return 90-53.333*x
 def cf_cold(x):  return 63.333-53.333*x
 
 def draw_graph(draw, gx, gtop, gw, gh, hot_fn, cold_fn, fill_gap=0.0, ticks=True,
-               tick_font=44, end_font=40, x_labels=True):
+               tick_font=44, end_font=44, x_labels=True):
     ybot = gtop+gh
     Y = lambda T: ybot - T/100*gh
     for T in (10, 50, 90):
@@ -533,16 +533,16 @@ def render_f(t, m, dur):
     draw.text((W//2, 120), "Same scale, side by side", font=get_font(60,True), fill=WHITE, anchor="mm")
     draw.text((W//2, 195), "°C · ideal single-pass case", font=get_font(46,True), fill=GREY, anchor="mm")
     gtop, gh, gw = 380, 820, 410
-    panels = [(140, "PARALLEL", par_hot, par_cold, m[0]+1.2, "Gap narrows"),
-              (620, "COUNTERFLOW", cf_hot, cf_cold, m[1], "Gap holds")]
+    panels = [(140, "PARALLEL", par_hot, par_cold, m[0]+1.2, "Push fades"),
+              (620, "COUNTERFLOW", cf_hot, cf_cold, m[1], "Push holds")]
     for i, (gx, title, hf, cf, t_fill, verdict) in enumerate(panels):
         fill = _ease((t-t_fill)/1.2) if t >= t_fill else 0.0
         draw.text((gx+gw//2, gtop-50), title, font=get_font(52,True), fill=WHITE, anchor="mm")
         draw_graph(draw, gx, gtop, gw, gh, hf, cf, fill_gap=fill, ticks=(i == 0), x_labels=False)
         # Position is measured along the hot stream in both panels; in counterflow
         # the cold stream enters at the hot outlet end, so say "hot" explicitly.
-        draw.text((gx, gtop+gh+14), "Hot inlet end", font=get_font(36,True), fill=GREY, anchor="lt")
-        draw.text((gx+gw, gtop+gh+58), "Hot outlet end", font=get_font(36,True), fill=GREY, anchor="rt")
+        draw.text((gx, gtop+gh+14), "Hot inlet end", font=get_font(44,True), fill=GREY, anchor="lt")
+        draw.text((gx+gw, gtop+gh+68), "Hot outlet end", font=get_font(44,True), fill=GREY, anchor="rt")
         if t >= t_fill:
             draw.text((gx+gw//2, gtop+gh+150), verdict, font=get_font(54,True), fill=YELLOW, anchor="mm")
         if t >= m[2]:
