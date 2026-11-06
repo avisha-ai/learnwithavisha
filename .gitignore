@@ -247,3 +247,7 @@ hx_ep01_v2_master*
 
 # Audio render artefacts (trial runs, not for tracking)
 *.mp3
+
+# Vercel CLI link
+.vercel
+.env*.local
