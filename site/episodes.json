@@ -12,13 +12,13 @@
       "num": "01",
       "subject": "Heat Transfer",
       "name": "Heat Transfer — The Flip",
-      "status": "dropping_soon",
+      "status": "released",
       "question": "“Same exchanger. Same fluids.<br>Flip the flow — why does heat transfer jump?”",
       "teaser": "Same exchanger. Flip one stream. Why does heat transfer jump?",
       "summary": "A shell-and-tube heat exchanger runs two ways. Parallel flow. Countercurrent flow. The geometry is identical. So why is countercurrent almost always better — and by how much?",
       "figure": "fig_ep01.svg",
       "figure_caption": "FIG. 1 — SHELL & TUBE EXCHANGER · COUNTERCURRENT FLOW",
-      "video": null
+      "video": {"mp4": "media/lwa_s1e01_the_flip.mp4", "poster": "media/lwa_s1e01_the_flip_poster.jpg"}
     },
     {"num": "02", "subject": "Fluid Flow", "name": "Fluid Flow", "status": "coming_soon",
      "teaser": "Why does doubling pipe diameter cut pressure drop by up to 32× in turbulent flow?"},

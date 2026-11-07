@@ -27,7 +27,8 @@ def featured_html(ep, linkedin):
         poster = f' poster="{E(v["poster"])}"' if v.get("poster") else ""
         track = (f'<track kind="captions" src="{E(v["vtt"])}" srclang="en" label="English">'
                  if v.get("vtt") else "")
-        action = (f'<div class="feat-video"><video controls playsinline preload="none"{poster}>'
+        action = (f'<div class="feat-video"><video controls playsinline preload="none"{poster} '
+                  f'aria-label="Episode {E(ep["num"])}: {E(ep["name"])}">'
                   f'<source src="{E(v["mp4"])}" type="video/mp4">{track}</video></div>')
     else:
         action = (f'<p class="feat-soon">Episode {E(ep["num"])} — dropping soon. Follow on '

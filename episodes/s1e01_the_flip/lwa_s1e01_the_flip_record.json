@@ -1,20 +1,58 @@
 {
-  "episode_id": "lwa_s1e01_the_flip",
-  "version": "2026-11-05",
-  "title": "S1 · E1 — The Flip",
-  "opening_question": "No new metal. No extra pumping. So where does the extra heat come from?",
-  "answer_summary": "Reversing one stream (counterflow) keeps the temperature difference — the driving force — alive along the whole tube, so every metre keeps transferring heat: about 36% more in the ideal single-pass case (equal heat-capacity rates, NTU = 2).",
-  "closing_question": "But tubes don't stay clean. Next time — what a thin layer of grime does to all of this.",
-  "successor_id": "lwa_s1e02_the_fouling_problem",
-  "successor_opening_question": "But tubes don't stay clean. Next time — what a thin layer of grime does to all of this.",
-  "benchmarks": {"parallel_hot_out_C": 50.73, "parallel_cold_out_C": 49.27, "counter_hot_out_C": 36.67, "counter_cold_out_C": 63.33, "heat_increase_pct": 35.82, "shown_on_screen": "51/49, 37/63, +36%, 14 °C cooler"},
-  "media": {
-    "captioned_mp4": {"sha256": "4d1a3479172e4c6441767a7e8441874db3836a11dc6f84bcc81a58f17f5c4f50", "duration_s": 89.38, "size": "1080x1920"},
-    "master_mp4": {"sha256": "958db06b12be87b416c66049a55cd9ee44bd9fc47c9760fd959d172219b8a8c6"},
-    "web_mp4": {"sha256": "9c20e07f94c2d3c0dd5dc624087d7b76d7018ba70d3abaf8b51cbbcc1715497c", "size": "720x1280", "mb": 2.0},
-    "poster_jpg": {"sha256": "f4c10879840b6d60b8b7a88072ecd0d9e327cb475b27c585f5bd76f063dde3ff"},
-    "loudness_lufs": -16.4, "true_peak_dbtp": -4.3
+ "episode_id": "lwa_s1e01_the_flip",
+ "version": "2026-11-05",
+ "title": "S1 · E1 — The Flip",
+ "opening_question": "No new metal. No extra pumping. So where does the extra heat come from?",
+ "answer_summary": "Reversing one stream (counterflow) keeps the temperature difference — the driving force — alive along the whole tube, so every metre keeps transferring heat: about 36% more in the ideal single-pass case (equal heat-capacity rates, NTU = 2).",
+ "closing_question": "But tubes don't stay clean. Next time — what a thin layer of grime does to all of this.",
+ "successor_id": "lwa_s1e02_the_fouling_problem",
+ "successor_opening_question": "But tubes don't stay clean. Next time — what a thin layer of grime does to all of this.",
+ "benchmarks": {
+  "parallel_hot_out_C": 50.73,
+  "parallel_cold_out_C": 49.27,
+  "counter_hot_out_C": 36.67,
+  "counter_cold_out_C": 63.33,
+  "heat_increase_pct": 35.82,
+  "shown_on_screen": "51/49, 37/63, +36%, 14 °C cooler"
+ },
+ "media": {
+  "captioned_mp4": {
+   "sha256": "4d1a3479172e4c6441767a7e8441874db3836a11dc6f84bcc81a58f17f5c4f50",
+   "duration_s": 89.38,
+   "size": "1080x1920"
   },
-  "gates": {"G1": "PASS", "G2": "PASS", "G3": "PASS", "G4": "PASS (machine checks); perceptual audio NOT_CHECKED", "G5": "PASS except check_episode.py NOT_CHECKED (script missing on this Mac)", "G6": "NOT_CHECKED (not published)"},
-  "notes": ["Re-render 2026-11-05: graph end labels 36→44 px; 'Gap narrows/Gap holds' → 'Push fades/Push holds'.", "P2: 'Push fades' close to narration 'the push fades out' (audio/visual split) — kept by Mrinal's choice."]
+  "master_mp4": {
+   "sha256": "958db06b12be87b416c66049a55cd9ee44bd9fc47c9760fd959d172219b8a8c6"
+  },
+  "web_mp4": {
+   "sha256": "9c20e07f94c2d3c0dd5dc624087d7b76d7018ba70d3abaf8b51cbbcc1715497c",
+   "size": "720x1280",
+   "mb": 2.0
+  },
+  "poster_jpg": {
+   "sha256": "f4c10879840b6d60b8b7a88072ecd0d9e327cb475b27c585f5bd76f063dde3ff"
+  },
+  "loudness_lufs": -16.4,
+  "true_peak_dbtp": -4.3
+ },
+ "gates": {
+  "G1": "PASS",
+  "G2": "PASS",
+  "G3": "PASS",
+  "G4": "PASS (machine checks); perceptual audio NOT_CHECKED",
+  "G5": "PASS except check_episode.py NOT_CHECKED (script missing on this Mac)",
+  "G6": "PASS 2026-11-07 — published to https://lwa.avisha.ai/ on user instruction. Live checks (desktop 1280 + mobile 390, headless Chrome): web mp4 sha256 9c20e07f… served (video/mp4, byte ranges 206), plays 720x1280 / 89.38 s with no media or console errors; preload=none with poster, 0 mp4 requests before play; captions burned in; aria-label set; keyboard Q&A ok; no horizontal scroll."
+ },
+ "notes": [
+  "Re-render 2026-11-05: graph end labels 36→44 px; 'Gap narrows/Gap holds' → 'Push fades/Push holds'.",
+  "P2: 'Push fades' close to narration 'the push fades out' (audio/visual split) — kept by Mrinal's choice."
+ ],
+ "status": "PUBLISHED",
+ "published": {
+  "url": "https://lwa.avisha.ai/",
+  "date": "2026-11-07",
+  "host": "Vercel project learnwithavisha (galamrinal-8553)",
+  "video": "media/lwa_s1e01_the_flip.mp4 (= web_mp4)",
+  "poster": "media/lwa_s1e01_the_flip_poster.jpg"
+ }
 }
