@@ -4,7 +4,8 @@
     "Every other 'released' episode appears in the episode index (section 3) with a WATCH link.",
     "status: 'released' (needs video.mp4) | 'dropping_soon' | 'coming_soon'.",
     "video.mp4 / video.poster are paths inside site/public/ (e.g. 'media/lwa_s1e01_the_flip.mp4').",
-    "After editing, run:  python3 site/build.py   then commit and deploy."
+    "After editing, run:  python3 site/build.py   then commit and deploy.",
+    "Optional index_name / index_teaser: shorter text for the episode-index row; otherwise name / teaser are used."
   ],
   "linkedin": "https://www.linkedin.com/in/mrinalgala",
   "episodes": [
@@ -18,21 +19,80 @@
       "summary": "A shell-and-tube heat exchanger runs two ways. Parallel flow. Countercurrent flow. The geometry is identical. So why is countercurrent almost always better — and by how much?",
       "figure": "fig_ep01.svg",
       "figure_caption": "FIG. 1 — SHELL & TUBE EXCHANGER · COUNTERCURRENT FLOW",
-      "video": {"mp4": "media/lwa_s1e01_the_flip.mp4", "poster": "media/lwa_s1e01_the_flip_poster.jpg"}
+      "video": {
+        "mp4": "media/lwa_s1e01_the_flip.mp4",
+        "poster": "media/lwa_s1e01_the_flip_poster.jpg"
+      },
+      "series": "Heat Exchanger Files"
     },
-    {"num": "02", "subject": "Fluid Flow", "name": "Fluid Flow", "status": "coming_soon",
-     "teaser": "Why does doubling pipe diameter cut pressure drop by up to 32× in turbulent flow?"},
-    {"num": "03", "subject": "Mass Transfer", "name": "Mass Transfer", "status": "coming_soon",
-     "teaser": "What actually happens on a distillation tray?"},
-    {"num": "04", "subject": "Reaction Engineering", "name": "Reaction Engineering", "status": "coming_soon",
-     "teaser": "Why does residence time change everything in a CSTR?"},
-    {"num": "05", "subject": "Thermodynamics", "name": "Thermodynamics", "status": "coming_soon",
-     "teaser": "What is a dew-point curve and why does it matter?"},
-    {"num": "06", "subject": "Separations", "name": "Separations", "status": "coming_soon",
-     "teaser": "How does a cyclone separate without any moving parts?"},
-    {"num": "07", "subject": "Process Safety", "name": "Process Safety", "status": "coming_soon",
-     "teaser": "When does a relief valve open — and what happens next?"},
-    {"num": "08", "subject": "Instrumentation & Control", "name": "Instrumentation & Control", "status": "coming_soon",
-     "teaser": "Why does integral action eliminate steady-state error?"}
+    {
+      "id": "ep02",
+      "num": "02",
+      "title": "The Fouling Problem",
+      "series": "Heat Exchanger Files",
+      "subject": "Heat Transfer",
+      "name": "The Fouling Problem",
+      "index_name": "The Fouling Problem",
+      "teaser": "Your exchanger was designed clean. After six months it transfers 20% less heat. Where did that resistance come from — and how do engineers account for it?",
+      "index_teaser": "Your exchanger was designed clean. After six months it transfers 20% less heat — where did the resistance come from?",
+      "status": "coming_soon"
+    },
+    {
+      "id": "ep03",
+      "num": "03",
+      "title": "Baffles — What They Do and Why They Matter",
+      "series": "Heat Exchanger Files",
+      "subject": "Heat Transfer",
+      "name": "Baffles — What They Do and Why They Matter",
+      "index_name": "Baffles — What They Do and Why",
+      "teaser": "Without baffles, shell-side fluid would short-circuit straight through. How a segmental plate forces the fluid into a meandering path — and why that doubles heat transfer.",
+      "index_teaser": "Without baffles, shell-side fluid short-circuits. How a plate forces a meandering path — and doubles heat transfer.",
+      "status": "coming_soon"
+    },
+    {
+      "id": "ep04",
+      "num": "04",
+      "title": "Which Fluid Goes Inside the Tubes?",
+      "series": "Heat Exchanger Files",
+      "subject": "Heat Transfer",
+      "name": "Which Fluid Goes Inside the Tubes?",
+      "index_name": "Which Fluid Goes Inside the Tubes?",
+      "teaser": "Corrosive? High pressure? Viscous? There is a decision rule — and breaking it costs you in maintenance or efficiency. Here is the logic engineers actually use.",
+      "index_teaser": "Corrosive? High pressure? Viscous? There is a decision rule — and breaking it costs you in maintenance or efficiency.",
+      "status": "coming_soon"
+    },
+    {
+      "id": "ep05",
+      "num": "05",
+      "title": "Your Kettle Has the Same Problem as a Refinery",
+      "series": "Heat Exchanger Files",
+      "subject": "Heat Transfer",
+      "name": "Your Kettle Has the Same Problem as a Refinery",
+      "index_name": "Your Kettle Has the Same Problem as a Refinery",
+      "teaser": "Nucleate boiling, film boiling, Leidenfrost. The same phase-change physics that ruins a kettle operates at every reboiler in a refinery — and knowing the curve saves equipment.",
+      "index_teaser": "Nucleate boiling, film boiling, Leidenfrost — the same curve that ruins a kettle operates at every reboiler in a plant.",
+      "status": "coming_soon"
+    },
+    {
+      "num": "06",
+      "subject": "Separations",
+      "name": "Separations",
+      "status": "coming_soon",
+      "teaser": "How does a cyclone separate without any moving parts?"
+    },
+    {
+      "num": "07",
+      "subject": "Process Safety",
+      "name": "Process Safety",
+      "status": "coming_soon",
+      "teaser": "When does a relief valve open — and what happens next?"
+    },
+    {
+      "num": "08",
+      "subject": "Instrumentation & Control",
+      "name": "Instrumentation & Control",
+      "status": "coming_soon",
+      "teaser": "Why does integral action eliminate steady-state error?"
+    }
   ]
 }

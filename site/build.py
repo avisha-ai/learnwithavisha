@@ -27,9 +27,15 @@ def featured_html(ep, linkedin):
         poster = f' poster="{E(v["poster"])}"' if v.get("poster") else ""
         track = (f'<track kind="captions" src="{E(v["vtt"])}" srclang="en" label="English">'
                  if v.get("vtt") else "")
-        action = (f'<div class="feat-video"><video controls playsinline preload="none"{poster} '
-                  f'aria-label="Episode {E(ep["num"])}: {E(ep["name"])}">'
-                  f'<source src="{E(v["mp4"])}" type="video/mp4">{track}</video></div>')
+        card_label = f'Episode {E(ep["num"])} · ' + (f'The {E(ep["series"])}' if ep.get("series") else E(ep["subject"]))
+        action = (f'<div class="feat-video-card">\n'
+                  f'          <div class="feat-video-card-label">{card_label}</div>\n'
+                  f'          <div class="feat-video-wrap">\n'
+                  f'            <video controls playsinline preload="none"{poster} aria-label="Episode {E(ep["num"])}: {E(ep["name"])}">\n'
+                  f'              <source src="{E(v["mp4"])}" type="video/mp4">{track}\n'
+                  f'            </video>\n'
+                  f'          </div>\n'
+                  f'        </div>')
     else:
         action = (f'<p class="feat-soon">Episode {E(ep["num"])} — dropping soon. Follow on '
                   f'<a href="{E(linkedin)}" target="_blank" rel="noopener">LinkedIn</a> for the release.</p>')
@@ -60,8 +66,8 @@ def row_html(ep):
         right = f'<span class="cs-label">{"DROPPING SOON" if ep["status"] == "dropping_soon" else "COMING SOON"}</span>'
     return (f'      <div class="cs-row{" done" if done else ""}">\n'
             f'        <span class="cs-num">{E(ep["num"])}</span>\n'
-            f'        <span class="cs-name">{E(ep["name"])}</span>\n'
-            f'        <span class="cs-teaser">{E(ep["teaser"])}</span>\n'
+            f'        <span class="cs-name">{E(ep.get("index_name") or ep["name"])}</span>\n'
+            f'        <span class="cs-teaser">{E(ep.get("index_teaser") or ep["teaser"])}</span>\n'
             f'        {right}\n      </div>')
 
 

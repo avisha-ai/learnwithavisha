@@ -361,7 +361,39 @@ h3.feat-q{font-weight:400}
   line-height:1.7;border-left:2px solid var(--accent);padding-left:12px;
 }
 .feat-soon a{color:var(--main)}
-.feat-video video{display:block;width:100%;max-width:320px;aspect-ratio:9/16;background:#050A09;border:1px solid var(--rule)}
+/* ── Option 2 Chalkboard Inverse — video section wrapper ── */
+.feat-video-card {
+  background: #EEF2FF;
+  border-top: 4px solid #00BFA5;
+  border-radius: 12px;
+  padding: 28px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-top: 20px;
+}
+.feat-video-card-label {
+  font-family: 'DM Mono', monospace;
+  font-size: .56rem;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #0052CC;
+}
+.feat-video-wrap {
+  box-shadow: 0 8px 40px rgba(0,80,200,0.13);
+  border-radius: 12px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 320px;
+}
+.feat-video-wrap video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 9/16;
+  background: #050A09;
+}
 .cs-watch{
   font-family:'DM Mono',monospace;font-size:.54rem;letter-spacing:.1em;
   color:var(--main);flex-shrink:0;text-decoration:none;border-bottom:1px solid currentColor;
@@ -398,6 +430,95 @@ h3.feat-q{font-weight:400}
 .qa-a strong{color:var(--main)}
 .qa-a .fig-ref{display:block;margin-top:8px;font-family:'DM Mono',monospace;font-size:.58rem;color:var(--accent);letter-spacing:.08em}
 .qa-a[hidden]{display:none}
+
+/* ── AI Bot UI ── */
+.bot-input-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.bot-input {
+  flex: 1;
+  font-family: 'Lora', serif;
+  font-size: .82rem;
+  color: var(--fg);
+  background: var(--paper);
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color .15s;
+  min-width: 0;
+}
+.bot-input:focus { border-color: var(--main); }
+.bot-input::placeholder { color: var(--fg3); }
+.bot-send {
+  font-family: 'DM Mono', monospace;
+  font-size: .9rem;
+  background: var(--main);
+  color: var(--bg);
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: opacity .15s;
+  flex-shrink: 0;
+}
+.bot-send:hover { opacity: .85; }
+.bot-send:disabled { opacity: .4; cursor: not-allowed; }
+
+.bot-answer-wrap {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.bot-answer-wrap[hidden], .bot-audio-row[hidden], .chat-note[hidden] { display: none; }
+.bot-answer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: color-mix(in srgb, var(--main) 8%, var(--card));
+  border-bottom: 1px solid var(--border);
+}
+.bot-answer-label {
+  font-family: 'DM Mono', monospace;
+  font-size: .52rem;
+  letter-spacing: .14em;
+  color: var(--main);
+}
+.bot-audio-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.bot-mute {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'DM Mono', monospace;
+  font-size: .5rem;
+  letter-spacing: .1em;
+  color: var(--fg3);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: color .15s, border-color .15s;
+}
+.bot-mute:hover { color: var(--main); border-color: var(--main); }
+.bot-answer-text {
+  font-family: 'Lora', serif;
+  font-size: .82rem;
+  color: var(--fg);
+  line-height: 1.85;
+  padding: 14px;
+  max-height: 220px;
+  overflow-y: auto;
+  white-space: pre-line;
+}
 
 /* follow */
 .follow{border-top:1px solid var(--rule);padding:32px 0 8px;margin-top:16px}
@@ -449,7 +570,14 @@ h3.feat-q{font-weight:400}
         <div class="feat-ep"><span class="live-dot"></span>EPISODE 01 · HEAT TRANSFER · NOW SHOWING</div>
         <h3 class="feat-q">“Same exchanger. Same fluids.<br>Flip the flow — why does heat transfer jump?”</h3>
         <p class="feat-sub">A shell-and-tube heat exchanger runs two ways. Parallel flow. Countercurrent flow. The geometry is identical. So why is countercurrent almost always better — and by how much?</p>
-        <div class="feat-video"><video controls playsinline preload="none" poster="media/lwa_s1e01_the_flip_poster.jpg" aria-label="Episode 01: Heat Transfer — The Flip"><source src="media/lwa_s1e01_the_flip.mp4" type="video/mp4"></video></div>
+        <div class="feat-video-card">
+          <div class="feat-video-card-label">Episode 01 · The Heat Exchanger Files</div>
+          <div class="feat-video-wrap">
+            <video controls playsinline preload="none" poster="media/lwa_s1e01_the_flip_poster.jpg" aria-label="Episode 01: Heat Transfer — The Flip">
+              <source src="media/lwa_s1e01_the_flip.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
       </div>
       <div class="feat-sketch">
         <svg role="img" aria-label="FIG. 1 — SHELL &amp; TUBE EXCHANGER · COUNTERCURRENT FLOW" viewBox="0 0 180 140" stroke="var(--fg2)" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -500,26 +628,26 @@ h3.feat-q{font-weight:400}
     <div class="cs-list">
       <div class="cs-row">
         <span class="cs-num">02</span>
-        <span class="cs-name">Fluid Flow</span>
-        <span class="cs-teaser">Why does doubling pipe diameter cut pressure drop by up to 32× in turbulent flow?</span>
+        <span class="cs-name">The Fouling Problem</span>
+        <span class="cs-teaser">Your exchanger was designed clean. After six months it transfers 20% less heat — where did the resistance come from?</span>
         <span class="cs-label">COMING SOON</span>
       </div>
       <div class="cs-row">
         <span class="cs-num">03</span>
-        <span class="cs-name">Mass Transfer</span>
-        <span class="cs-teaser">What actually happens on a distillation tray?</span>
+        <span class="cs-name">Baffles — What They Do and Why</span>
+        <span class="cs-teaser">Without baffles, shell-side fluid short-circuits. How a plate forces a meandering path — and doubles heat transfer.</span>
         <span class="cs-label">COMING SOON</span>
       </div>
       <div class="cs-row">
         <span class="cs-num">04</span>
-        <span class="cs-name">Reaction Engineering</span>
-        <span class="cs-teaser">Why does residence time change everything in a CSTR?</span>
+        <span class="cs-name">Which Fluid Goes Inside the Tubes?</span>
+        <span class="cs-teaser">Corrosive? High pressure? Viscous? There is a decision rule — and breaking it costs you in maintenance or efficiency.</span>
         <span class="cs-label">COMING SOON</span>
       </div>
       <div class="cs-row">
         <span class="cs-num">05</span>
-        <span class="cs-name">Thermodynamics</span>
-        <span class="cs-teaser">What is a dew-point curve and why does it matter?</span>
+        <span class="cs-name">Your Kettle Has the Same Problem as a Refinery</span>
+        <span class="cs-teaser">Nucleate boiling, film boiling, Leidenfrost — the same curve that ruins a kettle operates at every reboiler in a plant.</span>
         <span class="cs-label">COMING SOON</span>
       </div>
       <div class="cs-row">
@@ -543,9 +671,9 @@ h3.feat-q{font-weight:400}
     </div>
   </section>
 
-  <!-- Q&A -->
+  <!-- Q&A — AI BOT -->
   <section class="tutor-section" id="tutor" aria-labelledby="tutor-h">
-    <h2 class="tutor-fig" id="tutor-h">COMMON QUESTIONS · ANSWERED</h2>
+    <h2 class="tutor-fig" id="tutor-h">ASK AVISHA · AI TUTOR</h2>
     <div class="margin-note" style="top:0" aria-hidden="true">ChemE<br>Q&amp;A</div>
 
     <div class="tutor-inner">
@@ -556,31 +684,50 @@ h3.feat-q{font-weight:400}
         </div>
         <div class="tutor-id">
           <strong>Avisha</strong>
-          <span>Process engineering · curated answers</span>
+          <span>Chemical engineering · AI tutor</span>
         </div>
-        <span class="tutor-badge">EP 01</span>
+        <span class="tutor-badge" id="avisha-status">READY</span>
       </div>
 
-      <p class="qa-label">TAP A QUESTION TO READ THE ANSWER</p>
-
-      <div class="qa-item">
-        <h3><button class="qa-q" type="button" aria-expanded="true" aria-controls="qa-1" id="qa-1-q">Why does countercurrent flow transfer more heat than parallel flow?<span class="qa-sign" aria-hidden="true"></span></button></h3>
-        <div class="qa-a" id="qa-1" role="region" aria-labelledby="qa-1-q">Because the <strong>temperature driving force (ΔT) remains high along the entire exchanger length.</strong> In parallel flow, both streams move in the same direction — hot fluid cools while cold fluid warms, so their temperatures converge near the exit and ΔT collapses. Countercurrent keeps the hot inlet opposite the cold outlet, maintaining a useful gradient at every cross-section. The result: the same duty with significantly less heat transfer area. That is why nearly every industrial shell-and-tube runs countercurrent.<span class="fig-ref">→ See Fig. 1 above · EP 01</span></div>
-      </div>
-      <div class="qa-item">
-        <h3><button class="qa-q" type="button" aria-expanded="true" aria-controls="qa-2" id="qa-2-q">What is LMTD and how do I use it?<span class="qa-sign" aria-hidden="true"></span></button></h3>
-        <div class="qa-a" id="qa-2" role="region" aria-labelledby="qa-2-q"><strong>LMTD — Log Mean Temperature Difference</strong> — is the correct average ΔT to use in Q = U·A·LMTD. You need it because ΔT changes continuously along the exchanger. A simple arithmetic average overstates performance. LMTD = (ΔT₁ − ΔT₂) / ln(ΔT₁/ΔT₂), where ΔT₁ and ΔT₂ are the temperature differences at each end. For anything other than pure counterflow, apply a geometry correction factor F.</div>
-      </div>
-      <div class="qa-item">
-        <h3><button class="qa-q" type="button" aria-expanded="true" aria-controls="qa-3" id="qa-3-q">How does a PID controller respond to a disturbance?<span class="qa-sign" aria-hidden="true"></span></button></h3>
-        <div class="qa-a" id="qa-3" role="region" aria-labelledby="qa-3-q">A PID controller outputs a correction signal equal to <strong>P·e + I·∫e dt + D·de/dt</strong>, where e is the error — setpoint minus measurement. Proportional action (P) responds immediately but leaves a residual offset at steady state. Integral action (I) eliminates that offset by accumulating error over time, though it can cause overshoot. Derivative action (D) anticipates rate of change, damping the response before overshoot occurs. Most plant loops run as PI; derivative is added selectively where sensor noise is manageable.</div>
-      </div>
-      <div class="qa-item">
-        <h3><button class="qa-q" type="button" aria-expanded="true" aria-controls="qa-4" id="qa-4-q">Why does a pump cavitate at high suction lift?<span class="qa-sign" aria-hidden="true"></span></button></h3>
-        <div class="qa-a" id="qa-4" role="region" aria-labelledby="qa-4-q">Cavitation occurs when <strong>local pressure at the pump suction falls below the fluid's vapour pressure</strong>. Liquid flashes to vapour, forming bubbles that collapse violently as pressure recovers inside the impeller. High suction lift increases the static head the pump must overcome to draw fluid — lowering suction pressure further. The fix: reduce friction losses in the suction line, lower pump elevation relative to the liquid source, raise the liquid level, or reduce fluid temperature to lower vapour pressure.</div>
+      <!-- Input row -->
+      <div class="bot-input-row">
+        <input
+          type="text"
+          id="bot-q"
+          class="bot-input"
+          placeholder="Ask a ChE question…"
+          maxlength="200"
+          autocomplete="off"
+          aria-label="Your question for Avisha"
+        >
+        <button class="bot-send" id="bot-send" type="button" aria-label="Send question">→</button>
       </div>
 
-      <div class="chat-note" style="margin-top:16px">More questions answered with each new episode · Full AI tutor coming soon</div>
+      <!-- Answer box (hidden until first answer) -->
+      <div class="bot-answer-wrap" id="bot-answer-wrap" hidden>
+        <div class="bot-answer-header">
+          <span class="bot-answer-label">AVISHA ANSWERS</span>
+          <div class="bot-audio-row" id="bot-audio-row" hidden>
+            <audio id="bot-audio" preload="none"></audio>
+            <button class="bot-mute" id="bot-mute" type="button" aria-label="Toggle audio">
+              <svg id="icon-sound" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true">
+                <path d="M2 5H4.5L7 2V12L4.5 9H2V5Z"/>
+                <path d="M9 4.5C9.8 5.3 10.3 6.1 10.3 7C10.3 7.9 9.8 8.7 9 9.5"/>
+                <path d="M11 2.5C12.5 3.8 13.3 5.4 13.3 7C13.3 8.6 12.5 10.2 11 11.5"/>
+              </svg>
+              <svg id="icon-mute" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" style="display:none" aria-hidden="true">
+                <path d="M2 5H4.5L7 2V12L4.5 9H2V5Z"/>
+                <line x1="9" y1="4" x2="13" y2="10"/>
+                <line x1="13" y1="4" x2="9" y2="10"/>
+              </svg>
+              <span id="mute-label">MUTE</span>
+            </button>
+          </div>
+        </div>
+        <div class="bot-answer-text" id="bot-answer-text" aria-live="polite"></div>
+      </div>
+
+      <p class="chat-note" id="bot-note">Type any chemical engineering question — heat transfer, fluid flow, reactions, control loops.</p>
     </div>
   </section>
 
@@ -602,17 +749,110 @@ h3.feat-q{font-weight:400}
 </div>
 
 <script>
-// Q&A accordion. Without JavaScript every answer stays visible; with it, answers start collapsed.
-document.querySelectorAll('.qa-q').forEach(function (btn) {
-  var panel = document.getElementById(btn.getAttribute('aria-controls'));
-  btn.setAttribute('aria-expanded', 'false');
-  panel.hidden = true;
-  btn.addEventListener('click', function () {
-    var open = btn.getAttribute('aria-expanded') === 'true';
-    btn.setAttribute('aria-expanded', String(!open));
-    panel.hidden = open;
+(function () {
+  // ── Q&A accordion (kept for any remaining accordion uses) ──
+  document.querySelectorAll('.qa-q').forEach(function (btn) {
+    var panel = document.getElementById(btn.getAttribute('aria-controls'));
+    btn.setAttribute('aria-expanded', 'false');
+    if (panel) panel.hidden = true;
+    btn.addEventListener('click', function () {
+      var open = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!open));
+      if (panel) panel.hidden = open;
+    });
   });
-});
+
+  // ── AI Bot ──
+  var input = document.getElementById('bot-q');
+  var sendBtn = document.getElementById('bot-send');
+  var answerWrap = document.getElementById('bot-answer-wrap');
+  var answerText = document.getElementById('bot-answer-text');
+  var audioEl = document.getElementById('bot-audio');
+  var audioRow = document.getElementById('bot-audio-row');
+  var muteBtn = document.getElementById('bot-mute');
+  var iconSound = document.getElementById('icon-sound');
+  var iconMute = document.getElementById('icon-mute');
+  var muteLabel = document.getElementById('mute-label');
+  var statusBadge = document.getElementById('avisha-status');
+  var note = document.getElementById('bot-note');
+  var muted = false;
+
+  function setStatus(s) {
+    if (statusBadge) statusBadge.textContent = s;
+  }
+
+  function ask() {
+    var q = input.value.trim();
+    if (!q || sendBtn.disabled) return;
+
+    sendBtn.disabled = true;
+    setStatus('THINKING…');
+    answerWrap.hidden = true;
+    audioRow.hidden = true;
+    audioEl.pause(); // stop the previous answer: its mute button is hidden from here on
+    if (note) note.hidden = true;
+
+    fetch('/api/ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: q })
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      if (data.error) {
+        answerText.textContent = data.error;
+        answerWrap.hidden = false;
+        setStatus('READY');
+        sendBtn.disabled = false;
+        return;
+      }
+      // Show text
+      answerText.textContent = data.text || '';
+      answerWrap.hidden = false;
+
+      // Play audio if present and not muted
+      if (data.audio) {
+        var src = 'data:audio/mpeg;base64,' + data.audio;
+        audioEl.src = src;
+        audioRow.hidden = false;
+        if (!muted) {
+          audioEl.play().catch(function () {});
+        }
+      }
+      setStatus('READY');
+      sendBtn.disabled = false;
+      input.value = '';
+      input.focus();
+    })
+    .catch(function (err) {
+      answerText.textContent = 'Could not reach Avisha — check your connection and try again.';
+      answerWrap.hidden = false;
+      setStatus('READY');
+      sendBtn.disabled = false;
+    });
+  }
+
+  sendBtn.addEventListener('click', ask);
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') ask();
+  });
+
+  // Mute toggle
+  muteBtn.addEventListener('click', function () {
+    muted = !muted;
+    if (muted) {
+      audioEl.pause();
+      iconSound.style.display = 'none';
+      iconMute.style.display = '';
+      muteLabel.textContent = 'UNMUTE';
+    } else {
+      iconSound.style.display = '';
+      iconMute.style.display = 'none';
+      muteLabel.textContent = 'MUTE';
+      audioEl.play().catch(function () {});
+    }
+  });
+})();
 </script>
 </body>
 </html>
