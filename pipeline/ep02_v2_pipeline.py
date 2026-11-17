@@ -23,6 +23,14 @@ scene's length and each caption's in/out times come from measured audio.
 Captions are split into short cues (at most two lines) and burned in from an
 ASS file authored at the real 1080x1920 resolution.
 
+EP02 changes vs EP01 (spec, 17 Nov 2026):
+  * Hook first: the opening line plants the mystery over the exchanger
+    ("designed clean … six months later … what happened?") before any explanation.
+  * No duplicate subtitles: a burned-in caption cue is dropped when the same words
+    are already drawn on the canvas at that moment (found by probing each frame's
+    drawn text, see onscreen_text()). The SRT/VTT sidecars keep every line.
+  * Breath pauses: KEY_GAP (0.5 s) of silence after each key-reveal line.
+
 Layout: diagrams live in y 0–1520; the caption band is the lower third
 (y ≈ 1590–1760). Nothing drawn by the scenes may enter the caption band.
 """
@@ -62,6 +70,8 @@ KOKORO_VOICE = "af_heart"
 KOKORO_SPEED = 0.95   # slightly slower for educational pacing
 LINE_GAP  = 0.30      # silence between narration lines inside a scene (s)
 SCENE_GAP = 0.50      # extra silence at the end of each scene (s)
+KEY_GAP   = 0.50      # breath after a key-reveal line, so the idea lands (s)
+BREATH    = "breath"  # third element of a SCENES line: pause KEY_GAP after it
 END_HOLD  = 3.0       # final frame stays up after the last word (s)
 CAPTION_MAX_CHARS = 50   # ≈ two lines at 60 px in the caption band
 DIAGRAM_BOTTOM = 1520    # scenes draw nothing below this line
@@ -367,18 +377,31 @@ ASSUMPTION = ["Illustrative worked example —",
               "clean NTU = 2,",
               "deposit 0.08 mm, k = 0.2 W/m·K"]
 
-# ── Scene A: Hook — same exchanger, outlet three degrees colder ──────────────
+# ── Scene A: Hook — designed clean, six months later it struggles ─────────────
+# The narration asks the question; the canvas only shows the clock and the
+# outlet drifting, so nothing the voice says is also written on screen.
+def _badge(draw, y, text, colour):
+    f = get_font(60, True)
+    w = draw.textlength(text, font=f)
+    draw.rounded_rectangle([W//2-w/2-34, y-50, W//2+w/2+34, y+50], radius=50,
+                           fill=(30,34,50), outline=colour, width=5)
+    draw.text((W//2, y), text, font=f, fill=colour, anchor="mm")
+
 def render_a(t, m, dur):
-    drift = t >= 1.0
-    img = draw_illustration(counter=True, hot_out=40 if drift else 37,
-                            cold_out=60 if drift else 63,
-                            cold_out_colour=YELLOW if drift else None)
+    later = len(m) > 1 and t >= m[1]
+    k = _ease((t-m[1])/1.2) if later else 0.0
+    img = draw_illustration(counter=True,
+                            hot_out=40 if k > 0.5 else 37,
+                            cold_out=60 if k > 0.5 else 63,
+                            cold_out_colour=YELLOW if k > 0.5 else None)
     draw = ImageDraw.Draw(img)
     draw.text((W//2, 130), f"{EP_TAG} — {EP_TITLE}", font=get_font(64,True), fill=GREY, anchor="mm")
-    draw.text((W//2, 250), "Nothing broke.", font=get_font(64,True), fill=WHITE, anchor="mm")
-    draw.text((W//2, 340), "Nothing leaked.", font=get_font(64,True), fill=WHITE, anchor="mm")
-    if drift:
-        draw.text((W//2, 1330), "Outlet: 3 °C colder", font=get_font(84,True), fill=YELLOW, anchor="mm")
+    if later:
+        _badge(draw, 300, "MONTH 6", YELLOW)
+        if k > 0.5:
+            draw.text((W//2, 1330), "?", font=get_font(160,True), fill=YELLOW, anchor="mm")
+    else:
+        _badge(draw, 300, "DAY 1", (150,190,255))
     return img
 
 # ── Scene B: Same plant, same flows, different outlets ───────────────────────
@@ -553,21 +576,23 @@ def render_h(t, m, dur):
 # must say what the narrator says; numbers are written as digits.
 SCENES = [
     (render_a, [
-        ("Nothing broke. Nothing leaked. Yet the outlet is three degrees colder.",
-         "Nothing broke. Nothing leaked. Yet the outlet is 3 °C colder."),
+        ("Your heat exchanger was designed clean.",
+         "Your heat exchanger was designed clean."),
+        ("Six months later, it's struggling. Nobody touched it. What happened?",
+         "Six months later, it's struggling. Nobody touched it. What happened?", BREATH),
     ]),
     (render_b, [
         ("Same exchanger. Same flows. Hot in at ninety, cold in at ten degrees Celsius.",
          "Same exchanger. Same flows. Hot in at 90, cold in at 10 °C."),
         ("Clean, the cold stream left at sixty-three. Now it leaves at sixty.",
-         "Clean, the cold stream left at 63. Now it leaves at 60."),
+         "Clean, the cold stream left at 63. Now it leaves at 60.", BREATH),
     ]),
     (render_c, [
         ("What changed is a layer inside the tubes, eight hundredths of a millimetre thick. "
          "Thinner than a sheet of paper.",
          "What changed is a layer inside the tubes, 0.08 mm thick. Thinner than a sheet of paper."),
         ("It doesn't block the flow. It sits in the path of the heat.",
-         "It doesn't block the flow. It sits in the path of the heat."),
+         "It doesn't block the flow. It sits in the path of the heat.", BREATH),
     ]),
     (render_d, [
         ("Resistances in series simply add.",
@@ -576,26 +601,26 @@ SCENES = [
          "The deposit adds four ten-thousandths.",
          "Clean, the resistance to heat flow is 0.0020 m²·K/W. The deposit adds 0.0004."),
         ("So U falls from five hundred to about four hundred seventeen watts per square-metre-kelvin.",
-         "So U falls from 500 to about 417 W/m²·K."),
+         "So U falls from 500 to about 417 W/m²·K.", BREATH),
         ("That sliver resists heat like six millimetres of stainless steel.",
-         "That sliver resists heat like 6 mm of stainless steel."),
+         "That sliver resists heat like 6 mm of stainless steel.", BREATH),
     ]),
     (render_e, [
         ("Lower U means fewer transfer units: two becomes about one point seven.",
          "Lower U means fewer transfer units: 2 becomes about 1.7."),
         ("Effectiveness slips from point six seven to point six three, "
          "and the exchanger moves about six percent less heat.",
-         "Effectiveness slips from 0.67 to 0.63, and the exchanger moves about 6% less heat."),
+         "Effectiveness slips from 0.67 to 0.63, and the exchanger moves about 6% less heat.", BREATH),
     ]),
     (render_f, [
         ("Six percent is easy to miss. Flow is normal.",
          "6% is easy to miss. Flow is normal."),
         ("The only clue is a drifting thermometer.",
-         "The only clue is a drifting thermometer."),
+         "The only clue is a drifting thermometer.", BREATH),
     ]),
     (render_g, [
         ("Fouling is a resistance in series. Watch the temperatures, not just the flow.",
-         "Fouling is a resistance in series. Watch the temperatures, not just the flow."),
+         "Fouling is a resistance in series. Watch the temperatures, not just the flow.", BREATH),
         ("These numbers are an illustrative worked example.",
          "These numbers are an illustrative worked example."),
     ]),
@@ -608,7 +633,7 @@ MIN_SCENE = {}
 TAIL_HOLD = {render_h: END_HOLD}
 POSTER_AT = (render_d, 3, 2.5)    # resistance bar, U drop and the steel comparison all on screen
 
-VOICEOVER_SCRIPT = " ".join(n for _, lines in SCENES for n, _ in lines)
+VOICEOVER_SCRIPT = " ".join(ln[0] for _, lines in SCENES for ln in lines)
 
 # ── Narration ─────────────────────────────────────────────────────────────────
 _kokoro = None
@@ -675,7 +700,7 @@ def generate_narration():
     for render_fn, lines in SCENES:
         scene_start = t_abs
         marks = []
-        for i, (narr, cap) in enumerate(lines):
+        for i, (narr, cap, *flags) in enumerate(lines):
             s, sr = _tts(narr)
             s = _trim(s, sr)
             marks.append(t_abs - scene_start)
@@ -686,10 +711,12 @@ def generate_narration():
             t_c = t_abs
             for p in parts:
                 dc = d*len(p)/total_chars
-                cues.append((t_c, t_c+dc, p)); t_c += dc
+                cues.append((t_c, t_c+dc, p, render_fn, scene_start, cap)); t_c += dc
             chunks.append(s)
             t_abs += d
             gap = LINE_GAP if i < len(lines)-1 else SCENE_GAP
+            if BREATH in flags:
+                gap = max(gap, KEY_GAP)
             chunks.append(np.zeros(int(gap*sr), dtype=np.float32))
             t_abs += gap
         extra = TAIL_HOLD.get(render_fn, 0.0)
@@ -710,17 +737,64 @@ def generate_narration():
     return out_path, plan, cues
 
 # ── Captions ──────────────────────────────────────────────────────────────────
+_STOP = set("a an the in at of to is it its s and or so from by on that this as be "
+            "now yet just not c k w m".split())
+
+def _tokens(text):
+    return [w for w in re.findall(r"[a-z]+|\d+(?:\.\d+)?", text.lower()) if w not in _STOP]
+
+def onscreen_text(render_fn, t, marks, dur):
+    """Every string the scene draws at time t (probes ImageDraw.text, so labels,
+    titles, tags and insets are all caught without a hand-kept list)."""
+    seen, orig = [], ImageDraw.ImageDraw.text
+    def spy(self, xy, text, *a, **kw):
+        seen.append(str(text)); return orig(self, xy, text, *a, **kw)
+    ImageDraw.ImageDraw.text = spy
+    try:
+        img = render_fn(t, marks, dur)
+    finally:
+        ImageDraw.ImageDraw.text = orig
+    return " ".join(seen)
+
+def is_on_canvas(line_cues, plan, ratio=0.6):
+    """True when most of a narration line's words are already written on screen
+    while it plays. Decided per whole line, so no sentence loses half its caption."""
+    a, b = line_cues[0][0], line_cues[-1][1]
+    _, _, _, fn, s0, text = line_cues[0]
+    marks, dur = next((mk, d) for f, d, mk in plan if f is fn)
+    screen = set()
+    for c in line_cues:
+        for x in (c[0] + 0.15, (c[0] + c[1])/2, c[1] - 0.1):
+            screen |= set(_tokens(onscreen_text(fn, min(max(x - s0, 0), dur), marks, dur)))
+    words = _tokens(text)
+    hit = sum(w in screen for w in words)
+    return bool(words) and hit >= min(2, len(words)) and hit/len(words) >= ratio
+
+def burn_cues(cues, plan):
+    """Cues for the burned-in subtitle bar: lines already on the canvas are left out."""
+    lines, keep = [], []
+    for c in cues:                       # regroup cues by the line they came from
+        if lines and lines[-1][-1][5] is c[5] and lines[-1][-1][1] == c[0]:
+            lines[-1].append(c)
+        else:
+            lines.append([c])
+    for lc in lines:
+        if is_on_canvas(lc, plan):
+            print(f"  caption skipped (already on canvas) {lc[0][0]:5.1f}s: {lc[0][5]}")
+        else:
+            keep += lc
+    return keep
 def _ts(x, sep=","):
     ms = int(round(x*1000))
     return f"{ms//3600000:02d}:{ms//60000%60:02d}:{ms//1000%60:02d}{sep}{ms%1000:03d}"
 
-def write_captions(cues):
+def write_captions(cues, plan):
     srt = OUT / f"{EP_SLUG}.srt"
     srt.write_text("\n".join(f"{i}\n{_ts(a)} --> {_ts(b)}\n{c}\n"
-                             for i,(a,b,c) in enumerate(cues, 1)), encoding="utf-8")
+                             for i,(a,b,c,*_) in enumerate(cues, 1)), encoding="utf-8")
     vtt = OUT / f"{EP_SLUG}.vtt"
     vtt.write_text("WEBVTT\n\n" + "\n".join(f"{_ts(a,'.')} --> {_ts(b,'.')}\n{c}\n"
-                                            for a,b,c in cues), encoding="utf-8")
+                                            for a,b,c,*_ in cues), encoding="utf-8")
     # Burn-in style authored at real resolution: lower third, opaque box, ≤ 2 lines
     def cs(x):
         cc = int(round(x*100))
@@ -734,7 +808,8 @@ def write_captions(cues):
         "Style: Default,Arial,60,&H00FFFFFF,&H00FFFFFF,&H20000000,&H20000000,-1,0,0,0,100,100,0,0,3,"
         "16,0,2,70,70,170,1\n\n"
         "[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n"
-        + "".join(f"Dialogue: 0,{cs(a)},{cs(b)},Default,,0,0,0,,{c}\n" for a,b,c in cues),
+        + "".join(f"Dialogue: 0,{cs(a)},{cs(b)},Default,,0,0,0,,{c}\n"
+                  for a,b,c,*_ in burn_cues(cues, plan)),
         encoding="utf-8")
     return srt, ass
 
@@ -791,7 +866,7 @@ def poster(video, plan):
 def main():
     print(f"=== LearnWithAvisha · {EP_TAG} — {EP_TITLE} ===")
     nar, plan, cues = generate_narration()
-    srt, ass = write_captions(cues)
+    srt, ass = write_captions(cues, plan)
     mstr  = assemble(nar, plan)
     cap   = add_captions(mstr, ass)
     web   = make_web(cap)
