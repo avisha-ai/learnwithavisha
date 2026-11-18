@@ -35,13 +35,14 @@ FFMPEG = shutil.which("ffmpeg") or str(_MAMBA_BIN / "ffmpeg")
 # panel size in the 1920x1080 side-by-side frame (see side_by_side.py)
 PANEL_W, PANEL_H = 1160, 1080
 FPS = 30
+SUPERSAMPLE = 2         # render at 2x the output size, scale down (Lanczos) for sharp edges
 
 # colours shared with the 2D pipelines
 BG = (18, 20, 28)
 HOT, HOT_OUT = (235, 70, 60), (255, 190, 80)
 COLD, COLD_OUT = (70, 140, 240), (160, 205, 255)
 METAL, HEAD_METAL, SHEET_METAL = (118, 124, 136), (128, 104, 104), (165, 170, 180)
-TUBE, DEPOSIT = (200, 205, 215), (150, 100, 50)
+TUBE, DEPOSIT = (200, 205, 215), (105, 72, 45)   # dark deposit so the hot particles stand out
 WHITE, GREY = (255, 255, 255), (185, 190, 200)
 
 # geometry (arbitrary units; x = exchanger axis, z = up)
@@ -89,7 +90,8 @@ def nozzle(x, top, at_head=False):
     pipe = pv.Cylinder(center=(x, 0, (z0 + z_end) / 2), direction=(0, 0, 1), radius=0.2,
                        height=abs(z_end - z0))
     flange = pv.Cylinder(center=(x, 0, z_end), direction=(0, 0, 1), radius=0.3, height=0.08)
-    return pipe, flange, (x, 0, z_end + sign * 0.25)
+    # label anchor: bottom labels sit further out so the text clears the flange
+    return pipe, flange, (x, 0, z_end + sign * (0.25 if top else 0.75))
 
 class Exchanger:
     def __init__(self, plotter, fouling=False):
@@ -139,7 +141,7 @@ class Exchanger:
 # ── flow ─────────────────────────────────────────────────────────────────────
 class Flow:
     """Particles: tube side always left → right; shell side zig-zags round the baffles."""
-    def __init__(self, plotter, tubes, n_per_tube=6, n_shell=220, seed=7):
+    def __init__(self, plotter, tubes, point_size=12, n_per_tube=6, n_shell=220, seed=7):
         rng = np.random.default_rng(seed)
         self.tubes = np.array(tubes)
         self.hot_tube = np.repeat(np.arange(len(tubes)), n_per_tube)
@@ -152,10 +154,9 @@ class Flow:
         self.cold = pv.PolyData(self._cold_pts(1))
         self.hot["rgb"] = self._colours(self.hot_s, HOT, HOT_OUT)
         self.cold["rgb"] = self._colours(self.cold_s, COLD, COLD_OUT)
-        # hot particles sit inside the tubes, so they need to be bigger to read through the tube wall
-        for mesh, size in ((self.hot, 12), (self.cold, 12)):
+        for mesh in (self.hot, self.cold):
             plotter.add_mesh(mesh, scalars="rgb", rgb=True, render_points_as_spheres=True,
-                             point_size=size)
+                             point_size=point_size)
 
     @staticmethod
     def _colours(s, c0, c1):
@@ -205,15 +206,17 @@ def _set_visible(actors, on):
         a.SetVisibility(on)
 
 def build(size, fouling, mode, flip_at):
-    w, h = size
+    # everything is laid out from the render size, so text and particles look the same at any size
+    w, h = size[0] * SUPERSAMPLE, size[1] * SUPERSAMPLE
     p = pv.Plotter(off_screen=True, window_size=(w, h))
     p.set_background(rgb(BG))
-    try:
-        p.enable_anti_aliasing("ssaa")
-    except Exception:
-        pass
+    if SUPERSAMPLE == 1:              # the 2x render + downscale already does the anti-aliasing
+        try:
+            p.enable_anti_aliasing("ssaa")
+        except Exception:
+            pass
     ex = Exchanger(p, fouling=fouling)
-    flow = Flow(p, ex.tubes)
+    flow = Flow(p, ex.tubes, point_size=max(4, round(12 * h / PANEL_H)))
     fs = max(12, int(h / 40))
     labels_par = _labels(p, ex.ends, counter=False, size=fs)
     labels_ctr = _labels(p, ex.ends, counter=True, size=fs)
@@ -260,7 +263,7 @@ def render_video(out, duration, size=(PANEL_W, PANEL_H), fps=FPS, fouling=False,
     fh, fw = first.shape[:2]
     cmd = [FFMPEG, "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24",
            "-s", f"{fw}x{fh}", "-r", str(fps), "-i", "-",
-           "-vf", f"scale={size[0]}:{size[1]}", "-c:v", "libx264", "-pix_fmt", "yuv420p",
+           "-vf", f"scale={size[0]}:{size[1]}:flags=lanczos", "-c:v", "libx264", "-pix_fmt", "yuv420p",
            "-preset", "medium", "-crf", "18", str(out)]
     ff = subprocess.Popen(cmd, stdin=subprocess.PIPE)
     ff.stdin.write(np.ascontiguousarray(first[:, :, :3]).tobytes())
@@ -284,7 +287,7 @@ def render_still(out, t, size=(PANEL_W, PANEL_H), fouling=False, mode="counter",
     for _ in range(steps):
         state["flow"].step(0.1, 1 if counter_at(state, t) else -1)
     img = frame_at(state, t, 0.0)
-    Image.fromarray(img[:, :, :3]).save(out)
+    Image.fromarray(img[:, :, :3]).resize(size, Image.LANCZOS).save(out)
     state["p"].close()
     print(f"  3D still: {out}")
     return Path(out)
