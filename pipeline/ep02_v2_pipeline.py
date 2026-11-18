@@ -865,6 +865,30 @@ def poster(video, plan):
     print(f"  poster: {p} (t={t:.1f}s)")
     return p
 
+# Narration that first names the deposit: the 3D panel's tubes start clean and foul from here.
+# "layer" counts too: scene C introduces the deposit as "a layer inside the tubes" while the 2D
+# draws "Deposit 0.08 mm", well before the narration says the word "deposit" (scene D).
+FOUL_MENTION = re.compile(r"\b(foul\w*|deposit\w*|layer)\b", re.I)
+
+def first_mention(plan, pattern=FOUL_MENTION):
+    """Start time (s) of the first narration line matching pattern, from the measured plan."""
+    t0 = 0.0
+    for (fn, dur, marks), (_, lines) in zip(plan, SCENES):
+        for mark, (narr, *_) in zip(marks, lines):
+            if pattern.search(narr):
+                return t0 + mark
+        t0 += dur
+    return None
+
+def scene_end(plan, render_fn):
+    """End time (s) of the given scene in the measured plan."""
+    t = 0.0
+    for fn, dur, _ in plan:
+        t += dur
+        if fn is render_fn:
+            return t
+    return 0.0
+
 def main():
     print(f"=== LearnWithAvisha · {EP_TAG} — {EP_TITLE} ===")
     nar, plan, cues = generate_narration()
@@ -874,9 +898,13 @@ def main():
     web   = make_web(cap)
     pst   = poster(mstr, plan)   # clean frame, no half-sentence caption
     wide  = None
-    if "--wide" in sys.argv:     # widescreen: this 2D on the left, 3D fouled exchanger on the right
+    if "--wide" in sys.argv:     # widescreen: this 2D on the left, 3D exchanger fouling on the right
         from side_by_side import make_wide
-        wide = make_wide(cap, fouling=True, mode="counter")
+        foul_at = first_mention(plan)
+        title_from = scene_end(plan, render_a)     # scene A carries the episode title
+        print(f"  3D tubes foul from {foul_at:.2f}s (first mention of the deposit); "
+              f"ON PAPER from {title_from:.2f}s")
+        wide = make_wide(cap, fouling=True, mode="counter", foul_at=foul_at, title_from=title_from)
     print(f"\n=== DONE ===")
     print(f"  Master:    {mstr}")
     print(f"  Captioned: {cap}")
