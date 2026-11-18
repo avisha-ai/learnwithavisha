@@ -3,14 +3,16 @@ LearnWithAvisha · widescreen side-by-side: 2D episode on the left, 3D exchanger
 
 Takes a finished vertical episode (1080x1920, captions burned in, with audio) and builds a
 1920x1080 version split into two equal halves with a thin partition between them:
-  left  (960x1080)  "ON PAPER" — the 2D episode at full height (608x1080), centred
+  left  (960x1080)  "ON PAPER" — the 2D episode (576x1024) centred below a 56 px title band
   right (960x1080)  "IN THE PLANT" — the 3D shell-and-tube panel (hx3d.py, PyVista)
 Audio and captions come from the 2D episode unchanged; the 3D panel is rendered to the
 same length.
 
 Run from the learnwithavisha folder, after the episode pipeline:
     .venv/bin/python3 pipeline/side_by_side.py out/lwa_s1e02_the_fouling_problem_captioned.mp4 --foul-at 17.7 --title-from 7.1
-    .venv/bin/python3 pipeline/side_by_side.py out/lwa_s1e01_the_flip_captioned.mp4 --flip-at 42.0
+    .venv/bin/python3 pipeline/side_by_side.py out/lwa_s1e01_the_flip_captioned.mp4
+    (episodes with wide_settings() in their pipeline supply the title time, flip/fouling time
+     and label temperatures from their scene plan; flags given here override them)
     .venv/bin/python3 pipeline/side_by_side.py <video> --draft      # quick layout check
 
 Output: out/<episode>_wide.mp4  (1920x1080, 30 fps, H.264 + AAC)
