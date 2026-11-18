@@ -17,6 +17,8 @@ Output (in <repo>/out/; copy approved files to episodes/):
     lwa_s1e02_the_fouling_problem_web.mp4         720x1280 web derivative (<=5 MB)
     lwa_s1e02_the_fouling_problem.srt / .vtt      captions, timed from the narration itself
     lwa_s1e02_the_fouling_problem_poster.jpg      poster frame
+    lwa_s1e02_the_fouling_problem_wide.mp4        1920x1080 2D + 3D side by side (only with --wide;
+                                                  needs pyvista, see side_by_side.py)
 
 Timing model: every narration line is voiced as its own Kokoro clip, so each
 scene's length and each caption's in/out times come from measured audio.
@@ -871,12 +873,18 @@ def main():
     cap   = add_captions(mstr, ass)
     web   = make_web(cap)
     pst   = poster(mstr, plan)   # clean frame, no half-sentence caption
+    wide  = None
+    if "--wide" in sys.argv:     # widescreen: this 2D on the left, 3D fouled exchanger on the right
+        from side_by_side import make_wide
+        wide = make_wide(cap, fouling=True, mode="counter")
     print(f"\n=== DONE ===")
     print(f"  Master:    {mstr}")
     print(f"  Captioned: {cap}")
     print(f"  Web:       {web}")
     print(f"  SRT:       {srt}")
     print(f"  Poster:    {pst}")
+    if wide:
+        print(f"  Wide 2D+3D: {wide}")
 
 if __name__ == "__main__":
     main()

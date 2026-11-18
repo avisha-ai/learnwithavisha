@@ -13,3 +13,10 @@ google-auth-httplib2
 
 # System Utilities
 python-dotenv
+
+# Episode pipelines (pipeline/) — all free, run offline
+moviepy
+Pillow
+kokoro-onnx
+soundfile
+pyvista          # 3D panel for the widescreen 2D + 3D format (pipeline/hx3d.py)
