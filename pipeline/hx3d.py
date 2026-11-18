@@ -201,13 +201,18 @@ class Flow:
 
 
 # ── scene ────────────────────────────────────────────────────────────────────
-def _labels(plotter, ends, counter, size):
+def _labels(plotter, ends, counter, size, temps=None):
+    """temps: (hot in, hot out, cold in, cold out) °C shown under each name, or None."""
     cold_in, cold_out = ("shell_r", "shell_l") if counter else ("shell_l", "shell_r")
+    names = ["HOT IN", "HOT OUT", "COLD IN", "COLD OUT"]
+    if temps:
+        names = [f"{n}\n{v}°C" for n, v in zip(names, temps)]
     actors = []
-    for key, text, col in [("hot_in", "HOT IN", HOT), ("hot_out", "HOT OUT", HOT_OUT),
-                           (cold_in, "COLD IN", COLD), (cold_out, "COLD OUT", COLD_OUT)]:
+    for key, text, col in [("hot_in", names[0], HOT), ("hot_out", names[1], HOT_OUT),
+                           (cold_in, names[2], COLD), (cold_out, names[3], COLD_OUT)]:
         actors.append(plotter.add_point_labels([ends[key]], [text], font_size=size, bold=True,
                                                text_color=rgb(col), shape=None, show_points=False,
+                                               justification_horizontal="center",
                                                always_visible=True))
     return actors
 
@@ -223,19 +228,33 @@ def add_title(p, text, w, h):
     return p.add_text(text, position=(int(w * 0.05), int(h * 0.90)), font_size=title_font(h),
                       color=rgb(GREY))
 
-def render_title_png(text, out, size=(PANEL_W, PANEL_H)):
+def render_title_png(text, out, size=(PANEL_W, PANEL_H), raise_px=0, scale=1.0):
     """Just a panel title on a transparent background, in exactly the 3D panel's title style —
-    used for the ON PAPER label over the 2D half (side_by_side.py)."""
+    used for the ON PAPER label over the 2D half (side_by_side.py). raise_px moves it up (output
+    pixels), scale shrinks the font."""
     from PIL import Image
     w, h = size[0] * SUPERSAMPLE, size[1] * SUPERSAMPLE
     p = pv.Plotter(off_screen=True, window_size=(w, h))
     p.set_background(rgb(BG))
-    add_title(p, text, w, h)
+    p.add_text(text, position=(int(w * 0.05), int(h * 0.90) + raise_px * SUPERSAMPLE),
+               font_size=int(title_font(h) * scale), color=rgb(GREY))
     p.show(auto_close=False)
     img = p.screenshot(transparent_background=True, return_img=True)
     p.close()
     Image.fromarray(img).resize(size, Image.LANCZOS).save(out)
     return Path(out)
+
+def temps_at(state, t):
+    """(hot in, hot out, cold in, cold out) at time t, or None when no temperatures were given."""
+    tp = state["temps"]
+    if not tp:
+        return None
+    ho, co = tp["outlets"][0][1:]
+    for te, h, c in tp["outlets"]:
+        if te > t:
+            break
+        ho, co = h, c
+    return (tp["hot_in"], ho, tp["cold_in"], co)
 
 def fouling_at(state, t):
     """0 = clean, 1 = fouled, at time t."""
@@ -243,7 +262,8 @@ def fouling_at(state, t):
         return 1.0 if state["fouling"] else 0.0
     return min(1.0, max(0.0, (t - state["foul_at"]) / FOUL_FADE))
 
-def build(size, fouling, mode, flip_at, foul_at=None):
+def build(size, fouling, mode, flip_at, foul_at=None, temps=None, duration=30.0):
+    """temps: dict(hot_in, cold_in, outlets=[(t, hot out, cold out), ...]) for the nozzle labels."""
     # everything is laid out from the render size, so text and particles look the same at any size
     w, h = size[0] * SUPERSAMPLE, size[1] * SUPERSAMPLE
     p = pv.Plotter(off_screen=True, window_size=(w, h))
@@ -256,15 +276,19 @@ def build(size, fouling, mode, flip_at, foul_at=None):
     ex = Exchanger(p, fouling=fouling)
     flow = Flow(p, ex.tubes, point_size=max(4, round(12 * h / PANEL_H)))
     fs = max(12, int(h / 40))
-    labels_par = _labels(p, ex.ends, counter=False, size=fs)
-    labels_ctr = _labels(p, ex.ends, counter=True, size=fs)
+    # one label set per (flow direction, temperatures shown); frame_at shows the right one
+    temp_sets = {None} if not temps else {(temps["hot_in"], h, temps["cold_in"], c)
+                                          for _, h, c in temps["outlets"]}
+    labels = {(ctr, ts): _labels(p, ex.ends, counter=ctr, size=fs, temps=ts)
+              for ctr in (False, True) for ts in temp_sets}
     add_title(p, "IN THE PLANT", w, h)
     caption = p.add_text("", position=(int(w * 0.05), int(h * 0.05)), font_size=int(fs * 0.525),
                          color=rgb(GREY))    # 30% smaller than the old 0.75
-    place_camera(p, 0.0)
+    place_camera(p, 0.0, duration)
     p.show(auto_close=False)          # off-screen: initialises the render window, opens nothing
-    state = dict(p=p, ex=ex, flow=flow, lab_par=labels_par, lab_ctr=labels_ctr, caption=caption,
-                 mode=mode, flip_at=flip_at, fouling=fouling or foul_at is not None, foul_at=foul_at)
+    state = dict(p=p, ex=ex, flow=flow, labels=labels, caption=caption, temps=temps,
+                 duration=duration, mode=mode, flip_at=flip_at,
+                 fouling=fouling or foul_at is not None, foul_at=foul_at)
     return state
 
 def caption_text(state, t):
@@ -279,9 +303,11 @@ def counter_at(state, t):
         return t >= state["flip_at"]
     return state["mode"] == "counter"
 
-def place_camera(p, t):
-    # three-quarter view from the front, slow gentle orbit so the depth reads
-    az = math.radians(-35 + 18 * math.sin(2 * math.pi * t / 30))
+def place_camera(p, t, duration=30.0):
+    # three-quarter view from the front: one slow, eased swing across the whole video, starting
+    # flatter (closest to the 2D drawing) and turning to show more depth by the end
+    u = min(max(t / duration, 0.0), 1.0) if duration > 0 else 0.0
+    az = math.radians(-35 + 18 * math.cos(math.pi * u))
     el = math.radians(24)
     dist = 18.5          # far enough that both heads and all four nozzle labels stay in the 960 px panel
     p.camera.position = (dist * math.cos(el) * math.sin(az), -dist * math.cos(el) * math.cos(az),
@@ -290,21 +316,21 @@ def place_camera(p, t):
     p.camera.up = (0, 0, 1)
 
 def frame_at(state, t, dt):
-    ctr = counter_at(state, t)
-    _set_visible(state["lab_ctr"], ctr)
-    _set_visible(state["lab_par"], not ctr)
+    ctr, ts = counter_at(state, t), temps_at(state, t)
+    for key, actors in state["labels"].items():
+        _set_visible(actors, key == (ctr, ts))
     state["flow"].step(dt, 1 if ctr else -1)
     state["ex"].set_fouling(fouling_at(state, t))
     state["caption"].SetInput(caption_text(state, t))
-    place_camera(state["p"], t)
+    place_camera(state["p"], t, state["duration"])
     state["p"].render()
     return state["p"].screenshot(return_img=True)
 
 
 # ── output ───────────────────────────────────────────────────────────────────
 def render_video(out, duration, size=(PANEL_W, PANEL_H), fps=FPS, fouling=False,
-                 mode="counter", flip_at=None, foul_at=None):
-    state = build(size, fouling, mode, flip_at, foul_at)
+                 mode="counter", flip_at=None, foul_at=None, temps=None):
+    state = build(size, fouling, mode, flip_at, foul_at, temps, duration)
     n = int(math.ceil(duration * fps))
     first = frame_at(state, 0.0, 0.0)
     fh, fw = first.shape[:2]
@@ -327,9 +353,10 @@ def render_video(out, duration, size=(PANEL_W, PANEL_H), fps=FPS, fouling=False,
     return Path(out)
 
 def render_still(out, t, size=(PANEL_W, PANEL_H), fouling=False, mode="counter", flip_at=None,
-                 foul_at=None):
+                 foul_at=None, temps=None, duration=30.0):
+    """duration: length of the video this still stands for (sets where the camera swing is)."""
     from PIL import Image
-    state = build(size, fouling, mode, flip_at, foul_at)
+    state = build(size, fouling, mode, flip_at, foul_at, temps, duration)
     # run the particles up to t so the still looks like the video at that moment
     steps = int(t * 10)
     for _ in range(steps):
@@ -354,7 +381,8 @@ def main():
     a = ap.parse_args()
     size = (PANEL_W // 2, PANEL_H // 2) if a.draft else (PANEL_W, PANEL_H)
     if a.still is not None:
-        render_still(a.out, a.still, size, a.fouling, a.mode, a.flip_at, a.foul_at)
+        render_still(a.out, a.still, size, a.fouling, a.mode, a.flip_at, a.foul_at,
+                     duration=a.duration)
     else:
         render_video(a.out, a.duration, size, 15 if a.draft else FPS, a.fouling, a.mode, a.flip_at,
                      a.foul_at)

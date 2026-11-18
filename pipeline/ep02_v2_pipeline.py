@@ -362,6 +362,14 @@ def _skeleton(u):
 # R_f: 6.4 mm. Temperature profiles are deliberately not drawn: with less heat
 # moved the counterflow gap widens (26.7 → 30 K), which would read as a
 # contradiction of EP01 without a longer explanation.
+T_HOT_IN, T_COLD_IN = 90, 10
+def _outlets(ntu):
+    """(hot out, cold out) °C, rounded as drawn: counterflow, Cr = 1, ε = NTU/(1+NTU)."""
+    dT = ntu / (1 + ntu) * (T_HOT_IN - T_COLD_IN)
+    return round(T_HOT_IN - dT), round(T_COLD_IN + dT)
+CLEAN_OUT  = _outlets(2.0)                     # (37, 63)
+FOULED_OUT = _outlets(2.0 * 0.0020 / 0.0024)   # (40, 60): U falls by 1/U 0.0020 → 0.0024
+
 BROWN = (150,100,50)
 DEPOSIT_TXT = (230,170,100)
 
@@ -389,18 +397,39 @@ def _badge(draw, y, text, colour):
                            fill=(30,34,50), outline=colour, width=5)
     draw.text((W//2, y), text, font=f, fill=colour, anchor="mm")
 
+def outlets_shown(fn, t, m):
+    """(hot out, cold out) the 2D diagram shows at scene time t, or None when the scene has no
+    diagram. The single source for the 2D drawing and the 3D panel's labels (--wide)."""
+    if fn is render_a:      # month-6 numbers once the second line's change is half way (0.6 s)
+        later = len(m) > 1 and t >= m[1] and _ease((t - m[1]) / 1.2) > 0.5
+        return FOULED_OUT if later else CLEAN_OUT
+    if fn is render_b:
+        return FOULED_OUT if t >= m[1] else CLEAN_OUT
+    return None
+
+def outlet_timeline(plan, step=1/30):
+    """[(t, hot out, cold out)] in episode time, one entry per change; scenes without the
+    diagram keep the last values shown."""
+    events, t0 = [], 0.0
+    for fn, dur, marks in plan:
+        for i in range(int(dur / step) + 1):
+            shown = outlets_shown(fn, i * step, marks)
+            if shown and (not events or events[-1][1:] != shown):
+                events.append((round(t0 + i * step, 3), *shown))
+        t0 += dur
+    return events
+
 def render_a(t, m, dur):
     later = len(m) > 1 and t >= m[1]
-    k = _ease((t-m[1])/1.2) if later else 0.0
-    img = draw_illustration(counter=True,
-                            hot_out=40 if k > 0.5 else 37,
-                            cold_out=60 if k > 0.5 else 63,
-                            cold_out_colour=YELLOW if k > 0.5 else None)
+    hot_out, cold_out = outlets_shown(render_a, t, m)
+    fouled = (hot_out, cold_out) == FOULED_OUT
+    img = draw_illustration(counter=True, hot_out=hot_out, cold_out=cold_out,
+                            cold_out_colour=YELLOW if fouled else None)
     draw = ImageDraw.Draw(img)
     draw.text((W//2, 130), f"{EP_TAG} — {EP_TITLE}", font=get_font(64,True), fill=GREY, anchor="mm")
     if later:
         _badge(draw, 300, "MONTH 6", YELLOW)
-        if k > 0.5:
+        if fouled:
             draw.text((W//2, 1330), "?", font=get_font(160,True), fill=YELLOW, anchor="mm")
     else:
         _badge(draw, 300, "DAY 1", (150,190,255))
@@ -408,10 +437,11 @@ def render_a(t, m, dur):
 
 # ── Scene B: Same plant, same flows, different outlets ───────────────────────
 def render_b(t, m, dur):
-    now = t >= m[1]
+    now = outlets_shown(render_b, t, m) == FOULED_OUT
+    (ch, cc), (fh, fc) = CLEAN_OUT, FOULED_OUT
     img = draw_illustration(counter=True,
-                            hot_out="37→40" if now else 37,
-                            cold_out="63→60" if now else 63,
+                            hot_out=f"{ch}→{fh}" if now else ch,
+                            cold_out=f"{cc}→{fc}" if now else cc,
                             cold_out_colour=YELLOW if now else None)
     draw = ImageDraw.Draw(img)
     draw.text((W//2, 330), "Same exchanger · same flows", font=get_font(58,True), fill=WHITE, anchor="mm")
@@ -904,7 +934,10 @@ def main():
         title_from = scene_end(plan, render_a)     # scene A carries the episode title
         print(f"  3D tubes foul from {foul_at:.2f}s (first mention of the deposit); "
               f"ON PAPER from {title_from:.2f}s")
-        wide = make_wide(cap, fouling=True, mode="counter", foul_at=foul_at, title_from=title_from)
+        temps = dict(hot_in=T_HOT_IN, cold_in=T_COLD_IN, outlets=outlet_timeline(plan))
+        print(f"  3D outlet labels: {temps['outlets']}")
+        wide = make_wide(cap, fouling=True, mode="counter", foul_at=foul_at, title_from=title_from,
+                         temps=temps)
     print(f"\n=== DONE ===")
     print(f"  Master:    {mstr}")
     print(f"  Captioned: {cap}")

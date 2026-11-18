@@ -32,6 +32,8 @@ RIGHT_W, RIGHT_H = hx3d.PANEL_W, hx3d.PANEL_H
 assert (RIGHT_W, RIGHT_H) == (HALF_W, FRAME_H), "hx3d.PANEL_W/H must fill the right half"
 DIVIDER_W, DIVIDER_COLOUR = 3, "0x3A4050"   # vertical partition centred on x = 960
 TITLE_FADE = 0.5                            # ON PAPER fades in over this long (s)
+TITLE_RAISE, TITLE_SCALE = 20, 0.9          # ON PAPER sits 20 px higher, 10% smaller than IN THE PLANT
+PANEL_FADE = 1.0                            # 3D panel fades in from the background over this long (s)
 
 def duration_of(video):
     ffprobe = str(Path(hx3d.FFMPEG).with_name("ffprobe"))
@@ -46,7 +48,8 @@ def compose(left, right, title, out, duration, title_from=0.0):
     shown from title_from (s) — after the 2D's own title scene, so the two never overlap."""
     vf = (f"color=c={LEFT_BG}:s={FRAME_W}x{FRAME_H}:r={hx3d.FPS}:d={duration:.3f}[bg];"
           f"[0:v]scale={LEFT_W}:{FRAME_H}:flags=lanczos,setsar=1[l];"
-          f"[1:v]scale={RIGHT_W}:{RIGHT_H},setsar=1[r];"
+          f"[1:v]scale={RIGHT_W}:{RIGHT_H},setsar=1,"
+          f"fade=t=in:st=0:d={PANEL_FADE}:color={LEFT_BG}[r];"
           f"[2:v]format=rgba,fade=t=in:st={title_from:.3f}:d={TITLE_FADE}:alpha=1[title];"
           f"[bg][l]overlay={LEFT_X}:0[t1];"
           f"[t1][r]overlay={RIGHT_X}:0:shortest=1[t2];"
@@ -64,9 +67,11 @@ def compose(left, right, title, out, duration, title_from=0.0):
     return Path(out)
 
 def make_wide(video, fouling=False, mode="counter", flip_at=None, draft=False, foul_at=None,
-              title_from=0.0):
+              title_from=0.0, temps=None):
     """foul_at: 3D tubes start clean and fade to fouled from this time (s); implies fouling.
-    title_from: when ON PAPER appears (the end of the 2D's title scene)."""
+    title_from: when ON PAPER appears (the end of the 2D's title scene).
+    temps: dict(hot_in, cold_in, outlets=[(t, hot out, cold out)]) for the 3D nozzle labels,
+    taken from what the 2D shows (see outlet_timeline in the episode pipeline)."""
     video = Path(video)
     dur = duration_of(video)
     stem = video.stem.removesuffix("_captioned").removesuffix("_master")
@@ -75,8 +80,9 @@ def make_wide(video, fouling=False, mode="counter", flip_at=None, draft=False, f
     title = video.with_name(f"{stem}_on_paper_title.png")
     print(f"  3D panel for {video.name} ({dur:.1f}s)…")
     size = (RIGHT_W // 2, RIGHT_H // 2) if draft else (RIGHT_W, RIGHT_H)
-    hx3d.render_video(panel, dur, size, 15 if draft else hx3d.FPS, fouling, mode, flip_at, foul_at)
-    hx3d.render_title_png("ON PAPER", title, (HALF_W, FRAME_H))
+    hx3d.render_video(panel, dur, size, 15 if draft else hx3d.FPS, fouling, mode, flip_at, foul_at,
+                      temps)
+    hx3d.render_title_png("ON PAPER", title, (HALF_W, FRAME_H), TITLE_RAISE, TITLE_SCALE)
     compose(video, panel, title, out, dur, title_from)
     print(f"  wide: {out}")
     return out
