@@ -895,20 +895,10 @@ def poster(video, plan):
     print(f"  poster: {p} (t={t:.1f}s)")
     return p
 
-# Narration that first names the deposit: the 3D panel's tubes start clean and foul from here.
-# "layer" counts too: scene C introduces the deposit as "a layer inside the tubes" while the 2D
-# draws "Deposit 0.08 mm", well before the narration says the word "deposit" (scene D).
-FOUL_MENTION = re.compile(r"\b(foul\w*|deposit\w*|layer)\b", re.I)
-
-def first_mention(plan, pattern=FOUL_MENTION):
-    """Start time (s) of the first narration line matching pattern, from the measured plan."""
-    t0 = 0.0
-    for (fn, dur, marks), (_, lines) in zip(plan, SCENES):
-        for mark, (narr, *_) in zip(marks, lines):
-            if pattern.search(narr):
-                return t0 + mark
-        t0 += dur
-    return None
+def first_fouled(timeline):
+    """Episode time (s) the 2D first shows the month-6 (fouled) outlets: the 3D panel's tubes
+    foul from here and its labels switch to the same numbers at the same moment."""
+    return next(te for te, *shown in timeline if tuple(shown) == FOULED_OUT)
 
 def scene_end(plan, render_fn):
     """End time (s) of the given scene in the measured plan."""
@@ -930,11 +920,13 @@ def main():
     wide  = None
     if "--wide" in sys.argv:     # widescreen: this 2D on the left, 3D exchanger fouling on the right
         from side_by_side import make_wide
-        foul_at = first_mention(plan)
+        foul_at = first_fouled(outlet_timeline(plan))
         title_from = scene_end(plan, render_a)     # scene A carries the episode title
-        print(f"  3D tubes foul from {foul_at:.2f}s (first mention of the deposit); "
+        print(f"  3D tubes foul from {foul_at:.2f}s (first month-6 outlets in the 2D); "
               f"ON PAPER from {title_from:.2f}s")
-        temps = dict(hot_in=T_HOT_IN, cold_in=T_COLD_IN, outlets=outlet_timeline(plan))
+        # one change, together with the tubes: clean numbers, then fouled from foul_at on
+        temps = dict(hot_in=T_HOT_IN, cold_in=T_COLD_IN,
+                     outlets=[(0.0, *CLEAN_OUT), (foul_at, *FOULED_OUT)])
         print(f"  3D outlet labels: {temps['outlets']}")
         wide = make_wide(cap, fouling=True, mode="counter", foul_at=foul_at, title_from=title_from,
                          temps=temps)
