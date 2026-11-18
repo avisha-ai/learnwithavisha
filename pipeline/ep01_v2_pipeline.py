@@ -709,10 +709,11 @@ def _chunk_caption(text, max_chars=CAPTION_MAX_CHARS):
             return cues
         k += 1
 
-def generate_narration():
+def generate_narration(write=True):
     """Build the narration track and the timing plan from per-line clips.
     Returns (wav_path, plan, cues): plan = [(render_fn, duration, marks)],
     cues = [(start, end, caption)] in absolute seconds.
+    write=False only measures the plan from the cached clips (wav_path is None).
     """
     print(f"  narration via Kokoro ({KOKORO_VOICE}), one clip per line…")
     chunks, plan, cues = [], [], []
@@ -745,6 +746,8 @@ def generate_narration():
             chunks.append(np.zeros(int(extra*sr), dtype=np.float32))
             t_abs += extra; dur += extra
         plan.append((render_fn, dur, marks))
+    if not write:
+        return None, plan, cues
     raw = OUT / "narration_kokoro_raw.wav"
     sf.write(str(raw), np.concatenate(chunks), sr)
     # Loudness to spec: −16 LUFS integrated, true peak ≤ −1.5 dBTP
@@ -833,6 +836,38 @@ def poster(video, plan):
     print(f"  poster: {p} (t={t:.1f}s)")
     return p
 
+# ── Widescreen 2D + 3D (side_by_side.py) ─────────────────────────────────────
+# The 3D labels take their numbers from the same temperature model the 2D graphs draw.
+T_HOT_IN, T_COLD_IN = round(par_hot(0)), round(par_cold(0))
+PARALLEL_OUT = (round(par_hot(1)), round(par_cold(1)))   # (hot out, cold out)
+COUNTER_OUT  = (round(cf_hot(1)), round(cf_cold(0)))     # cold leaves at the hot inlet end
+
+def scene_start(plan, render_fn):
+    t = 0.0
+    for fn, dur, _ in plan:
+        if fn is render_fn:
+            return t
+        t += dur
+    raise ValueError(render_fn.__name__)
+
+def scene_end(plan, render_fn):
+    return scene_start(plan, render_fn) + next(d for fn, d, _ in plan if fn is render_fn)
+
+def flip_time(plan):
+    """When render_d's schematic switches to counterflow (its p crosses 0.5)."""
+    dur = next(d for fn, d, _ in plan if fn is render_d)
+    return scene_start(plan, render_d) + 0.55*dur
+
+def wide_settings(flip_at=None):
+    """make_wide() arguments for this episode, from the measured scene plan: the 3D runs
+    parallel, flips to counterflow at flip_at (default: when the 2D flips in scene D), and its
+    outlet labels switch with it; ON PAPER waits for the title scene to end."""
+    _, plan, _ = generate_narration(write=False)
+    flip = flip_time(plan) if flip_at is None else flip_at
+    return dict(mode="counter", flip_at=flip, title_from=scene_end(plan, render_intro),
+                temps=dict(hot_in=T_HOT_IN, cold_in=T_COLD_IN,
+                           outlets=[(0.0, *PARALLEL_OUT), (flip, *COUNTER_OUT)]))
+
 def main():
     print(f"=== LearnWithAvisha · {EP_TAG} — {EP_TITLE} ===")
     nar, plan, cues = generate_narration()
@@ -841,6 +876,9 @@ def main():
     cap   = add_captions(mstr, ass)
     web   = make_web(cap)
     pst   = poster(mstr, plan)   # clean frame, no half-sentence caption
+    if "--wide" in sys.argv:     # widescreen: this 2D on the left, 3D exchanger flipping on the right
+        from side_by_side import make_wide
+        make_wide(cap, **wide_settings())
     print(f"\n=== DONE ===")
     print(f"  Master:    {mstr}")
     print(f"  Captioned: {cap}")

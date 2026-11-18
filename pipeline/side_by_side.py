@@ -17,14 +17,16 @@ Output: out/<episode>_wide.mp4  (1920x1080, 30 fps, H.264 + AAC)
 Everything here is free and offline: PyVista + ffmpeg.
 """
 
-import argparse, subprocess, sys
+import argparse, re, subprocess, sys
 from pathlib import Path
 
 import hx3d
 
 FRAME_W, FRAME_H = 1920, 1080
 HALF_W = FRAME_W // 2               # two equal halves
-LEFT_W = 608                        # 2D episode at full height (1080x1920 scaled to 608x1080)
+LEFT_TOP = 56                       # band above the 2D for ON PAPER, clear of the 2D's own headings
+LEFT_H = FRAME_H - LEFT_TOP         # 2D episode (1080x1920) scaled to 576x1024 below the band
+LEFT_W = round(LEFT_H * 1080 / 1920 / 2) * 2
 LEFT_X = (HALF_W - LEFT_W) // 2     # centred in the left half
 LEFT_BG = "0x%02x%02x%02x" % hx3d.BG   # same dark as the 3D side and the 2D episode itself
 RIGHT_X = HALF_W
@@ -47,11 +49,11 @@ def compose(left, right, title, out, duration, title_from=0.0):
     """left: 2D episode, right: 3D panel, title: transparent ON PAPER png for the left half,
     shown from title_from (s) — after the 2D's own title scene, so the two never overlap."""
     vf = (f"color=c={LEFT_BG}:s={FRAME_W}x{FRAME_H}:r={hx3d.FPS}:d={duration:.3f}[bg];"
-          f"[0:v]scale={LEFT_W}:{FRAME_H}:flags=lanczos,setsar=1[l];"
+          f"[0:v]scale={LEFT_W}:{LEFT_H}:flags=lanczos,setsar=1[l];"
           f"[1:v]scale={RIGHT_W}:{RIGHT_H},setsar=1,"
           f"fade=t=in:st=0:d={PANEL_FADE}:color={LEFT_BG}[r];"
           f"[2:v]format=rgba,fade=t=in:st={title_from:.3f}:d={TITLE_FADE}:alpha=1[title];"
-          f"[bg][l]overlay={LEFT_X}:0[t1];"
+          f"[bg][l]overlay={LEFT_X}:{LEFT_TOP}[t1];"
           f"[t1][r]overlay={RIGHT_X}:0:shortest=1[t2];"
           f"[t2][title]overlay=0:0[t3];"     # on top of the 2D, same place as IN THE PLANT
           f"[t3]drawbox=x={HALF_W - DIVIDER_W // 2}:y=0:w={DIVIDER_W}:h={FRAME_H}"
@@ -87,6 +89,16 @@ def make_wide(video, fouling=False, mode="counter", flip_at=None, draft=False, f
     print(f"  wide: {out}")
     return out
 
+def episode_settings(video):
+    """make_wide() arguments from the episode pipeline whose EP_SLUG matches the video, if it
+    has wide_settings() (title timing, flip/fouling time and label temperatures from its plan)."""
+    stem = Path(video).stem.removesuffix("_captioned").removesuffix("_master")
+    for src in sorted(Path(__file__).parent.glob("ep*_v2_pipeline.py")):
+        if re.search(rf'^EP_SLUG\s*=\s*"{re.escape(stem)}"', src.read_text(), re.M):
+            mod = __import__(src.stem)
+            return mod.wide_settings if hasattr(mod, "wide_settings") else None
+    return None
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("video", help="finished vertical episode (the _captioned.mp4)")
@@ -95,11 +107,19 @@ def main():
     ap.add_argument("--fouling", action="store_true", help="show fouled (brown) tubes")
     ap.add_argument("--foul-at", type=float,
                     help="3D tubes clean until this time (s), then fade to fouled over hx3d.FOUL_FADE s")
-    ap.add_argument("--title-from", type=float, default=0.0,
+    ap.add_argument("--title-from", type=float,
                     help="show ON PAPER from this time (s): the end of the 2D's title scene")
     ap.add_argument("--draft", action="store_true", help="half-size 3D at 15 fps — layout check")
     a = ap.parse_args()
-    make_wide(a.video, a.fouling, a.mode, a.flip_at, a.draft, a.foul_at, a.title_from)
+    # the episode's own plan fills in what the command line leaves out
+    settings = episode_settings(a.video)
+    kw = settings(flip_at=a.flip_at) if settings else {}
+    if a.foul_at is not None: kw["foul_at"] = a.foul_at
+    if a.title_from is not None: kw["title_from"] = a.title_from
+    if settings is None: kw.update(mode=a.mode, flip_at=a.flip_at)
+    print(f"  settings: { {k: v for k, v in kw.items() if k != 'temps'} }"
+          + (f" · labels {kw['temps']['outlets']}" if kw.get("temps") else ""))
+    make_wide(a.video, fouling=a.fouling, draft=a.draft, **kw)
 
 if __name__ == "__main__":
     main()
