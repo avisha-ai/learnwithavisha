@@ -23,6 +23,8 @@
       "figure_caption": "FIG. 1 — SHELL & TUBE EXCHANGER · COUNTERCURRENT FLOW",
       "video": {
         "mp4": "media/lwa_s1e01_the_flip.mp4",
+        "mp4_3d": "media/lwa_s1e01_the_flip_3d.mp4",
+        "poster_3d": "media/lwa_s1e01_the_flip_3d_poster.jpg",
         "poster": "media/lwa_s1e01_the_flip_poster.jpg",
         "vtt": "captions/lwa_s1e01_the_flip.vtt"
       },
