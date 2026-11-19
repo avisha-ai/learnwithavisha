@@ -64,18 +64,23 @@ h3.feat-q{font-weight:400}
   aspect-ratio: 9/16;
   background: #050A09;
 }
-/* 2D episode + 3D equipment view side by side; the 3D drops below the 2D on narrow screens */
+/* 2D episode + 3D equipment view, always side by side. Widths share the space 320:506
+   (9:16 at 320 and 960:1080 at 506 are both 569 tall), so the heights match at any width. */
 .feat-inner.no-fig { grid-template-columns: 1fr; }
 .feat-video-pair {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   gap: 16px;
   width: 100%;
 }
-.feat-video-pair .feat-video-wrap { flex: 0 1 320px; }
-.feat-video-wrap.is-3d { flex: 0 1 506px; max-width: 506px; cursor: pointer; }
+.feat-video-pair .feat-video-wrap { flex: 320 1 0; min-width: 0; }
+.feat-video-pair .feat-video-wrap.is-3d { flex: 506 1 0; max-width: 506px; cursor: pointer; }
+@media (max-width: 600px) {
+  .feat-video-pair { gap: 8px; }
+  .feat-video-card:has(.feat-video-pair) { padding-left: 12px; padding-right: 12px; }
+}
 .feat-video-wrap.is-3d video { aspect-ratio: 960/1080; background: #12141C; }
 .cs-watch{
   font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;
@@ -236,11 +241,6 @@ h3.feat-q{font-weight:400}
     <div class="hero-actions">
       <a class="btn-main" href="#topics" style="text-decoration:none">Browse episodes →</a>
       <a class="btn-link" href="#tutor">Ask Avisha ↓</a>
-    </div>
-    <div class="spec-row">
-      <div class="spec-item"><span class="sv">60–90s</span><span class="sl">per episode</span></div>
-      <div class="spec-item"><span class="sv">Free</span><span class="sl">always</span></div>
-      <div class="spec-item"><span class="sv">{{LIVE_COUNT}} live</span><span class="sl">{{COMING_COUNT}} coming</span></div>
     </div>
   </section>
 

@@ -114,7 +114,7 @@ nav{
   line-height:1.85;max-width:480px;margin-bottom:28px;
 }
 
-.hero-actions{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:36px}
+.hero-actions{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
 .btn-main{
   font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.08em;
   background:var(--main);color:var(--bg);
@@ -128,19 +128,6 @@ nav{
   color:var(--main);background:none;border:none;cursor:pointer;
   text-decoration:underline;
 }
-
-/* spec row */
-.spec-row{
-  display:flex;gap:0;border-top:1px solid var(--rule);
-  padding-top:16px;
-}
-.spec-item{
-  padding-right:24px;margin-right:24px;
-  border-right:1px solid var(--rule);
-}
-.spec-item:last-child{border-right:none}
-.sv{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--fg);display:block;font-weight:500}
-.sl{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;color:var(--fg3);display:block}
 
 /* ── FEATURED MYSTERY ── */
 .featured{
@@ -325,8 +312,6 @@ nav{
 
 @media(max-width:480px){
   .hero{padding:36px 0 28px}
-  .spec-row{flex-direction:column;gap:10px}
-  .spec-item{border-right:none;padding-right:0;margin-right:0;padding-bottom:8px;border-bottom:1px solid var(--rule)}
   .cs-teaser{display:none}
   .tutor-inner{padding:16px}
 }

@@ -109,12 +109,10 @@ def main():
         sys.exit("no episode is released or dropping_soon — nothing to feature")
     feat = max(cands, key=lambda e: int(e["num"]))
     rows = "\n".join(row_html(e) for e in eps if e is not feat)
-    live = sum(e["status"] == "released" for e in eps)
 
     out = (HERE / "template.html").read_text()
     for k, v in {"BASE_CSS": (HERE / "_base.css").read_text(), "FEATURED": featured_html(feat, data["linkedin"]),
                  "INDEX": rows, "LINKEDIN": E(data["linkedin"]), "TOPIC_COUNT": str(len(eps)),
-                 "LIVE_COUNT": str(live), "COMING_COUNT": str(len(eps) - live),
                  "SITE_URL": SITE_URL, "DESCRIPTION": E(DESCRIPTION)}.items():
         out = out.replace("{{" + k + "}}", v)
     assert "{{" not in out, "unfilled placeholder"

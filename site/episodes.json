@@ -39,7 +39,7 @@
       "name": "The Fouling Problem",
       "index_name": "The Fouling Problem",
       "teaser": "Your exchanger was designed clean. After six months it transfers 20% less heat. Where did that resistance come from — and how do engineers account for it?",
-      "index_teaser": "Your exchanger was designed clean. After six months it transfers 20% less heat — where did the resistance come from?",
+      "index_teaser": "Your exchanger was designed clean. As deposits build up, heat transfer can fall—where does the extra resistance come from?",
       "status": "coming_soon"
     },
     {
@@ -51,7 +51,7 @@
       "name": "Baffles — What They Do and Why They Matter",
       "index_name": "Baffles — What They Do and Why",
       "teaser": "Without baffles, shell-side fluid would short-circuit straight through. How a segmental plate forces the fluid into a meandering path — and why that doubles heat transfer.",
-      "index_teaser": "Without baffles, shell-side fluid short-circuits. How a plate forces a meandering path — and doubles heat transfer.",
+      "index_teaser": "Without baffles, shell-side fluid short-circuits. How a plate forces a meandering path — and changes shell-side flow and heat transfer.",
       "status": "coming_soon"
     },
     {
