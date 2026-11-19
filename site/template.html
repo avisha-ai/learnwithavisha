@@ -6,7 +6,7 @@
 <title>Learn with Avisha — Plant Mysteries</title>
 <meta name="description" content="{{DESCRIPTION}}">
 <link rel="canonical" href="{{SITE_URL}}">
-<link rel="icon" href="data:,">
+<link rel="icon" href="/favicon-64.png" sizes="64x64">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Learn with Avisha">
 <meta property="og:title" content="Learn with Avisha — Plant Mysteries">
@@ -62,6 +62,18 @@ h3.feat-q{font-weight:400}
   aspect-ratio: 9/16;
   background: #050A09;
 }
+/* 2D episode + 3D equipment view side by side; the 3D drops below the 2D on narrow screens */
+.feat-video-pair {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+.feat-video-pair .feat-video-wrap { flex: 0 1 320px; }
+.feat-video-wrap.is-3d { flex: 1 1 300px; max-width: 560px; cursor: pointer; }
+.feat-video-wrap.is-3d video { aspect-ratio: 960/1080; background: #12141C; }
 .cs-watch{
   font-family:'DM Mono',monospace;font-size:.54rem;letter-spacing:.1em;
   color:var(--main);flex-shrink:0;text-decoration:none;border-bottom:1px solid currentColor;
@@ -225,7 +237,7 @@ h3.feat-q{font-weight:400}
     <div class="spec-row">
       <div class="spec-item"><span class="sv">60–90s</span><span class="sl">per episode</span></div>
       <div class="spec-item"><span class="sv">Free</span><span class="sl">always</span></div>
-      <div class="spec-item"><span class="sv">{{TOPIC_COUNT}} topics</span><span class="sl">coming</span></div>
+      <div class="spec-item"><span class="sv">{{LIVE_COUNT}} live</span><span class="sl">{{COMING_COUNT}} coming</span></div>
     </div>
   </section>
 

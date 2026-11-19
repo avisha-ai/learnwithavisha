@@ -5,7 +5,9 @@
     "status: 'released' (needs video.mp4) | 'dropping_soon' | 'coming_soon'.",
     "video.mp4 / video.poster are paths inside site/public/ (e.g. 'media/lwa_s1e01_the_flip.mp4').",
     "After editing, run:  python3 site/build.py   then commit and deploy.",
-    "Optional index_name / index_teaser: shorter text for the episode-index row; otherwise name / teaser are used."
+    "Optional index_name / index_teaser: shorter text for the episode-index row; otherwise name / teaser are used.",
+    "Optional video.mp4_3d (+ optional video.poster_3d): the 3D equipment panel (pipeline/hx3d.py, 960x1080, same length as the episode). When set, the featured card shows it to the right of the 2D video, playing in step.",
+    "Optional video.vtt: captions file inside site/public/ (put it in site/static/captions/, e.g. 'captions/lwa_s1e01_the_flip.vtt')."
   ],
   "linkedin": "https://www.linkedin.com/in/mrinalgala",
   "episodes": [
@@ -21,7 +23,8 @@
       "figure_caption": "FIG. 1 — SHELL & TUBE EXCHANGER · COUNTERCURRENT FLOW",
       "video": {
         "mp4": "media/lwa_s1e01_the_flip.mp4",
-        "poster": "media/lwa_s1e01_the_flip_poster.jpg"
+        "poster": "media/lwa_s1e01_the_flip_poster.jpg",
+        "vtt": "captions/lwa_s1e01_the_flip.vtt"
       },
       "series": "Heat Exchanger Files"
     },
