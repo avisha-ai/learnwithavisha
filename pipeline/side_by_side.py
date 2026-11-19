@@ -37,7 +37,9 @@ assert (RIGHT_W, RIGHT_H) == (HALF_W, FRAME_H), "hx3d.PANEL_W/H must fill the ri
 DIVIDER_W, DIVIDER_COLOUR = 3, "0x3A4050"   # vertical partition centred on x = 960
 TITLE_FADE = 0.5                            # ON PAPER fades in over this long (s)
 TITLE_RAISE, TITLE_SCALE = 20, 0.9          # ON PAPER sits 20 px higher, 10% smaller than IN THE PLANT
-PANEL_FADE = 1.0                            # 3D panel fades in from the background over this long (s)
+PANEL_FADE = 0.0                            # 3D panel fade-in (s); 0 = visible from the first frame,
+                                            # so a paused video / thumbnail shows both halves
+POSTER_AT = 5.0                             # wide poster frame (s): both 2D and 3D on screen
 
 def duration_of(video):
     ffprobe = str(Path(hx3d.FFMPEG).with_name("ffprobe"))
@@ -50,10 +52,10 @@ def duration_of(video):
 def compose(left, right, title, out, duration, title_from=0.0):
     """left: 2D episode, right: 3D panel, title: transparent ON PAPER png for the left half,
     shown from title_from (s) — after the 2D's own title scene, so the two never overlap."""
+    panel_fade = f",fade=t=in:st=0:d={PANEL_FADE}:color={LEFT_BG}" if PANEL_FADE > 0 else ""
     vf = (f"color=c={LEFT_BG}:s={FRAME_W}x{FRAME_H}:r={hx3d.FPS}:d={duration:.3f}[bg];"
           f"[0:v]scale={LEFT_W}:{LEFT_H}:flags=lanczos,setsar=1[l];"
-          f"[1:v]scale={RIGHT_W}:{RIGHT_H},setsar=1,"
-          f"fade=t=in:st=0:d={PANEL_FADE}:color={LEFT_BG}[r];"
+          f"[1:v]scale={RIGHT_W}:{RIGHT_H},setsar=1{panel_fade}[r];"
           f"[2:v]format=rgba,fade=t=in:st={title_from:.3f}:d={TITLE_FADE}:alpha=1[title];"
           f"[bg][l]overlay={LEFT_X}:{LEFT_TOP}[t1];"
           f"[t1][r]overlay={RIGHT_X}:0:shortest=1[t2];"
@@ -89,7 +91,18 @@ def make_wide(video, fouling=False, mode="counter", flip_at=None, draft=False, f
     hx3d.render_title_png("ON PAPER", title, (HALF_W, FRAME_H), TITLE_RAISE, TITLE_SCALE)
     compose(video, panel, title, out, dur, title_from)
     print(f"  wide: {out}")
+    wide_poster(out, min(POSTER_AT, dur / 2))
     return out
+
+def wide_poster(wide, at):
+    """Still frame of the wide video (both halves visible) for the site and shared links."""
+    poster = Path(wide).with_name(f"{Path(wide).stem}_poster.jpg")
+    r = subprocess.run([hx3d.FFMPEG, "-y", "-loglevel", "error", "-ss", f"{at:.2f}", "-i", str(wide),
+                        "-frames:v", "1", "-q:v", "2", str(poster)], capture_output=True, text=True)
+    if r.returncode != 0:
+        sys.exit(f"  wide poster failed:\n{r.stderr[-400:]}")
+    print(f"  wide poster: {poster} (t={at:.1f}s)")
+    return poster
 
 def episode_settings(video):
     """make_wide() arguments from the episode pipeline whose EP_SLUG matches the video, if it
