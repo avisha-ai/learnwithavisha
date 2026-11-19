@@ -65,13 +65,15 @@ def featured_html(ep, linkedin):
         action = (f'<p class="feat-soon">Episode {E(ep["num"])} — dropping soon. Follow on '
                   f'<a href="{E(linkedin)}" target="_blank" rel="noopener">LinkedIn</a> for the release.</p>')
     figure = ""
-    if ep.get("figure"):
+    # the 3D view replaces the side sketch; episodes without 3D keep it
+    has_3d = released and bool(ep["video"].get("mp4_3d"))
+    if ep.get("figure") and not has_3d:
         svg = (HERE / ep["figure"]).read_text().strip()
         svg = svg.replace("<svg ", f'<svg role="img" aria-label="{E(ep.get("figure_caption",""))}" ', 1)
         figure = (f'      <div class="feat-sketch">\n        {svg}\n'
                   f'        <div class="sketch-cap" aria-hidden="true">{E(ep.get("figure_caption",""))}</div>\n      </div>')
     return f'''    <h2 class="feat-fig" id="featured-h">FEATURED MYSTERY · EPISODE {E(ep["num"])}</h2>
-    <div class="feat-inner" style="position:relative">
+    <div class="feat-inner{"" if figure else " no-fig"}" style="position:relative">
       <div class="margin-note" aria-hidden="true">EP {E(ep["num"])}<br>{E(ep["subject"]).replace(" ", "<br>")}</div>
       <div>
         <div class="feat-ep">{'<span class="live-dot"></span>' if released else ''}{label}</div>
