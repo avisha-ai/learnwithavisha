@@ -1,0 +1,8 @@
+# EP02 — The Fouling Problem (spec placeholder; the render robot uses pipeline/ep02_v2_pipeline.py)
+episode: 2
+slug: lwa_s1e02_the_fouling_problem
+module: shell-and-tube heat exchanger
+closing_question: Why are there plates inside the shell?  # → EP03 Baffles
+references:
+  - NPTEL Heat Transfer (fouling factor, overall heat transfer coefficient)
+  - LibreTexts: Heat exchangers, effectiveness-NTU method
