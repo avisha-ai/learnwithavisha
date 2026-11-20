@@ -7,3 +7,5 @@ is merged into main, it can be deleted.
 
 - ep02-ci.patch: Linux fonts (Liberation), KOKORO_DIR, and the EP02 steel line
   ("about 6.4 mm", 20 Nov 2026).
+
+Branch previews build on Vercel from this branch (linked 20 Nov 2026).
