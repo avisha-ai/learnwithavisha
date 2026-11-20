@@ -38,9 +38,18 @@
       "subject": "Heat Transfer",
       "name": "The Fouling Problem",
       "index_name": "The Fouling Problem",
-      "teaser": "Your exchanger was designed clean. After six months it transfers 20% less heat. Where did that resistance come from — and how do engineers account for it?",
+      "teaser": "Your exchanger was designed clean. Six months later it moves less heat. Where did that resistance come from — and how do engineers account for it?",
       "index_teaser": "Your exchanger was designed clean. As deposits build up, heat transfer can fall—where does the extra resistance come from?",
-      "status": "coming_soon"
+      "question": "“Designed clean. Six months later, less heat.<br>Where did the extra resistance come from?”",
+      "summary": "A deposit just 0.08 mm thick adds a resistance in series with the tube wall and the two films. U falls about 17%, the outlets drift, and the exchanger moves about 6% less heat.",
+      "status": "released",
+      "video": {
+        "mp4": "media/lwa_s1e02_the_fouling_problem.mp4",
+        "mp4_3d": "media/lwa_s1e02_the_fouling_problem_3d.mp4",
+        "poster_3d": "media/lwa_s1e02_the_fouling_problem_3d_poster.jpg",
+        "poster": "media/lwa_s1e02_the_fouling_problem_poster.jpg",
+        "vtt": "captions/lwa_s1e02_the_fouling_problem.vtt"
+      }
     },
     {
       "id": "ep03",
@@ -50,7 +59,7 @@
       "subject": "Heat Transfer",
       "name": "Baffles — What They Do and Why They Matter",
       "index_name": "Baffles — What They Do and Why",
-      "teaser": "Without baffles, shell-side fluid would short-circuit straight through. How a segmental plate forces the fluid into a meandering path — and why that doubles heat transfer.",
+      "teaser": "Without baffles, shell-side fluid would short-circuit straight through. How a segmental plate forces the fluid into a zig-zag path, and what that does to heat transfer and pressure drop.",
       "index_teaser": "Without baffles, shell-side fluid short-circuits. How a plate forces a meandering path — and changes shell-side flow and heat transfer.",
       "status": "coming_soon"
     },
@@ -79,25 +88,34 @@
       "status": "coming_soon"
     },
     {
-      "num": "06",
-      "subject": "Separations",
-      "name": "Separations",
-      "status": "coming_soon",
-      "teaser": "How does a cyclone separate without any moving parts?"
-    },
-    {
-      "num": "07",
+      "series": "Heat Exchanger Files",
       "subject": "Process Safety",
-      "name": "Process Safety",
       "status": "coming_soon",
-      "teaser": "When does a relief valve open — and what happens next?"
+      "num": "06",
+      "name": "When a Tube Bursts",
+      "index_name": "When a Tube Bursts",
+      "teaser": "One tube splits inside a running exchanger. The high-pressure fluid floods the other side. What protects the shell, and why engineers design for a failure they hope never happens.",
+      "index_teaser": "A tube splits inside a running exchanger. What protects the shell from the high-pressure side?"
     },
     {
-      "num": "08",
+      "series": "Heat Exchanger Files",
       "subject": "Instrumentation & Control",
-      "name": "Instrumentation & Control",
       "status": "coming_soon",
-      "teaser": "Why does integral action eliminate steady-state error?"
+      "num": "07",
+      "name": "Holding the Outlet Temperature",
+      "index_name": "Holding the Outlet Temperature",
+      "teaser": "Feed changes, fouling grows, weather shifts, yet the outlet must stay on target. How a control loop and a bypass keep an exchanger steady.",
+      "index_teaser": "Everything upstream changes. How does a control loop keep the outlet on target?"
+    },
+    {
+      "series": "Heat Exchanger Files",
+      "subject": "Mass Transfer",
+      "status": "coming_soon",
+      "num": "08",
+      "name": "The Exchanger Under the Column",
+      "index_name": "The Exchanger Under the Column",
+      "teaser": "Every distillation column hides a heat exchanger at its base. Why the reboiler is where separation really begins, and the start of our next mystery: the column.",
+      "index_teaser": "Every distillation column hides an exchanger at its base. Where separation really begins."
     }
   ]
 }

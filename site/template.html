@@ -214,6 +214,12 @@ h3.feat-q{font-weight:400}
   .lab-footer a.foot-by{margin-left:auto}
 }
 .nav-logo{display:inline-flex;align-items:center;gap:8px} .nav-seal{width:24px;height:24px;border-radius:5px;display:block} .lab-footer a.foot-by{display:inline-flex;align-items:center;gap:10px} .foot-seal{width:40px;height:40px;border-radius:8px;display:block}
+/* review tweaks (2026-11-20) */
+.hero-by{font-family:'Lora',serif;font-style:italic;font-size:.82rem;color:var(--fg3);margin:-14px 0 24px}
+.bot-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+.bot-chip{font-family:'Lora',serif;font-style:italic;font-size:.78rem;color:var(--main);background:none;border:1px solid var(--border);border-radius:100px;padding:6px 12px;cursor:pointer;transition:border-color .15s,color .15s}
+.bot-chip:hover,.bot-chip:focus-visible{border-color:var(--main);color:var(--accent)}
+.bot-chip:disabled{opacity:.4;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -231,6 +237,7 @@ h3.feat-q{font-weight:400}
     <h1>One process mystery.<br><em>One honest explanation.</em></h1>
     <div class="annotation">Short animated explainers — built for engineers who want to understand why.</div>
     <p class="hero-body">Real equipment. Real phenomena. Explained clearly — so the next time you see a heat exchanger or a control loop, you actually know what's happening inside.</p>
+    <p class="hero-by">A Chemical Engineer's vision · by Avisha</p>
     <div class="hero-actions">
       <a class="btn-main" href="#topics" style="text-decoration:none">Browse episodes →</a>
       <a class="btn-link" href="#tutor">Ask Avisha ↓</a>
@@ -244,7 +251,7 @@ h3.feat-q{font-weight:400}
 
   <!-- EPISODE INDEX (generated from episodes.json) -->
   <section class="topics-section" id="topics" aria-labelledby="topics-h">
-    <h2 class="topics-fig" id="topics-h">EPISODE INDEX · {{TOPIC_COUNT}} TOPICS PLANNED</h2>
+    <h2 class="topics-fig" id="topics-h">EPISODE INDEX · NEW EPISODE EVERY WEEK</h2>
     <div class="cs-list">
 {{INDEX}}
     </div>
@@ -269,6 +276,11 @@ h3.feat-q{font-weight:400}
       </div>
 
       <!-- Input row -->
+      <div class="bot-chips" aria-label="Try one of these questions">
+        <button class="bot-chip" type="button" data-q="Why is countercurrent flow usually better in a heat exchanger?">Why is countercurrent flow usually better?</button>
+        <button class="bot-chip" type="button" data-q="What is fouling in a heat exchanger, and why does it matter?">What is fouling, and why does it matter?</button>
+        <button class="bot-chip" type="button" data-q="When should the viscous fluid go on the shell side of a shell-and-tube exchanger?">When does the viscous fluid go on the shell side?</button>
+      </div>
       <div class="bot-input-row">
         <input
           type="text"
@@ -404,6 +416,14 @@ h3.feat-q{font-weight:400}
   }
 
   sendBtn.addEventListener('click', ask);
+  // starter questions: fill the box and ask in one tap
+  document.querySelectorAll('.bot-chip').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      if (sendBtn.disabled) return;
+      input.value = chip.getAttribute('data-q');
+      ask();
+    });
+  });
   input.addEventListener('keydown', function (e) {
     if (e.key === 'Enter') ask();
   });
