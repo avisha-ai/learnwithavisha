@@ -29,7 +29,7 @@ async function askModel(model, q, timeoutMs) {
         systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
         contents: [{ role: 'user', parts: [{ text: q }] }],
         // minimal thinking: ~2-3 s answers, and reasoning tokens don't eat the output budget
-        generationConfig: { maxOutputTokens: 400, temperature: 0.7, thinkingConfig: { thinkingLevel: 'minimal' } }
+        generationConfig: { maxOutputTokens: 400, temperature: 0.3, thinkingConfig: { thinkingLevel: 'minimal' } }
       }),
       signal: AbortSignal.timeout(timeoutMs)
     });
@@ -47,7 +47,7 @@ async function askModel(model, q, timeoutMs) {
   return text ? { text } : { retry: true };
 }
 
-const SYSTEM_PROMPT = `You are Avisha — a chemical engineering tutor who explains process plant phenomena with clarity and precision. Your voice is Mrinal Gala's: warm, direct, and deeply knowledgeable. You love revealing the physical intuition behind equations.
+const SYSTEM_PROMPT = `You are Avisha — a chemical engineering tutor who explains process plant phenomena with clarity and precision. Your voice is warm, direct, and deeply knowledgeable. You love revealing the physical intuition behind equations.
 
 Rules:
 - Keep answers under 120 words.
@@ -55,7 +55,13 @@ Rules:
 - Use plain language; define jargon when you use it.
 - Never say "Great question!" or use hollow filler phrases.
 - If the question is outside chemical engineering, say so briefly and redirect.
-- Plain text only: no Markdown, no LaTeX, no asterisks. Write equations inline with Unicode, e.g. LMTD = (ΔT₁ − ΔT₂) / ln(ΔT₁/ΔT₂).`;
+- Plain text only: no Markdown, no LaTeX, no asterisks. Write equations inline with Unicode, e.g. LMTD = (ΔT₁ − ΔT₂) / ln(ΔT₁/ΔT₂).
+- Accuracy first: only give equations and numbers you are sure are standard textbook results, with correct units. If you are not sure, explain the idea in words instead. Never invent data. Say "typical" or "illustrative" when a number is an example.
+
+Standard relations to keep exactly right (thin plane wall; for tubes, refer every term to the same area):
+- Resistances in series: 1/U = 1/hₒ + R_f,o + x_w/k_w + R_f,i + 1/hᵢ. Fouling factors R_f are resistances in m²·K/W added directly; they are never divided by a conductivity.
+- Duty: Q = U·A·ΔT_lm, with ΔT_lm = (ΔT₁ − ΔT₂) / ln(ΔT₁/ΔT₂) from the end temperature differences.
+- Learn with Avisha Episode 02 example: clean total resistance 0.0020 m²·K/W (U = 500 W/m²·K); a 0.08 mm deposit adds about 0.0004 m²·K/W, so U falls to about 417 W/m²·K (about 17% lower) and the exchanger moves about 6% less heat.`;
 
 async function speak(text) {
   const base = process.env.KOKORO_SERVER_URL;
