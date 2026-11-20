@@ -31,7 +31,7 @@ SYNC_3D_JS = ("(()=>{const m=document.getElementById('feat-2d'),d=document.getEl
               "d.addEventListener('click',()=>{m.paused?m.play():m.pause()});})();")
 
 
-def featured_html(ep, linkedin):
+def featured_html(ep):
     released = ep["status"] == "released"
     label = f'EPISODE {E(ep["num"])} · {E(ep["subject"]).upper()}' + (" · NOW SHOWING" if released else "")
     if released:
@@ -62,8 +62,7 @@ def featured_html(ep, linkedin):
                   f'{main_video}'
                   f'        </div>')
     else:
-        action = (f'<p class="feat-soon">Episode {E(ep["num"])} — dropping soon. Follow on '
-                  f'<a href="{E(linkedin)}" target="_blank" rel="noopener">LinkedIn</a> for the release.</p>')
+        action = f'<p class="feat-soon">Episode {E(ep["num"])} — dropping soon.</p>'
     figure = ""
     # the 3D view replaces the side sketch; episodes without 3D keep it
     has_3d = released and bool(ep["video"].get("mp4_3d"))
@@ -111,8 +110,8 @@ def main():
     rows = "\n".join(row_html(e) for e in eps if e is not feat)
 
     out = (HERE / "template.html").read_text()
-    for k, v in {"BASE_CSS": (HERE / "_base.css").read_text(), "FEATURED": featured_html(feat, data["linkedin"]),
-                 "INDEX": rows, "LINKEDIN": E(data["linkedin"]), "TOPIC_COUNT": str(len(eps)),
+    for k, v in {"BASE_CSS": (HERE / "_base.css").read_text(), "FEATURED": featured_html(feat),
+                 "INDEX": rows, "TOPIC_COUNT": str(len(eps)),
                  "SITE_URL": SITE_URL, "DESCRIPTION": E(DESCRIPTION)}.items():
         out = out.replace("{{" + k + "}}", v)
     assert "{{" not in out, "unfilled placeholder"
