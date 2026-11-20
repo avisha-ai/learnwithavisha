@@ -30,6 +30,43 @@ SYNC_3D_JS = ("(()=>{const m=document.getElementById('feat-2d'),d=document.getEl
               "m.addEventListener('ratechange',()=>{d.playbackRate=m.playbackRate});"
               "d.addEventListener('click',()=>{m.paused?m.play():m.pause()});})();")
 
+# WATCH in the episode index plays that episode in the featured player (2D + 3D side by side) instead of
+# opening the bare 2D file; a "Back to Episode NN" button returns to the featured episode.
+SWAP_JS = ("(()=>{const box=document.querySelector('.feat-inner[data-ep]'),h=document.getElementById('featured-h'),"
+           "m=document.getElementById('feat-2d');if(!box||!h||!m)return;"
+           "const d=document.getElementById('feat-3d'),w3=box.querySelector('.is-3d'),q=box.querySelector('.feat-q'),"
+           "sub=box.querySelector('.feat-sub'),lab=box.querySelector('.feat-ep'),note=box.querySelector('.margin-note'),"
+           "cl=box.querySelector('.feat-video-card-label'),home=JSON.parse(box.dataset.ep);"
+           "const back=document.createElement('button');back.type='button';back.className='btn-link feat-back';"
+           "back.textContent='\\u2190 Back to Episode '+home.num;back.hidden=true;sub.after(back);"
+           "const src=(v,url,poster,vtt)=>{v.pause();v.textContent='';const s=document.createElement('source');"
+           "s.src=url;s.type='video/mp4';v.appendChild(s);if(vtt){const t=document.createElement('track');"
+           "t.kind='captions';t.src=vtt;t.srclang='en';t.label='English';v.appendChild(t)}"
+           "if(poster)v.poster=poster;else v.removeAttribute('poster');v.load()};"
+           "const load=x=>{h.textContent=x.h;lab.innerHTML=x.e;q.innerHTML=x.q;sub.textContent=x.s;"
+           "if(note)note.innerHTML=x.n;if(cl)cl.textContent=x.c;src(m,x.mp4,x.poster,x.vtt);"
+           "if(d&&w3){if(x.mp4_3d){src(d,x.mp4_3d,x.poster_3d);w3.style.display=''}else{d.pause();w3.style.display='none'}}"
+           "back.hidden=x.num===home.num};"
+           "back.addEventListener('click',()=>{load(home);h.scrollIntoView({behavior:'smooth'})});"
+           "document.addEventListener('click',e=>{const a=e.target.closest('.cs-watch[data-ep]');if(!a)return;"
+           "e.preventDefault();load(JSON.parse(a.dataset.ep));h.scrollIntoView({behavior:'smooth'});"
+           "m.play().catch(()=>{})});})();")
+
+
+def ep_payload(ep, featured):
+    """What the featured player needs to show an episode (used by SWAP_JS)."""
+    v = ep.get("video") or {}
+    num = E(ep["num"])
+    return {"num": ep["num"],
+            "h": f'{"FEATURED MYSTERY" if featured else "NOW PLAYING"} · EPISODE {ep["num"]}',
+            "e": ('<span class="live-dot"></span>' if featured else '')
+                 + f'EPISODE {num} · {E(ep["subject"]).upper()}' + (" · NOW SHOWING" if featured else ""),
+            "n": f'EP {num}<br>{E(ep["subject"]).replace(" ", "<br>")}',
+            "q": ep["question"], "s": ep["summary"],
+            "c": f'Episode {ep["num"]} · ' + (f'The {ep["series"]}' if ep.get("series") else ep["subject"]),
+            "mp4": v.get("mp4"), "mp4_3d": v.get("mp4_3d"), "poster": v.get("poster"),
+            "poster_3d": v.get("poster_3d"), "vtt": v.get("vtt")}
+
 
 def featured_html(ep):
     released = ep["status"] == "released"
@@ -71,8 +108,11 @@ def featured_html(ep):
         svg = svg.replace("<svg ", f'<svg role="img" aria-label="{E(ep.get("figure_caption",""))}" ', 1)
         figure = (f'      <div class="feat-sketch">\n        {svg}\n'
                   f'        <div class="sketch-cap" aria-hidden="true">{E(ep.get("figure_caption",""))}</div>\n      </div>')
+    data_ep = f' data-ep="{E(json.dumps(ep_payload(ep, True), ensure_ascii=False))}"' if released else ""
+    if released:
+        action += f'\n        <script>{SWAP_JS}</script>'
     return f'''    <h2 class="feat-fig" id="featured-h">FEATURED MYSTERY · EPISODE {E(ep["num"])}</h2>
-    <div class="feat-inner{"" if figure else " no-fig"}" style="position:relative">
+    <div class="feat-inner{"" if figure else " no-fig"}"{data_ep} style="position:relative">
       <div class="margin-note" aria-hidden="true">EP {E(ep["num"])}<br>{E(ep["subject"]).replace(" ", "<br>")}</div>
       <div>
         <div class="feat-ep">{'<span class="live-dot"></span>' if released else ''}{label}</div>
@@ -87,7 +127,8 @@ def featured_html(ep):
 def row_html(ep):
     done = ep["status"] == "released"
     if done:
-        right = f'<a class="cs-watch" href="{E(ep["video"]["mp4"])}" aria-label="Watch episode {E(ep["num"])}: {E(ep["name"])}">WATCH ▶</a>'
+        payload = E(json.dumps(ep_payload(ep, False), ensure_ascii=False))
+        right = f'<a class="cs-watch" href="{E(ep["video"]["mp4"])}" data-ep="{payload}" aria-label="Watch episode {E(ep["num"])}: {E(ep["name"])}">WATCH ▶</a>'
     else:
         right = f'<span class="cs-label">{"DROPPING SOON" if ep["status"] == "dropping_soon" else "COMING SOON"}</span>'
     return (f'      <div class="cs-row{" done" if done else ""}">\n'

@@ -1,0 +1,37 @@
+# LWA site robot: when the site sources change on a work branch, rebuild site/public with
+# site/build.py and commit it back to the same branch, so the Vercel preview shows the change.
+# Quick (no rendering). Never runs on main.
+name: Build site
+
+on:
+  push:
+    branches-ignore: [main]
+    paths: ["site/build.py", "site/template.html", "site/episodes.json", "site/_base.css"]
+
+permissions:
+  contents: write                       # to commit the rebuilt site/public back to this branch
+
+concurrency:
+  group: site-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build site
+        run: python3 site/build.py
+      - name: Commit site/public back to the branch
+        run: |
+          git config user.name  "LWA site robot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site/public
+          git status --short
+          if git diff --cached --quiet; then echo "nothing new to commit"; exit 0; fi
+          git commit -m "site robot: rebuild site/public (run ${{ github.run_id }})"
+          git push        # GITHUB_TOKEN pushes do not start another workflow run, so no loop
