@@ -6,8 +6,8 @@
 <title>Learn with Avisha — Plant Mysteries</title>
 <meta name="description" content="{{DESCRIPTION}}">
 <link rel="canonical" href="{{SITE_URL}}">
-<link rel="icon" href="/favicon-64.png" sizes="64x64">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" href="/lwa-seal-small.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Learn with Avisha">
 <meta property="og:title" content="Learn with Avisha — Plant Mysteries">
@@ -64,8 +64,8 @@ h3.feat-q{font-weight:400}
   aspect-ratio: 9/16;
   background: #050A09;
 }
-/* 2D episode + 3D equipment view, always side by side. Widths share the space 320:506
-   (9:16 at 320 and 960:1080 at 506 are both 569 tall), so the heights match at any width. */
+/* 2D episode + 3D equipment view, always side by side. Widths share the space 81:128, the exact
+   ratio of 9:16 to 960:1080, so both boxes are the same height at any width (2D caps at 320px). */
 .feat-inner.no-fig { grid-template-columns: 1fr; }
 .feat-video-pair {
   display: flex;
@@ -75,8 +75,8 @@ h3.feat-q{font-weight:400}
   gap: 16px;
   width: 100%;
 }
-.feat-video-pair .feat-video-wrap { flex: 320 1 0; min-width: 0; }
-.feat-video-pair .feat-video-wrap.is-3d { flex: 506 1 0; max-width: 506px; cursor: pointer; }
+.feat-video-pair .feat-video-wrap { flex: 81 1 0; min-width: 0; }
+.feat-video-pair .feat-video-wrap.is-3d { flex: 128 1 0; max-width: calc(320px * 128 / 81); cursor: pointer; }
 @media (max-width: 600px) {
   .feat-video-pair { gap: 8px; }
   .feat-video-card:has(.feat-video-pair) { padding-left: 12px; padding-right: 12px; }
@@ -221,6 +221,11 @@ h3.feat-q{font-weight:400}
 .pill:hover,.pill:focus-visible{border-color:var(--main);color:var(--main)}
 .follow-sub{font-family:'Lora',serif;font-style:italic;font-size:.75rem;color:var(--fg3);padding-left:4px}
 .lab-footer a{color:var(--fg3);text-decoration:none;font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em}
+@media(max-width:480px){             /* no room for both in one row: seal + link move under the copyright, right-aligned */
+  .lab-footer{flex-wrap:wrap;row-gap:12px}
+  .lab-footer a.foot-by{margin-left:auto}
+}
+.nav-logo{display:inline-flex;align-items:center;gap:8px} .nav-seal{width:24px;height:24px;border-radius:5px;display:block} .lab-footer a.foot-by{display:inline-flex;align-items:center;gap:10px} .foot-seal{width:40px;height:40px;border-radius:8px;display:block}
 </style>
 </head>
 <body>
@@ -228,7 +233,7 @@ h3.feat-q{font-weight:400}
 
   <!-- NAV -->
   <nav>
-    <a href="#" class="nav-logo">LEARN WITH <em>AVISHA</em></a>
+    <a href="#" class="nav-logo"><img class="nav-seal" src="/lwa-seal-small.svg" alt="" width="24" height="24">LEARN WITH <em>AVISHA</em></a>
   </nav>
 
   <main>
@@ -330,7 +335,7 @@ h3.feat-q{font-weight:400}
   <!-- FOOTER -->
   <footer class="lab-footer">
     <span>LEARN WITH <em>AVISHA</em> · © 2026</span>
-    <a href="https://avisha.ai" target="_blank" rel="noopener">BY AVISHA.AI ↗</a>
+    <a href="https://avisha.ai" target="_blank" rel="noopener" class="foot-by"><img class="foot-seal" src="/lwa-seal-small.svg" alt="Learn with Avisha seal" width="40" height="40">BY AVISHA.AI ↗</a>
   </footer>
 </div>
 
