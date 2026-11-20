@@ -103,6 +103,9 @@ def get_font(size=48, bold=False):
         "/System/Library/Fonts/Supplemental/Arial Bold.ttf" if bold
             else "/System/Library/Fonts/Supplemental/Arial.ttf",
         "/System/Library/Fonts/Helvetica.ttc",
+        # Linux (CI): Liberation Sans has Arial's metrics, so line breaks match the Mac
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf" if bold
+            else "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
         "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" if bold
             else "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
     ]
@@ -196,7 +199,8 @@ def draw_schematic(draw, counter=False, hot_out=51, cold_out=49, y0=SCH_Y0,
 # ── Brand: LWA wordmark, bottom right (seconds 1–4 and end card) ─────────────
 def _georgia(size):
     for c in ("/System/Library/Fonts/Supplemental/Georgia Italic.ttf",
-              "/Library/Fonts/Georgia Italic.ttf"):
+              "/Library/Fonts/Georgia Italic.ttf",
+              "/usr/share/fonts/truetype/liberation/LiberationSerif-Italic.ttf"):   # Linux (CI)
         if Path(c).exists():
             return ImageFont.truetype(c, size)
     return get_font(size)
@@ -634,8 +638,8 @@ SCENES = [
          "Clean, the resistance to heat flow is 0.0020 m²·K/W. The deposit adds 0.0004."),
         ("So U falls from five hundred to about four hundred seventeen watts per square-metre-kelvin.",
          "So U falls from 500 to about 417 W/m²·K.", BREATH),
-        ("That sliver resists heat like six millimetres of stainless steel.",
-         "That sliver resists heat like 6 mm of stainless steel.", BREATH),
+        ("That sliver resists heat like about six and a half millimetres of stainless steel.",
+         "That sliver resists heat like about 6.4 mm of stainless steel.", BREATH),
     ]),
     (render_e, [
         ("Lower U means fewer transfer units: two becomes about one point seven.",
@@ -678,8 +682,10 @@ def _tts(text):
         samples, sr = sf.read(str(path), dtype="float32")
         return samples, sr
     if _kokoro is None:
-        # kokoro-onnx does not download weights itself; reuse the copies Isha's voice server keeps
-        kokoro_dir = Path.home() / "Library/Application Support/Isha/kokoro"
+        # kokoro-onnx does not download weights itself; reuse the copies Isha's voice server keeps.
+        # CI sets KOKORO_DIR (or KOKORO_MODEL / KOKORO_VOICES) to its cached download.
+        kokoro_dir = Path(os.environ.get("KOKORO_DIR",
+                                         Path.home() / "Library/Application Support/Isha/kokoro"))
         _kokoro = kokoro_onnx.Kokoro(
             os.environ.get("KOKORO_MODEL", str(kokoro_dir / "kokoro-v1.0.onnx")),
             os.environ.get("KOKORO_VOICES", str(kokoro_dir / "voices-v1.0.bin")),

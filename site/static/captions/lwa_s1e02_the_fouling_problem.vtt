@@ -1,0 +1,82 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:02.493
+Your heat exchanger was designed clean.
+
+00:00:02.793 --> 00:00:04.733
+Six months later, it's struggling.
+
+00:00:04.733 --> 00:00:06.616
+Nobody touched it. What happened?
+
+00:00:07.116 --> 00:00:09.769
+Same exchanger. Same flows.
+
+00:00:09.769 --> 00:00:12.815
+Hot in at 90, cold in at 10 °C.
+
+00:00:13.115 --> 00:00:15.712
+Clean, the cold stream left at 63.
+
+00:00:15.712 --> 00:00:17.240
+Now it leaves at 60.
+
+00:00:17.740 --> 00:00:20.889
+What changed is a layer inside the tubes,
+
+00:00:20.889 --> 00:00:24.345
+0.08 mm thick. Thinner than a sheet of paper.
+
+00:00:24.645 --> 00:00:26.045
+It doesn't block the flow.
+
+00:00:26.045 --> 00:00:27.768
+It sits in the path of the heat.
+
+00:00:28.268 --> 00:00:30.412
+Resistances in series simply add.
+
+00:00:30.712 --> 00:00:34.591
+Clean, the resistance to heat flow is
+
+00:00:34.591 --> 00:00:38.680
+0.0020 m²·K/W. The deposit adds 0.0004.
+
+00:00:38.980 --> 00:00:44.415
+So U falls from 500 to about 417 W/m²·K.
+
+00:00:44.915 --> 00:00:47.016
+That sliver resists heat like
+
+00:00:47.016 --> 00:00:49.336
+about 6.4 mm of stainless steel.
+
+00:00:49.836 --> 00:00:52.728
+Lower U means fewer transfer units:
+
+00:00:52.728 --> 00:00:54.380
+2 becomes about 1.7.
+
+00:00:54.680 --> 00:00:57.876
+Effectiveness slips from 0.67 to 0.63,
+
+00:00:57.876 --> 00:01:01.493
+and the exchanger moves about 6% less heat.
+
+00:01:01.993 --> 00:01:04.833
+6% is easy to miss. Flow is normal.
+
+00:01:05.133 --> 00:01:07.476
+The only clue is a drifting thermometer.
+
+00:01:07.976 --> 00:01:10.165
+Fouling is a resistance in series.
+
+00:01:10.165 --> 00:01:12.869
+Watch the temperatures, not just the flow.
+
+00:01:13.369 --> 00:01:16.154
+These numbers are an illustrative worked example.
+
+00:01:16.654 --> 00:01:19.075
+Next: why are there plates inside the shell?
