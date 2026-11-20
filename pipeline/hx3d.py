@@ -36,7 +36,7 @@ FFMPEG = shutil.which("ffmpeg") or str(_MAMBA_BIN / "ffmpeg")
 # panel size in the 1920x1080 side-by-side frame (see side_by_side.py)
 PANEL_W, PANEL_H = 960, 1080      # right half of the 1920x1080 frame
 FPS = 30
-FOUL_FADE = 3.0         # seconds for clean tubes to turn fouled after --foul-at
+FOUL_FADE = 3.5        # seconds for clean tubes to turn fouled after --foul-at
 SUPERSAMPLE = 2         # render at 2x the output size, scale down (Lanczos) for sharp edges
 
 # colours shared with the 2D pipelines
@@ -46,6 +46,19 @@ COLD, COLD_OUT = (70, 140, 240), (160, 205, 255)
 METAL, HEAD_METAL, SHEET_METAL = (118, 124, 136), (128, 104, 104), (165, 170, 180)
 TUBE, DEPOSIT = (200, 205, 215), (105, 72, 45)   # dark deposit so the hot particles stand out
 TUBE_OPACITY, DEPOSIT_OPACITY = 0.30, 0.25
+# fouling made visible: a brown sheath on every tube plus collars where the tubes meet the
+# tubesheets, both much thicker than the real 0.08 mm (the panel says so)
+SCALE_COLOUR, SCALE_OPACITY = (160, 100, 55), 0.80
+SCALE_R, COLLAR_R, COLLAR_W = 0.105, 0.1225, 0.12   # 1.5x and 1.75x TUBE_R (0.07)
+DEPOSIT_TXT = (230, 170, 100)                     # same as the 2D's deposit labels
+# fouling status lines: (text, ASCII fallback when no font file with ≈ and − is found)
+CLEAN_TXT = ("CLEAN · U = 500 W/m²K", "CLEAN - U = 500 W/m2K")
+FOULED_TXT = ("FOULED · U ≈ 417 W/m²K (−17%)", "FOULED - U ~ 417 W/m2K (-17%)")
+EXAGGERATED_TXT = "deposit thickness exaggerated for visibility"
+FONT_FILES = {False: ("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+                      "/System/Library/Fonts/Supplemental/Arial.ttf", "/Library/Fonts/Arial.ttf"),
+              True: ("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+                     "/System/Library/Fonts/Supplemental/Arial Bold.ttf", "/Library/Fonts/Arial Bold.ttf")}
 WHITE, GREY = (255, 255, 255), (185, 190, 200)
 
 # geometry (arbitrary units; x = exchanger axis, z = up)
@@ -97,7 +110,8 @@ def nozzle(x, top, at_head=False):
     return pipe, flange, (x, 0, z_end + sign * (0.25 if top else 0.75))
 
 class Exchanger:
-    def __init__(self, plotter, fouling=False):
+    def __init__(self, plotter, fouling=False, deposit=False):
+        """deposit: build the brown scale (sheaths + collars) that set_fouling fades in."""
         p = self.p = plotter
         metal = dict(smooth_shading=True, specular=0.5, specular_power=20)
         # shell: see-through so the bundle and the flow inside are visible
@@ -124,6 +138,18 @@ class Exchanger:
                                 for y, z in self.tubes]).combine()
         # fouled tubes stay brown but see-through enough for the hot fluid inside to read
         self.bundle = p.add_mesh(bundle, color=rgb(TUBE), opacity=TUBE_OPACITY, smooth_shading=True)
+        self.deposit = None
+        if deposit:
+            scale = [pv.Cylinder(center=(0, y, z), direction=(1, 0, 0), radius=SCALE_R,
+                                 height=L - 0.08, resolution=24) for y, z in self.tubes]
+            # collars on the shell-side faces of both tubesheets (the head side is hidden inside
+            # the opaque channel heads), so the deposit also reads where the tubes start and end
+            for x in (X0 + 0.04 + COLLAR_W / 2, X1 - 0.04 - COLLAR_W / 2):
+                scale += [pv.Cylinder(center=(x, y, z), direction=(1, 0, 0), radius=COLLAR_R,
+                                      height=COLLAR_W, resolution=24) for y, z in self.tubes]
+            self.deposit = p.add_mesh(pv.MultiBlock(scale).combine(), color=rgb(SCALE_COLOUR),
+                                      opacity=SCALE_OPACITY, smooth_shading=True, specular=0.05,
+                                      ambient=0.25)
         self.set_fouling(1.0 if fouling else 0.0)
         # segmental baffles, windows alternating top / bottom
         for i, x in enumerate(BAFFLE_XS):
@@ -146,6 +172,10 @@ class Exchanger:
         prop = self.bundle.GetProperty()
         prop.SetColor(rgb(c))
         prop.SetOpacity((1 - k) * TUBE_OPACITY + k * DEPOSIT_OPACITY)
+        if self.deposit is not None:
+            a = 1 - (1 - k) ** 2          # ease-out: the scale is already clear early in the fade
+            self.deposit.GetProperty().SetOpacity(SCALE_OPACITY * a)
+            self.deposit.SetVisibility(a > 0.01)
 
 
 # ── flow ─────────────────────────────────────────────────────────────────────
@@ -273,7 +303,7 @@ def build(size, fouling, mode, flip_at, foul_at=None, temps=None, duration=30.0)
             p.enable_anti_aliasing("ssaa")
         except Exception:
             pass
-    ex = Exchanger(p, fouling=fouling)
+    ex = Exchanger(p, fouling=fouling, deposit=fouling or foul_at is not None)
     flow = Flow(p, ex.tubes, point_size=max(4, round(12 * h / PANEL_H)))
     fs = max(12, int(h / 40))
     # one label set per (flow direction, temperatures shown); frame_at shows the right one
@@ -284,12 +314,41 @@ def build(size, fouling, mode, flip_at, foul_at=None, temps=None, duration=30.0)
     add_title(p, "IN THE PLANT", w, h)
     caption = p.add_text("", position=(int(w * 0.05), int(h * 0.05)), font_size=int(fs * 0.525),
                          color=rgb(GREY))    # 30% smaller than the old 0.75
+    status = note = None
+    unicode_ok = False
+    if fouling or foul_at is not None:
+        # fouling episodes: the caption becomes a clean / fouled status line with U, plus a note
+        caption.SetVisibility(False)
+        status = p.add_text("", position=(int(w * 0.05), int(h * 0.075)), font_size=int(fs * 0.75),
+                            color=rgb(WHITE))
+        note = p.add_text(EXAGGERATED_TXT, position=(int(w * 0.05), int(h * 0.04)),
+                          font_size=int(fs * 0.45), color=rgb(GREY))
+        unicode_ok = _font_file(status, bold=True)
+        _font_file(note, bold=False)
+        note.SetVisibility(False)
     place_camera(p, 0.0, duration)
     p.show(auto_close=False)          # off-screen: initialises the render window, opens nothing
     state = dict(p=p, ex=ex, flow=flow, labels=labels, caption=caption, temps=temps,
                  duration=duration, mode=mode, flip_at=flip_at,
-                 fouling=fouling or foul_at is not None, foul_at=foul_at)
+                 fouling=fouling or foul_at is not None, foul_at=foul_at, status=status, note=note,
+                 unicode_ok=unicode_ok)
     return state
+
+def _font_file(actor, bold):
+    """Use a TrueType font that has ≈ and − (VTK's built-in font may not); False if none found."""
+    for f in FONT_FILES[bold]:
+        if Path(f).exists():
+            tp = actor.GetTextProperty()
+            tp.SetFontFamily(4)          # VTK_FONT_FILE
+            tp.SetFontFile(f)
+            return True
+    return False
+
+def status_at(state, t):
+    """(text, colour, fouled) for the clean / fouled status line at time t."""
+    fouled = state["foul_at"] is None or t >= state["foul_at"]
+    text = (FOULED_TXT if fouled else CLEAN_TXT)[0 if state["unicode_ok"] else 1]
+    return text, (DEPOSIT_TXT if fouled else WHITE), fouled
 
 def caption_text(state, t):
     if not state["fouling"]:
@@ -322,6 +381,11 @@ def frame_at(state, t, dt):
     state["flow"].step(dt, 1 if ctr else -1)
     state["ex"].set_fouling(fouling_at(state, t))
     state["caption"].SetInput(caption_text(state, t))
+    if state["status"] is not None:
+        text, col, fouled = status_at(state, t)
+        state["status"].SetInput(text)
+        state["status"].GetTextProperty().SetColor(rgb(col))
+        state["note"].SetVisibility(fouled)
     place_camera(state["p"], t, state["duration"])
     state["p"].render()
     return state["p"].screenshot(return_img=True)

@@ -6,3 +6,4 @@ closing_question: Why are there plates inside the shell?  # → EP03 Baffles
 references:
   - NPTEL Heat Transfer (fouling factor, overall heat transfer coefficient)
   - LibreTexts: Heat exchangers, effectiveness-NTU method
+# rerender 3D fouling
