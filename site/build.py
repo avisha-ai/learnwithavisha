@@ -7,7 +7,7 @@ Rolling hero: section 2 shows the most recent episode whose status is
 'released' or 'dropping_soon'. Every other released episode is listed in the
 episode index with a WATCH link. No video host other than this site is linked.
 """
-import json, shutil, sys
+import json, re, shutil, sys
 from html import escape as E
 from pathlib import Path
 
@@ -36,7 +36,8 @@ SWAP_JS = ("(()=>{const box=document.querySelector('.feat-inner[data-ep]'),h=doc
            "m=document.getElementById('feat-2d');if(!box||!h||!m)return;"
            "const d=document.getElementById('feat-3d'),w3=box.querySelector('.is-3d'),q=box.querySelector('.feat-q'),"
            "sub=box.querySelector('.feat-sub'),lab=box.querySelector('.feat-ep'),note=box.querySelector('.margin-note'),"
-           "cl=box.querySelector('.feat-video-card-label'),home=JSON.parse(box.dataset.ep);"
+           "cl=box.querySelector('.feat-video-card-label'),tr=document.getElementById('feat-tr'),"
+           "trt=document.getElementById('feat-tr-text'),home=JSON.parse(box.dataset.ep);"
            "const back=document.createElement('button');back.type='button';back.className='btn-link feat-back';"
            "back.textContent='\\u2190 Back to Episode '+home.num;back.hidden=true;sub.after(back);"
            "const src=(v,url,poster,vtt)=>{v.pause();v.textContent='';const s=document.createElement('source');"
@@ -45,12 +46,61 @@ SWAP_JS = ("(()=>{const box=document.querySelector('.feat-inner[data-ep]'),h=doc
            "if(poster)v.poster=poster;else v.removeAttribute('poster');v.load()};"
            "const load=x=>{h.textContent=x.h;lab.innerHTML=x.e;q.innerHTML=x.q;sub.textContent=x.s;"
            "if(note)note.innerHTML=x.n;if(cl)cl.textContent=x.c;src(m,x.mp4,x.poster,x.vtt);"
+           "if(tr&&trt){trt.textContent=x.t||'';tr.open=false;tr.style.display=x.t?'':'none'}"
            "if(d&&w3){if(x.mp4_3d){src(d,x.mp4_3d,x.poster_3d);w3.style.display=''}else{d.pause();w3.style.display='none'}}"
            "back.hidden=x.num===home.num};"
            "back.addEventListener('click',()=>{load(home);h.scrollIntoView({behavior:'smooth'})});"
            "document.addEventListener('click',e=>{const a=e.target.closest('.cs-watch[data-ep]');if(!a)return;"
            "e.preventDefault();load(JSON.parse(a.dataset.ep));h.scrollIntoView({behavior:'smooth'});"
            "m.play().catch(()=>{})});})();")
+
+
+def transcript(ep):
+    """Plain text of the episode's captions (.vtt in site/static/), for readers and search engines."""
+    vtt = (ep.get("video") or {}).get("vtt")
+    path = HERE / "static" / vtt if vtt else None
+    if not path or not path.is_file():
+        return ""
+    lines = []
+    for block in path.read_text(encoding="utf-8").replace("\r", "").split("\n\n"):
+        for line in block.split("\n"):
+            line = line.strip()
+            if not line or line.startswith(("WEBVTT", "NOTE", "STYLE")) or "-->" in line or line.isdigit():
+                continue
+            line = re.sub(r"<[^>]+>", "", line)
+            if not lines or lines[-1] != line:
+                lines.append(line)
+    return " ".join(lines)
+
+
+def video_jsonld(eps):
+    """schema.org VideoObject for every released episode, so search engines know the page has these videos."""
+    vids = []
+    for ep in eps:
+        v = ep.get("video") or {}
+        if ep["status"] != "released" or not ep.get("released"):
+            if ep["status"] == "released":
+                print(f'warning: episode {ep["num"]} has no "released" date, left out of the video data')
+            continue
+        obj = {"@type": "VideoObject",
+               "name": f'Learn with Avisha {ep["num"]}: {ep["name"]}',
+               "description": ep["summary"],
+               "thumbnailUrl": SITE_URL + v.get("poster", "og-image.png"),
+               "uploadDate": ep["released"],
+               "contentUrl": SITE_URL + v["mp4"],
+               "inLanguage": "en",
+               "isFamilyFriendly": True,
+               "publisher": {"@type": "Organization", "name": "Avisha", "url": "https://avisha.ai/",
+                             "logo": {"@type": "ImageObject", "url": SITE_URL + "apple-touch-icon.png"}}}
+        text = transcript(ep)
+        if text:
+            obj["transcript"] = text
+        vids.append(obj)
+    data = {"@context": "https://schema.org", "@graph": [
+        {"@type": "WebSite", "name": "Learn with Avisha", "url": SITE_URL,
+         "publisher": {"@type": "Organization", "name": "Avisha", "url": "https://avisha.ai/"}}] + vids}
+    js = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
+    return f'<script type="application/ld+json">{js}</script>'
 
 
 def ep_payload(ep, featured):
@@ -65,7 +115,7 @@ def ep_payload(ep, featured):
             "q": ep["question"], "s": ep["summary"],
             "c": f'Episode {ep["num"]} · ' + (f'The {ep["series"]}' if ep.get("series") else ep["subject"]),
             "mp4": v.get("mp4"), "mp4_3d": v.get("mp4_3d"), "poster": v.get("poster"),
-            "poster_3d": v.get("poster_3d"), "vtt": v.get("vtt")}
+            "poster_3d": v.get("poster_3d"), "vtt": v.get("vtt"), "t": transcript(ep)}
 
 
 def featured_html(ep):
@@ -94,9 +144,14 @@ def featured_html(ep):
                           f'          </div>\n'
                           f'          </div>\n'
                           f'          <script>{SYNC_3D_JS}</script>\n')
+        text = transcript(ep)
+        hide = "" if text else ' style="display:none"'
+        tr_html = (f'          <details class="feat-tr" id="feat-tr"{hide}>'
+                   f'<summary>Read the transcript</summary><p id="feat-tr-text">{E(text)}</p></details>\n')
         action = (f'<div class="feat-video-card">\n'
                   f'          <div class="feat-video-card-label">{card_label}</div>\n'
                   f'{main_video}'
+                  f'{tr_html}'
                   f'        </div>')
     else:
         action = f'<p class="feat-soon">Episode {E(ep["num"])} — dropping soon.</p>'
@@ -153,12 +208,20 @@ def main():
     out = (HERE / "template.html").read_text()
     for k, v in {"BASE_CSS": (HERE / "_base.css").read_text(), "FEATURED": featured_html(feat),
                  "INDEX": rows, "TOPIC_COUNT": str(len(eps)),
-                 "SITE_URL": SITE_URL, "DESCRIPTION": E(DESCRIPTION)}.items():
+                 "SITE_URL": SITE_URL, "DESCRIPTION": E(DESCRIPTION), "JSONLD": video_jsonld(eps)}.items():
         out = out.replace("{{" + k + "}}", v)
     assert "{{" not in out, "unfilled placeholder"
 
     PUBLIC.mkdir(exist_ok=True)
     (PUBLIC / "index.html").write_text(out)
+    # search engines: allow everything and point to the sitemap (one page; lastmod = newest release)
+    dates = sorted(e["released"] for e in eps if e["status"] == "released" and e.get("released"))
+    (PUBLIC / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {SITE_URL}sitemap.xml\n")
+    (PUBLIC / "sitemap.xml").write_text(
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        f'  <url><loc>{SITE_URL}</loc>{f"<lastmod>{dates[-1]}</lastmod>" if dates else ""}</url>\n'
+        '</urlset>\n')
     for d in ("static", "media"):          # static/ → site root, media/ → /media/
         if (HERE / d).is_dir():
             shutil.copytree(HERE / d, PUBLIC if d == "static" else PUBLIC / d, dirs_exist_ok=True)
