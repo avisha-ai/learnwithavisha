@@ -7,6 +7,7 @@
     "After editing, run:  python3 site/build.py   then commit and deploy.",
     "Optional index_name / index_teaser: shorter text for the episode-index row; otherwise name / teaser are used.",
     "Optional video.mp4_3d (+ optional video.poster_3d): the 3D equipment panel (pipeline/hx3d.py, 960x1080, same length as the episode). When set, the featured card shows it to the right of the 2D video, playing in step.",
+    "released: date the episode went live (YYYY-MM-DD); needed for the video data search engines read.",
     "Optional video.vtt: captions file inside site/public/ (put it in site/static/captions/, e.g. 'captions/lwa_s1e01_the_flip.vtt')."
   ],
   "linkedin": "https://www.linkedin.com/in/mrinalgala",
@@ -16,6 +17,7 @@
       "subject": "Heat Transfer",
       "name": "Heat Transfer — The Flip",
       "status": "released",
+      "released": "2026-11-07",
       "question": "“Same exchanger. Same fluids.<br>Flip the flow — why does heat transfer jump?”",
       "teaser": "Same exchanger. Flip one stream. Why does heat transfer jump?",
       "summary": "A shell-and-tube heat exchanger runs two ways. Parallel flow. Countercurrent flow. The geometry is identical. So why is countercurrent almost always better — and by how much?",
@@ -43,6 +45,7 @@
       "question": "“Designed clean. Six months later, less heat.<br>Where did the extra resistance come from?”",
       "summary": "A deposit just 0.08 mm thick adds a resistance in series with the tube wall and the two films. U falls about 17%, the outlets drift, and the exchanger moves about 6% less heat.",
       "status": "released",
+      "released": "2026-11-20",
       "video": {
         "mp4": "media/lwa_s1e02_the_fouling_problem.mp4",
         "mp4_3d": "media/lwa_s1e02_the_fouling_problem_3d.mp4",
