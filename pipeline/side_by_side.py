@@ -73,11 +73,12 @@ def compose(left, right, title, out, duration, title_from=0.0):
     return Path(out)
 
 def make_wide(video, fouling=False, mode="counter", flip_at=None, draft=False, foul_at=None,
-              title_from=0.0, temps=None):
+              title_from=0.0, temps=None, baffles_at=None):
     """foul_at: 3D tubes start clean and fade to fouled from this time (s); implies fouling.
     title_from: when ON PAPER appears (the end of the 2D's title scene).
     temps: dict(hot_in, cold_in, outlets=[(t, hot out, cold out)]) for the 3D nozzle labels,
-    taken from what the 2D shows (see outlet_timeline in the episode pipeline)."""
+    taken from what the 2D shows (see outlet_timeline in the episode pipeline).
+    baffles_at: 3D baffles shown / hidden over time (see hx3d.baffle_events); None = always there."""
     video = Path(video)
     dur = duration_of(video)
     stem = video.stem.removesuffix("_captioned").removesuffix("_master")
@@ -87,7 +88,7 @@ def make_wide(video, fouling=False, mode="counter", flip_at=None, draft=False, f
     print(f"  3D panel for {video.name} ({dur:.1f}s)…")
     size = (RIGHT_W // 2, RIGHT_H // 2) if draft else (RIGHT_W, RIGHT_H)
     hx3d.render_video(panel, dur, size, 15 if draft else hx3d.FPS, fouling, mode, flip_at, foul_at,
-                      temps)
+                      temps, baffles_at=baffles_at)
     hx3d.render_title_png("ON PAPER", title, (HALF_W, FRAME_H), TITLE_RAISE, TITLE_SCALE)
     compose(video, panel, title, out, dur, title_from)
     print(f"  wide: {out}")

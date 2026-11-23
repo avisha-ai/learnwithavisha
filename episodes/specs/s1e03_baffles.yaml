@@ -1,0 +1,16 @@
+# EP03 — Baffles: What They Do and Why (spec; the render robot uses pipeline/ep03_v2_pipeline.py)
+episode: 3
+slug: lwa_s1e03_baffles
+module: shell-and-tube heat exchanger
+opening_question: Why are there plates inside the shell?  # ← EP02's closing question
+closing_question: Which fluid goes inside the tubes?  # → EP04 Tubes or shell
+numbers:  # illustrative worked example, Kern shell-side method, baffle spacing halved
+  shell_side_h: about 1.5x   # 2^0.55 = 1.464
+  pressure_drop: about 7x    # 2^-0.19 * 2^2 * 2 = 7.01
+  usual_spacing: 0.2 to 1.0 shell diameters  # Sinnott (C&R Vol 6); TEMA minimum 1/5 ID or 2 in
+3d: baffles in place for the hook, taken out with scene B (straight, slow shell flow), back with scene C (zig-zag, faster)
+references:
+  - NPTEL Heat Transfer / Process Design of Heat Exchangers (shell-and-tube, baffles, Kern method)
+  - LibreTexts Engineering, heat exchanger design (shell-side flow, baffles)
+  - Kakaç & Liu, Heat Exchangers: Selection, Rating and Thermal Design (Kern method)
+  - Sinnott, Coulson & Richardson's Chemical Engineering Vol 6 (baffle spacing)
