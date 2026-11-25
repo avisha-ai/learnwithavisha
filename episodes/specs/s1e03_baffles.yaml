@@ -15,3 +15,4 @@ references:
   - Kakaç & Liu, Heat Exchangers: Selection, Rating and Thermal Design (Kern method)
   - Sinnott, Coulson & Richardson's Chemical Engineering Vol 6 (baffle spacing)
 # rerender: render robot push was rejected (site robot pushed first), workflow now syncs before push
+# rerender: 3D baffles visibility
