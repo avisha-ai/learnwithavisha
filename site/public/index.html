@@ -405,6 +405,10 @@ h3.feat-q{font-weight:400}
 }
 .cs-watch:hover,.cs-watch:focus-visible{color:var(--accent)}
 .cs-row.done .cs-num{color:var(--accent)}
+.cs-module{
+  font-family:'DM Mono',monospace;font-size:.72rem;font-weight:400;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--fg3);margin:0 0 10px;
+}
 
 /* Q&A accordion */
 .qa-label{
@@ -603,6 +607,7 @@ h3.feat-q{font-weight:400}
   <section class="topics-section" id="topics" aria-labelledby="topics-h">
     <h2 class="topics-fig" id="topics-h">EPISODE INDEX · NEW EPISODE EVERY WEEK</h2>
     <div class="cs-list">
+      <h3 class="cs-module">The Heat Exchanger Files</h3>
       <div class="cs-row done">
         <span class="cs-num">01</span>
         <span class="cs-name">Heat Transfer — The Flip</span>
@@ -668,9 +673,9 @@ h3.feat-q{font-weight:400}
 
       <!-- Input row -->
       <div class="bot-chips" aria-label="Try one of these questions">
+        <button class="bot-chip" type="button" data-q="What do baffles do in a shell-and-tube exchanger?">What do baffles do?</button>
+        <button class="bot-chip" type="button" data-q="Why does closer baffle spacing raise the shell-side pressure drop?">Why does closer baffle spacing raise pressure drop?</button>
         <button class="bot-chip" type="button" data-q="Why is countercurrent flow usually better in a heat exchanger?">Why is countercurrent flow usually better?</button>
-        <button class="bot-chip" type="button" data-q="What is fouling in a heat exchanger, and why does it matter?">What is fouling, and why does it matter?</button>
-        <button class="bot-chip" type="button" data-q="When should the viscous fluid go on the shell side of a shell-and-tube exchanger?">When does the viscous fluid go on the shell side?</button>
       </div>
       <div class="bot-input-row">
         <input
