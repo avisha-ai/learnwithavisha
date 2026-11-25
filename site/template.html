@@ -88,6 +88,10 @@ h3.feat-q{font-weight:400}
 }
 .cs-watch:hover,.cs-watch:focus-visible{color:var(--accent)}
 .cs-row.done .cs-num{color:var(--accent)}
+.cs-module{
+  font-family:'DM Mono',monospace;font-size:.72rem;font-weight:400;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--fg3);margin:0 0 10px;
+}
 
 /* Q&A accordion */
 .qa-label{
@@ -283,9 +287,7 @@ h3.feat-q{font-weight:400}
 
       <!-- Input row -->
       <div class="bot-chips" aria-label="Try one of these questions">
-        <button class="bot-chip" type="button" data-q="Why is countercurrent flow usually better in a heat exchanger?">Why is countercurrent flow usually better?</button>
-        <button class="bot-chip" type="button" data-q="What is fouling in a heat exchanger, and why does it matter?">What is fouling, and why does it matter?</button>
-        <button class="bot-chip" type="button" data-q="When should the viscous fluid go on the shell side of a shell-and-tube exchanger?">When does the viscous fluid go on the shell side?</button>
+{{TUTOR_CHIPS}}
       </div>
       <div class="bot-input-row">
         <input

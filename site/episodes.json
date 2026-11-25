@@ -68,6 +68,11 @@
       "released": "2026-12-01",
       "question": "“Why put plates in the path of the flow?<br>What do they buy, and what do they cost?”",
       "summary": "Segmental baffles force the shell-side fluid across the tubes in a zig-zag path instead of letting it slip straight through. The fluid moves faster across the tubes, so heat transfer goes up; the price is pressure drop, which rises much faster. Baffles also hold the tubes up so they do not sag or vibrate.",
+      "tutor_questions": [
+        {"label": "What do baffles do?", "q": "What do baffles do in a shell-and-tube exchanger?"},
+        {"label": "Why does closer baffle spacing raise pressure drop?", "q": "Why does closer baffle spacing raise the shell-side pressure drop?"},
+        {"label": "Why is countercurrent flow usually better?", "q": "Why is countercurrent flow usually better in a heat exchanger?"}
+      ],
       "video": {
         "mp4": "media/lwa_s1e03_baffles.mp4",
         "mp4_3d": "media/lwa_s1e03_baffles_3d.mp4",
