@@ -193,6 +193,35 @@ def row_html(ep):
             f'        {right}\n      </div>')
 
 
+def index_html(eps):
+    """Index rows, with the module heading (e.g. "The Heat Exchanger Files") above each series."""
+    out, series = [], None
+    for ep in eps:
+        s = ep.get("series")
+        if s and s != series:
+            out.append(f'      <h3 class="cs-module">The {E(s)}</h3>')
+        series = s
+        out.append(row_html(ep))
+    return "\n".join(out)
+
+
+# tutor starter questions: the featured episode's optional "tutor_questions" ([{label, q}, ...]),
+# else these three. WATCH does not change them.
+DEFAULT_TUTOR_QUESTIONS = [
+    {"label": "Why is countercurrent flow usually better?",
+     "q": "Why is countercurrent flow usually better in a heat exchanger?"},
+    {"label": "What is fouling, and why does it matter?",
+     "q": "What is fouling in a heat exchanger, and why does it matter?"},
+    {"label": "When does the viscous fluid go on the shell side?",
+     "q": "When should the viscous fluid go on the shell side of a shell-and-tube exchanger?"}]
+
+
+def tutor_chips(ep):
+    qs = ep.get("tutor_questions") or DEFAULT_TUTOR_QUESTIONS
+    return "\n".join(f'        <button class="bot-chip" type="button" data-q="{E(x["q"])}">{E(x["label"])}</button>'
+                     for x in qs)
+
+
 def main():
     data = json.loads((HERE / "episodes.json").read_text())
     eps = data["episodes"]
@@ -203,11 +232,11 @@ def main():
     if not cands:
         sys.exit("no episode is released or dropping_soon — nothing to feature")
     feat = max(cands, key=lambda e: int(e["num"]))
-    rows = "\n".join(row_html(e) for e in eps if e is not feat)
+    rows = index_html([e for e in eps if e is not feat])
 
     out = (HERE / "template.html").read_text()
     for k, v in {"BASE_CSS": (HERE / "_base.css").read_text(), "FEATURED": featured_html(feat),
-                 "INDEX": rows, "TOPIC_COUNT": str(len(eps)),
+                 "INDEX": rows, "TUTOR_CHIPS": tutor_chips(feat), "TOPIC_COUNT": str(len(eps)),
                  "SITE_URL": SITE_URL, "DESCRIPTION": E(DESCRIPTION), "JSONLD": video_jsonld(eps)}.items():
         out = out.replace("{{" + k + "}}", v)
     assert "{{" not in out, "unfilled placeholder"

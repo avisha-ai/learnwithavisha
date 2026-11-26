@@ -15,6 +15,8 @@ Usually called from side_by_side.py; standalone use:
     .venv/bin/python3 pipeline/hx3d.py --still 5 --out out/hx3d_frame.png      # one frame, quick look
 Options: --mode counter|parallel  --flip-at SECONDS (parallel → counter)  --fouling
          --foul-at SECONDS (clean tubes, fading to fouled over FOUL_FADE s from then)  --draft
+         --baffles-at SECONDS (no baffles, straight slow shell flow, until then; then baffles
+         fade in and the flow zig-zags). Default: baffles always there (EP01/EP02).
 
 Install (once):  .venv/bin/pip install pyvista
 """
@@ -37,6 +39,13 @@ FFMPEG = shutil.which("ffmpeg") or str(_MAMBA_BIN / "ffmpeg")
 PANEL_W, PANEL_H = 960, 1080      # right half of the 1920x1080 frame
 FPS = 30
 FOUL_FADE = 3.5        # seconds for clean tubes to turn fouled after --foul-at
+BAFFLE_FADE = 1.0      # seconds for the baffles to fade in / out at a --baffles-at switch
+# baffle episodes (--baffles-at / switches) draw the baffles as solid plates so they read from the
+# camera even near edge-on; EP01/EP02 (no baffle option) keep the old faint discs
+BAFFLE_PLATE, BAFFLE_EDGE = (205, 214, 226), (62, 70, 84)   # light steel plate, dark outline
+BAFFLE_OPACITY, BAFFLE_T = 0.92, 0.08                       # near-opaque, plate thickness
+SHELL_OPACITY, SHELL_OPACITY_BAFFLES = 0.22, 0.12           # shell more see-through with plates
+COLD_SLOW = 0.035      # shell-side particle speed with no baffles (straight, slow flow)
 SUPERSAMPLE = 2         # render at 2x the output size, scale down (Lanczos) for sharp edges
 
 # colours shared with the 2D pipelines
@@ -98,6 +107,18 @@ def segmental_baffle(x, top_cut):
     pts = np.column_stack([np.full_like(y, x), y, z])
     return pv.PolyData(pts, faces=np.hstack([[len(pts)], np.arange(len(pts))]))
 
+def baffle_plate(x, top_cut):
+    """The segmental baffle as a solid plate BAFFLE_T thick, centred on x."""
+    return segmental_baffle(x - BAFFLE_T / 2, top_cut).extrude((BAFFLE_T, 0, 0), capping=True)
+
+def baffle_outline(x, top_cut):
+    """Closed outlines of both faces of the plate at x (the dark edge line)."""
+    a = segmental_baffle(x - BAFFLE_T / 2, top_cut).points
+    b = segmental_baffle(x + BAFFLE_T / 2, top_cut).points
+    n = len(a)
+    lines = np.hstack([[n + 1], np.arange(n), [0], [n + 1], np.arange(n, 2 * n), [n]])
+    return pv.PolyData(np.vstack([a, b]), lines=lines)
+
 def nozzle(x, top, at_head=False):
     """Vertical flanged nozzle; returns (pipe, flange, open-end point)."""
     sign = 1 if top else -1
@@ -110,14 +131,16 @@ def nozzle(x, top, at_head=False):
     return pipe, flange, (x, 0, z_end + sign * (0.25 if top else 0.75))
 
 class Exchanger:
-    def __init__(self, plotter, fouling=False, deposit=False):
-        """deposit: build the brown scale (sheaths + collars) that set_fouling fades in."""
+    def __init__(self, plotter, fouling=False, deposit=False, bold_baffles=False):
+        """deposit: build the brown scale (sheaths + collars) that set_fouling fades in.
+        bold_baffles: solid light-steel baffle plates with a dark edge (baffle episodes)."""
         p = self.p = plotter
         metal = dict(smooth_shading=True, specular=0.5, specular_power=20)
         # shell: see-through so the bundle and the flow inside are visible
         p.add_mesh(pv.Cylinder(center=(0, 0, 0), direction=(1, 0, 0), radius=R, height=L,
                                resolution=96, capping=False),
-                   color=rgb(METAL), opacity=0.22, **metal)
+                   color=rgb(METAL), opacity=SHELL_OPACITY_BAFFLES if bold_baffles else SHELL_OPACITY,
+                   **metal)
         # channel heads (bonnets): barrel + domed end, opaque
         for sx in (-1, 1):
             xc = sx * (L / 2 + HEAD_L / 2)
@@ -152,9 +175,20 @@ class Exchanger:
                                       ambient=0.25)
         self.set_fouling(1.0 if fouling else 0.0)
         # segmental baffles, windows alternating top / bottom
-        for i, x in enumerate(BAFFLE_XS):
-            p.add_mesh(segmental_baffle(x, top_cut=(i % 2 == 0)), color=rgb(SHEET_METAL),
-                       opacity=0.35)
+        self.bold_baffles = bold_baffles
+        self.baffle_edges = []
+        if bold_baffles:
+            lw = max(2, round(3 * p.window_size[1] / PANEL_H))
+            self.baffles = [p.add_mesh(baffle_plate(x, top_cut=(i % 2 == 0)), color=rgb(BAFFLE_PLATE),
+                                       opacity=BAFFLE_OPACITY, ambient=0.35, diffuse=0.7, specular=0.2)
+                            for i, x in enumerate(BAFFLE_XS)]
+            self.baffle_edges = [p.add_mesh(baffle_outline(x, top_cut=(i % 2 == 0)),
+                                            color=rgb(BAFFLE_EDGE), line_width=lw)
+                                 for i, x in enumerate(BAFFLE_XS)]
+        else:
+            self.baffles = [p.add_mesh(segmental_baffle(x, top_cut=(i % 2 == 0)),
+                                       color=rgb(SHEET_METAL), opacity=0.35)
+                            for i, x in enumerate(BAFFLE_XS)]
         # nozzles: tube side on the heads, shell side on the shell
         self.ends = {}
         hx_in, hx_out = X0 - HEAD_L / 2, X1 + HEAD_L / 2
@@ -177,11 +211,23 @@ class Exchanger:
             self.deposit.GetProperty().SetOpacity(SCALE_OPACITY * a)
             self.deposit.SetVisibility(a > 0.01)
 
+    def set_baffles(self, k):
+        """k = 0 no baffles, 1 baffles in place (the default look); in between they fade."""
+        op = BAFFLE_OPACITY if self.bold_baffles else 0.35
+        for b in self.baffles:
+            b.GetProperty().SetOpacity(op * k)
+            b.SetVisibility(k > 0.01)
+        for e in self.baffle_edges:
+            e.GetProperty().SetOpacity(k)
+            e.SetVisibility(k > 0.01)
+
 
 # ── flow ─────────────────────────────────────────────────────────────────────
 class Flow:
     """Particles: tube side always left → right; shell side zig-zags round the baffles."""
-    def __init__(self, plotter, tubes, point_size=12, n_per_tube=4, n_shell=150, seed=7):
+    def __init__(self, plotter, tubes, point_size=12, n_per_tube=4, n_shell=150, seed=7, bold=False):
+        """bold: baffle episodes, the shell-side path runs level through each baffle window."""
+        self.bold = bold
         rng = np.random.default_rng(seed)
         self.tubes = np.array(tubes)
         self.hot_tube = np.repeat(np.arange(len(tubes)), n_per_tube)
@@ -189,6 +235,9 @@ class Flow:
         self.cold_s = rng.random(n_shell)
         self.cold_y = rng.uniform(-0.75, 0.75, n_shell)
         self.cold_jit = rng.uniform(-0.12, 0.12, n_shell)
+        # drawn after the others so EP01/EP02 particles stay exactly as before
+        self.cold_z0 = rng.uniform(-0.75, 0.75, n_shell)  # straight-path height, no baffles
+        self.baffle_k = 1.0                               # 1 = zig-zag round the baffles
         self.hot_speed, self.cold_speed = 0.10, 0.08     # fraction of length per second
         self.hot = pv.PolyData(self._hot_pts())
         self.cold = pv.PolyData(self._cold_pts(1))
@@ -210,6 +259,17 @@ class Flow:
 
     def _shell_z(self, x):
         """Height of the shell-side path at x: weaves through the alternating baffle windows."""
+        if self.bold:
+            # level through each window (just before to just after the plate), so the particles
+            # clearly pass over one plate and under the next, crossing the bundle in between
+            xs, zs = [X0], [0.0]
+            for i, bx in enumerate(BAFFLE_XS):
+                zw = 0.76 if i % 2 == 0 else -0.76
+                xs += [bx - 0.15, bx + 0.15]
+                zs += [zw, zw]
+            xs.append(X1)
+            zs.append(0.0)
+            return np.interp(x, np.array(xs), np.array(zs))
         knots_x = np.array([X0] + list(BAFFLE_XS) + [X1])
         knots_z = np.array([0.0] + [0.72 if i % 2 == 0 else -0.72 for i in range(len(BAFFLE_XS))] + [0.0])
         return np.interp(x, knots_x, knots_z)
@@ -218,12 +278,18 @@ class Flow:
         # s runs inlet → outlet; direction +1: enters right (countercurrent), -1: enters left
         x = X1 - self.cold_s * L if direction > 0 else X0 + self.cold_s * L
         z = self._shell_z(x) + self.cold_jit
+        k = self.baffle_k
+        if k < 1.0:     # without baffles the shell side runs straight along the tubes
+            z = k * z + (1 - k) * self.cold_z0
         y = self.cold_y * np.sqrt(np.clip(1 - (z / R) ** 2, 0.05, 1))
         return np.column_stack([x, y, z])
 
-    def step(self, dt, direction):
+    def step(self, dt, direction, baffle_k=1.0):
+        """baffle_k: 1 = baffles in place (zig-zag, faster), 0 = none (straight, slow)."""
+        self.baffle_k = baffle_k
+        speed = self.cold_speed if baffle_k >= 1.0 else COLD_SLOW + (self.cold_speed - COLD_SLOW) * baffle_k
         self.hot_s = (self.hot_s + self.hot_speed * dt) % 1.0
-        self.cold_s = (self.cold_s + self.cold_speed * dt) % 1.0
+        self.cold_s = (self.cold_s + speed * dt) % 1.0
         self.hot.points = self._hot_pts()
         self.cold.points = self._cold_pts(direction)
         self.hot["rgb"] = self._colours(self.hot_s, HOT, HOT_OUT)
@@ -292,8 +358,34 @@ def fouling_at(state, t):
         return 1.0 if state["fouling"] else 0.0
     return min(1.0, max(0.0, (t - state["foul_at"]) / FOUL_FADE))
 
-def build(size, fouling, mode, flip_at, foul_at=None, temps=None, duration=30.0):
-    """temps: dict(hot_in, cold_in, outlets=[(t, hot out, cold out), ...]) for the nozzle labels."""
+def baffle_events(baffles_at):
+    """baffles_at: None (baffles always there, EP01/EP02), a time (none until then, then they
+    fade in), or [(t, shown), ...] switches, e.g. [(0, True), (9.5, False), (21, True)]."""
+    if baffles_at is None:
+        return None
+    if isinstance(baffles_at, (int, float)):
+        return [(0.0, False), (float(baffles_at), True)]
+    return sorted((float(t), bool(on)) for t, on in baffles_at)
+
+def baffles_k(state, t):
+    """0 = no baffles, 1 = baffles in place, at time t (fades over BAFFLE_FADE at each switch)."""
+    ev = state.get("baffles")
+    if not ev:
+        return 1.0
+    k = 1.0 if ev[0][1] else 0.0
+    for te, on in ev[1:]:
+        if te > t:
+            break
+        u = min(1.0, max(0.0, (t - te) / BAFFLE_FADE))
+        k = u if on else 1 - u
+    return k
+
+BAFFLES_TXT = ("Baffles: zig-zag across the tubes", "Baffles: zig-zag across the tubes")
+NO_BAFFLES_TXT = ("No baffles: straight along the tubes, slow", "No baffles: straight along the tubes, slow")
+
+def build(size, fouling, mode, flip_at, foul_at=None, temps=None, duration=30.0, baffles_at=None):
+    """temps: dict(hot_in, cold_in, outlets=[(t, hot out, cold out), ...]) for the nozzle labels.
+    baffles_at: see baffle_events (None = baffles always there, as before)."""
     # everything is laid out from the render size, so text and particles look the same at any size
     w, h = size[0] * SUPERSAMPLE, size[1] * SUPERSAMPLE
     p = pv.Plotter(off_screen=True, window_size=(w, h))
@@ -303,8 +395,14 @@ def build(size, fouling, mode, flip_at, foul_at=None, temps=None, duration=30.0)
             p.enable_anti_aliasing("ssaa")
         except Exception:
             pass
-    ex = Exchanger(p, fouling=fouling, deposit=fouling or foul_at is not None)
-    flow = Flow(p, ex.tubes, point_size=max(4, round(12 * h / PANEL_H)))
+    bold = baffle_events(baffles_at) is not None
+    if bold:
+        try:                          # correct see-through ordering of plates, tubes and shell
+            p.enable_depth_peeling()
+        except Exception:
+            pass
+    ex = Exchanger(p, fouling=fouling, deposit=fouling or foul_at is not None, bold_baffles=bold)
+    flow = Flow(p, ex.tubes, point_size=max(4, round(12 * h / PANEL_H)), bold=bold)
     fs = max(12, int(h / 40))
     # one label set per (flow direction, temperatures shown); frame_at shows the right one
     temp_sets = {None} if not temps else {(temps["hot_in"], h, temps["cold_in"], c)
@@ -326,12 +424,19 @@ def build(size, fouling, mode, flip_at, foul_at=None, temps=None, duration=30.0)
         unicode_ok = _font_file(status, bold=True)
         _font_file(note, bold=False)
         note.SetVisibility(False)
+    bstatus = None
+    if baffle_events(baffles_at) and status is None:
+        # baffle episodes: the caption becomes a "no baffles / baffles" status line
+        caption.SetVisibility(False)
+        bstatus = p.add_text("", position=(int(w * 0.05), int(h * 0.06)), font_size=int(fs * 0.75),
+                             color=rgb(WHITE))
+        _font_file(bstatus, bold=True)
     place_camera(p, 0.0, duration)
     p.show(auto_close=False)          # off-screen: initialises the render window, opens nothing
     state = dict(p=p, ex=ex, flow=flow, labels=labels, caption=caption, temps=temps,
                  duration=duration, mode=mode, flip_at=flip_at,
                  fouling=fouling or foul_at is not None, foul_at=foul_at, status=status, note=note,
-                 unicode_ok=unicode_ok)
+                 unicode_ok=unicode_ok, baffles=baffle_events(baffles_at), bstatus=bstatus)
     return state
 
 def _font_file(actor, bold):
@@ -378,8 +483,15 @@ def frame_at(state, t, dt):
     ctr, ts = counter_at(state, t), temps_at(state, t)
     for key, actors in state["labels"].items():
         _set_visible(actors, key == (ctr, ts))
-    state["flow"].step(dt, 1 if ctr else -1)
+    bk = baffles_k(state, t)
+    state["flow"].step(dt, 1 if ctr else -1, bk)
     state["ex"].set_fouling(fouling_at(state, t))
+    if state["baffles"]:
+        state["ex"].set_baffles(bk)
+    if state.get("bstatus") is not None:
+        # the line names the state being shown: switches as soon as the fade passes half way
+        state["bstatus"].SetInput((BAFFLES_TXT if bk >= 0.5 else NO_BAFFLES_TXT)[0])
+        state["bstatus"].GetTextProperty().SetColor(rgb(WHITE if bk >= 0.5 else COLD_OUT))
     state["caption"].SetInput(caption_text(state, t))
     if state["status"] is not None:
         text, col, fouled = status_at(state, t)
@@ -393,8 +505,8 @@ def frame_at(state, t, dt):
 
 # ── output ───────────────────────────────────────────────────────────────────
 def render_video(out, duration, size=(PANEL_W, PANEL_H), fps=FPS, fouling=False,
-                 mode="counter", flip_at=None, foul_at=None, temps=None):
-    state = build(size, fouling, mode, flip_at, foul_at, temps, duration)
+                 mode="counter", flip_at=None, foul_at=None, temps=None, baffles_at=None):
+    state = build(size, fouling, mode, flip_at, foul_at, temps, duration, baffles_at)
     n = int(math.ceil(duration * fps))
     first = frame_at(state, 0.0, 0.0)
     fh, fw = first.shape[:2]
@@ -417,14 +529,14 @@ def render_video(out, duration, size=(PANEL_W, PANEL_H), fps=FPS, fouling=False,
     return Path(out)
 
 def render_still(out, t, size=(PANEL_W, PANEL_H), fouling=False, mode="counter", flip_at=None,
-                 foul_at=None, temps=None, duration=30.0):
+                 foul_at=None, temps=None, duration=30.0, baffles_at=None):
     """duration: length of the video this still stands for (sets where the camera swing is)."""
     from PIL import Image
-    state = build(size, fouling, mode, flip_at, foul_at, temps, duration)
+    state = build(size, fouling, mode, flip_at, foul_at, temps, duration, baffles_at)
     # run the particles up to t so the still looks like the video at that moment
     steps = int(t * 10)
-    for _ in range(steps):
-        state["flow"].step(0.1, 1 if counter_at(state, t) else -1)
+    for i in range(steps):
+        state["flow"].step(0.1, 1 if counter_at(state, t) else -1, baffles_k(state, i * 0.1))
     img = frame_at(state, t, 0.0)
     Image.fromarray(img[:, :, :3]).resize(size, Image.LANCZOS).save(out)
     state["p"].close()
@@ -441,15 +553,18 @@ def main():
     ap.add_argument("--fouling", action="store_true", help="show fouled (brown) tubes")
     ap.add_argument("--foul-at", type=float,
                     help=f"clean tubes until this time (s), then fade to fouled over {FOUL_FADE:g} s")
+    ap.add_argument("--baffles-at", type=float,
+                    help=f"no baffles (straight, slow shell flow) until this time (s), then they fade "
+                         f"in over {BAFFLE_FADE:g} s and the flow zig-zags")
     ap.add_argument("--draft", action="store_true", help="half size, 15 fps — layout check")
     a = ap.parse_args()
     size = (PANEL_W // 2, PANEL_H // 2) if a.draft else (PANEL_W, PANEL_H)
     if a.still is not None:
         render_still(a.out, a.still, size, a.fouling, a.mode, a.flip_at, a.foul_at,
-                     duration=a.duration)
+                     duration=a.duration, baffles_at=a.baffles_at)
     else:
         render_video(a.out, a.duration, size, 15 if a.draft else FPS, a.fouling, a.mode, a.flip_at,
-                     a.foul_at)
+                     a.foul_at, baffles_at=a.baffles_at)
 
 if __name__ == "__main__":
     main()
